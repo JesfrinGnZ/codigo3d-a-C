@@ -1,0 +1,319 @@
+/*--------------- 1ra Area: Codigo de Usuario -----------------------*/
+//-------> importaciones, paquetes
+
+package gnz.backend.analizadores;
+import java_cup.runtime.*;
+
+
+parser code {:
+
+
+
+    public parser(AnalizadorLexicoCodigo lex){
+        super(lex);
+    }
+
+    //Metodo al que se llama automaticamente ante algun error sintactico
+    public void syntax_error(Symbol s){
+        int columna = s.right;
+        int linea = s.left;
+        System.out.println("Error SINTACTICO:" + s.value + " en:" + linea + ":" + columna);
+}
+
+    //Metodo al que se llama en el momento en que ya no es posible una recuperacion de errores
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
+        int columna = s.right;
+        int linea = s.left;
+        System.out.println("Error SINTACTICO:" + s.value + " en:" + linea + ":" + columna);
+ }
+
+
+:}
+
+/*--------------- 2da Area: Declaraciones -----------------------*/
+
+terminal String     PCOMA;
+terminal String     ASIGNACION,COMA;
+terminal String     IDENTIFICADOR;
+terminal String     BOOLEAN;
+terminal String     TRUE,FALSE;
+terminal String     CHAR;
+terminal String     DECLARACION_CARACTER;
+terminal String     BYTE,INT,LONG,FLOAT,DOUBLE;
+terminal String     NUMERO_ENTERO,NUMERO_DECIMAL,NUMERO_DECIMALF;
+terminal String     STRING;
+terminal String     DECLARACION_STRING;
+
+terminal String     MAS,POR,MENOS,DIV,PORCENTAJE;
+terminal String     MENOR,MAYOR,MENOR_IGUAL,MAYOR_IGUAL,DISTINTO_DE,IGUAL_A;
+terminal String     NOT,AND,OR;
+
+terminal String     PARENTESIS_ABIERTO,PARENTESIS_CERRADO,CORCHETE_ABIERTO,CORCHETE_CERRADO;
+
+terminal String     IF,ELSIF,ELSE;
+
+terminal String     WHILE,DO;
+
+terminal String     FOR,DOS_PUNTOS;
+
+terminal String     ARRAY;
+
+terminal String     PRINT,PRINTLN,SCANS,SCANN;
+
+terminal String     VOID,RETURN;
+
+terminal String     MAIN;
+
+//terminal String     COMENTARIO_LINEA,COMENTARIO_DE_BLOQUE;
+
+
+non terminal Object     inicio;
+non terminal Object     conjuntoDeInstrucciones,unaInstruccion;
+non terminal Object     conjuntoDeDeclaraciones;
+non terminal Object     unaDeclaracion;
+
+
+//******************************************************************Declaracion de variables******************************************
+
+non terminal Object     declaracionDeVariables;
+non terminal Object     tipoDeVariable;
+non terminal Object     conjuntoDeIdentificadoresParaVariables;
+non terminal Object     unIdentificadorParaVariable;
+non terminal Object     expresion;
+
+//******************************************************************Condicion y comparacion******************************************
+
+non terminal Object     comparacion;
+non terminal Object     condicion;
+
+
+//******************************************************************Asignacion de variables******************************************
+
+non terminal Object     asignacionDeVariable;
+
+//******************************************************************Declaracion de arreglos******************************************
+
+non terminal Object     declaracionDeArreglos;
+non terminal Object     unIdentificadorParaArreglo;
+non terminal Object     conjuntoDeDimensiones;
+non terminal Object     unaDimension;
+non terminal Object     conjuntoDeIdentificadoresParaArreglo;
+non terminal Object     asignacionDeArreglo;
+
+//******************************************************************Declaracion de estructura If******************************************
+
+non terminal Object     declaracionDeEstructuraIf;
+
+//******************************************************************Declaracion de estructura IF-ELSE******************************************
+
+non terminal Object     declaracionDeEstructuraIfElse;
+
+//******************************************************************Declaracion de estructura ELSEIF******************************************
+
+non terminal Object     declaracionDeEstructuraElseIf,conjuntoDeElseIf,unElseIf;
+
+
+//******************************************************************DeclaracionCHAR de estructura While******************************************
+
+non terminal Object     declaracionDeEstructuraWhile;
+non terminal Object     instrucccionWhile;
+
+//******************************************************************declaracion de estructura DoWhile********************************************
+
+non terminal Object     declaracionDeEstructuraDoWhile;
+non terminal Object     declaracionDo;
+
+//******************************************************************declaracion de estructura For********************************************
+
+non terminal Object     declaracionDeEstructuraFor,incrementoDecremento;
+non terminal Object     asignacionParaFor;
+
+//******************************************************************declaracion de funciones Predefinidas********************************************
+
+non terminal Object     declaracionDeFuncionesPredefinidas;
+non terminal Object     conjuntoDeTexto;
+non terminal Object     unTexto;
+
+//***********************************************************************************Subprogramas*****************************************************
+
+non terminal Object     conjuntoDeSubprogramas;
+non terminal Object     unSubPrograma;
+non terminal Object     tipoDeRetorno;
+non terminal Object     conjuntoDeParametros;
+non terminal Object     unParametro;
+non terminal Object     cuerpoDeFuncion,cuerpoDeFuncionReturn;
+
+//***********************************************************************************Funcion Main***************************************************
+non terminal Object funcionMain;
+
+
+/*--------------- 3ra Area: Reglas Semanticas -----------------------*/
+
+precedence left ELSE;
+precedence left ELSIF;
+precedence left MAS, MENOS;
+precedence left POR, DIV,PORCENTAJE;
+precedence left NOT,AND,OR;
+
+start with inicio;
+//*******************************************************Expresiones,comparaciones y tipos de variables****************************
+expresion::= expresion MAS expresion;
+expresion::= expresion MENOS expresion;
+expresion::=expresion POR expresion;
+expresion::=expresion DIV expresion;
+expresion::=expresion PORCENTAJE expresion;
+//expresion::=PARENTESIS_ABIERTO expresion PARENTESIS_CERRADO;
+expresion::=MENOS PARENTESIS_ABIERTO expresion PARENTESIS_CERRADO;
+expresion::=IDENTIFICADOR;
+expresion::=TRUE;
+expresion::=FALSE;
+expresion::=DECLARACION_CARACTER;
+expresion::=NUMERO_ENTERO;
+expresion::=NUMERO_DECIMAL;
+expresion::=NUMERO_DECIMALF;
+expresion::=DECLARACION_STRING;
+
+
+comparacion::= comparacion AND comparacion;
+comparacion::= comparacion OR comparacion;
+comparacion::= NOT comparacion;
+comparacion::= PARENTESIS_ABIERTO comparacion PARENTESIS_CERRADO;
+comparacion::=expresion MENOR expresion;
+comparacion::=expresion MAYOR expresion;
+comparacion::=expresion MENOR_IGUAL expresion;
+comparacion::=expresion MAYOR_IGUAL expresion;
+comparacion::=expresion DISTINTO_DE expresion;
+comparacion::=expresion IGUAL_A expresion;
+comparacion::=expresion;
+
+tipoDeVariable::=STRING;
+tipoDeVariable::=BOOLEAN;
+tipoDeVariable::=CHAR;
+tipoDeVariable::=BYTE;
+tipoDeVariable::=INT;
+tipoDeVariable::=LONG;
+tipoDeVariable::=FLOAT;
+tipoDeVariable::=DOUBLE;
+
+
+//******************************************************************Inicio**********************************************************
+
+inicio::= conjuntoDeDeclaraciones conjuntoDeSubprogramas PORCENTAJE PORCENTAJE PORCENTAJE funcionMain;
+inicio::= conjuntoDeDeclaraciones  PORCENTAJE PORCENTAJE PORCENTAJE funcionMain;
+inicio::= conjuntoDeSubprogramas  PORCENTAJE PORCENTAJE PORCENTAJE funcionMain;
+inicio::= PORCENTAJE PORCENTAJE PORCENTAJE funcionMain;
+
+
+conjuntoDeDeclaraciones::=conjuntoDeDeclaraciones unaDeclaracion | unaDeclaracion ;
+unaDeclaracion::=declaracionDeVariables;
+
+conjuntoDeInstrucciones::=conjuntoDeInstrucciones unaInstruccion | unaInstruccion;
+
+//******************************************************************Error**********************************************************
+
+unaInstruccion::=error;
+
+//******************************************************************Declaracion de variables****************************************************
+unaInstruccion::=declaracionDeVariables;
+declaracionDeVariables::=tipoDeVariable conjuntoDeIdentificadoresParaVariables PCOMA;
+conjuntoDeIdentificadoresParaVariables::=conjuntoDeIdentificadoresParaVariables COMA unIdentificadorParaVariable|
+                                         unIdentificadorParaVariable;
+unIdentificadorParaVariable::=IDENTIFICADOR;
+unIdentificadorParaVariable::=IDENTIFICADOR ASIGNACION comparacion;
+
+//******************************************************************Asignacion de variables****************************************************
+unaInstruccion::=asignacionDeVariable;
+asignacionDeVariable::=IDENTIFICADOR ASIGNACION comparacion PCOMA;
+
+//*******************************************************************Declaracion de arreglos********************************************
+unaInstruccion::=declaracionDeArreglos;
+declaracionDeArreglos::=ARRAY tipoDeVariable conjuntoDeDimensiones conjuntoDeIdentificadoresParaArreglo PCOMA;
+conjuntoDeDimensiones::=conjuntoDeDimensiones unaDimension|unaDimension;
+unaDimension::=CORCHETE_ABIERTO comparacion CORCHETE_CERRADO;
+conjuntoDeIdentificadoresParaArreglo::=conjuntoDeIdentificadoresParaArreglo COMA unIdentificadorParaArreglo | unIdentificadorParaArreglo;
+unIdentificadorParaArreglo::=IDENTIFICADOR;
+
+//*******************************************************************Asignacion de arreglos********************************************
+unaInstruccion::=asignacionDeArreglo;
+asignacionDeArreglo::=IDENTIFICADOR conjuntoDeDimensiones ASIGNACION comparacion PCOMA;
+
+
+
+//*******************************************************************Instruccion IF ***************************************************
+unaInstruccion::=declaracionDeEstructuraIf;
+//------>1
+declaracionDeEstructuraIf::= IF PARENTESIS_ABIERTO comparacion PARENTESIS_CERRADO unaInstruccion;
+//------>2
+declaracionDeEstructuraIf::= IF PARENTESIS_ABIERTO comparacion PARENTESIS_CERRADO CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO;
+//*****************************************************************Instruccion IF-ELSE*****************************************************
+unaInstruccion::=declaracionDeEstructuraIfElse;
+//------->1
+declaracionDeEstructuraIfElse::= declaracionDeEstructuraIf ELSE unaInstruccion;
+//------->2
+declaracionDeEstructuraIfElse::= declaracionDeEstructuraIf ELSE CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO;
+//****************************************************************Instruccion ELSEIF*******************************************************
+unaInstruccion::=declaracionDeEstructuraElseIf;
+//------->1
+declaracionDeEstructuraElseIf::=declaracionDeEstructuraIf conjuntoDeElseIf;
+//------->2
+declaracionDeEstructuraElseIf::=declaracionDeEstructuraIf conjuntoDeElseIf ELSE unaInstruccion;
+//------->3
+declaracionDeEstructuraElseIf::=declaracionDeEstructuraIf conjuntoDeElseIf ELSE CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO;
+
+conjuntoDeElseIf::=conjuntoDeElseIf unElseIf|unElseIf;
+unElseIf::=ELSIF PARENTESIS_ABIERTO comparacion PARENTESIS_CERRADO unaInstruccion;
+unElseIf::=ELSIF PARENTESIS_ABIERTO comparacion PARENTESIS_CERRADO CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO;
+
+
+//**********************************************************Instruccion While*************************************************************
+unaInstruccion::=declaracionDeEstructuraWhile;
+declaracionDeEstructuraWhile::= WHILE PARENTESIS_ABIERTO comparacion PARENTESIS_CERRADO unaInstruccion;
+declaracionDeEstructuraWhile::= WHILE PARENTESIS_ABIERTO comparacion PARENTESIS_CERRADO CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO;
+
+//*********************************************************Instruccion Do-While***********************************************************
+unaInstruccion::=declaracionDeEstructuraDoWhile;
+declaracionDeEstructuraDoWhile::= DO unaInstruccion WHILE PARENTESIS_ABIERTO comparacion PARENTESIS_CERRADO;
+declaracionDeEstructuraDoWhile::= DO CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO WHILE PARENTESIS_ABIERTO comparacion PARENTESIS_CERRADO;
+//*********************************************************Instruccion For*****************************************************************
+unaInstruccion::=declaracionDeEstructuraFor;
+declaracionDeEstructuraFor::=FOR PARENTESIS_ABIERTO asignacionParaFor DOS_PUNTOS comparacion DOS_PUNTOS incrementoDecremento PARENTESIS_CERRADO unaInstruccion;
+declaracionDeEstructuraFor::=FOR PARENTESIS_ABIERTO asignacionParaFor DOS_PUNTOS comparacion DOS_PUNTOS incrementoDecremento PARENTESIS_CERRADO
+                             CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO;
+asignacionParaFor::=IDENTIFICADOR ASIGNACION comparacion;
+incrementoDecremento::= MAS NUMERO_ENTERO;
+incrementoDecremento::= MENOS NUMERO_ENTERO;
+//*********************************************************Funciones predefinidas************************************************************
+unaInstruccion::=declaracionDeFuncionesPredefinidas;
+declaracionDeFuncionesPredefinidas::= PRINTLN CORCHETE_ABIERTO conjuntoDeTexto CORCHETE_CERRADO PCOMA;
+declaracionDeFuncionesPredefinidas::= PRINT CORCHETE_ABIERTO conjuntoDeTexto CORCHETE_CERRADO PCOMA;
+declaracionDeFuncionesPredefinidas::= SCANS CORCHETE_ABIERTO IDENTIFICADOR CORCHETE_CERRADO PCOMA;
+declaracionDeFuncionesPredefinidas::= SCANN CORCHETE_ABIERTO IDENTIFICADOR CORCHETE_CERRADO PCOMA;
+conjuntoDeTexto::= conjuntoDeTexto COMA unTexto | unTexto;
+unTexto::=expresion;
+
+//*********************************************************Subprogramas**********************************************************************
+
+conjuntoDeSubprogramas::= conjuntoDeSubprogramas unSubPrograma| unSubPrograma;
+unSubPrograma::=tipoDeVariable IDENTIFICADOR PARENTESIS_ABIERTO conjuntoDeParametros PARENTESIS_CERRADO
+                CORCHETE_ABIERTO cuerpoDeFuncionReturn CORCHETE_CERRADO;
+
+unSubPrograma::=VOID IDENTIFICADOR PARENTESIS_ABIERTO conjuntoDeParametros PARENTESIS_CERRADO
+                                CORCHETE_ABIERTO cuerpoDeFuncion CORCHETE_CERRADO;
+
+
+conjuntoDeParametros::= conjuntoDeParametros COMA unParametro | unParametro |;
+unParametro::= tipoDeVariable IDENTIFICADOR;
+
+cuerpoDeFuncionReturn::=conjuntoDeDeclaraciones PORCENTAJE PORCENTAJE PORCENTAJE conjuntoDeInstrucciones RETURN comparacion;
+cuerpoDeFuncionReturn::=conjuntoDeDeclaraciones PORCENTAJE PORCENTAJE PORCENTAJE RETURN comparacion;
+cuerpoDeFuncionReturn::= PORCENTAJE PORCENTAJE PORCENTAJE conjuntoDeInstrucciones RETURN comparacion;
+cuerpoDeFuncionReturn::= PORCENTAJE PORCENTAJE PORCENTAJE RETURN comparacion;
+
+
+cuerpoDeFuncion::=conjuntoDeDeclaraciones PORCENTAJE PORCENTAJE PORCENTAJE conjuntoDeInstrucciones;
+cuerpoDeFuncion::=conjuntoDeDeclaraciones PORCENTAJE PORCENTAJE PORCENTAJE;
+cuerpoDeFuncion::= PORCENTAJE PORCENTAJE PORCENTAJE conjuntoDeInstrucciones;
+conjuntoDeInstrucciones::=PORCENTAJE PORCENTAJE PORCENTAJE;
+
+//***************************************************************funcionMain************************************************************
+funcionMain::= MAIN PARENTESIS_ABIERTO PARENTESIS_CERRADO CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO;
