@@ -1,6 +1,9 @@
 package gnz.gui.frames;
 
-
+import gnz.backend.analizadores.AnalizadorLexicoCodigo;
+import gnz.backend.analizadores.parser;
+import gnz.backend.errores.ManejadorDeErrores;
+import gnz.backend.tablas.ManejadorDeTablas;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.logging.Level;
@@ -20,6 +23,7 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
 
     private final UndoManager editManager;
     private final ManejadorDeEditorDeTexto manejadorEditor;
+    private ManejadorDeTablas manTablas;
 
     /**
      * Creates new form EditorDeTextoFrame
@@ -361,6 +365,7 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
         try {
             this.codigo3dTextArea.setText("");
             this.erroresTextArea.setText("");
+            this.manTablas = new ManejadorDeTablas(this);
             analizarCodigo(this.codigoTextArea.getText());
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Existio un error al analizar el codigo :/");
@@ -423,7 +428,14 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
     }
 
     public void analizarCodigo(String codigo) throws Exception {
-      
+        AnalizadorLexicoCodigo lex = new AnalizadorLexicoCodigo(new BufferedReader(new StringReader(codigo)), this);
+        parser sintactico = new parser(lex, this);
+        sintactico.parse();
+        if (!ManejadorDeErrores.hayError) {
+            erroresTextArea.setText("NO EXISTEN ERRORES");
+            manTablas.escribirCuartetos();
+        }
+        ManejadorDeErrores.hayError = false;
     }
 
     public JTextArea getErroresTextArea() {
@@ -432,6 +444,18 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
 
     public void setErroresTextArea(JTextArea erroresTextArea) {
         this.erroresTextArea = erroresTextArea;
+    }
+
+    public ManejadorDeTablas getManTablas() {
+        return manTablas;
+    }
+
+    public void setManTablas(ManejadorDeTablas manTablas) {
+        this.manTablas = manTablas;
+    }
+
+    public JTextArea getCodigo3dTextArea() {
+        return codigo3dTextArea;
     }
 
 }

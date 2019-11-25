@@ -3,6 +3,8 @@
 package gnz.backend.analizadores;
 import java_cup.runtime.*;
 import static gnz.backend.analizadores.sym.*;
+import gnz.gui.frames.*;
+
 %% //------------------>2da area<--------------------------
 
 %public
@@ -19,7 +21,7 @@ Identificador = [:jletter:] ( [:jletterdigit:] | [_] | [$] )*
 Digitos = 0 | [1-9][0-9]*
 %{
 
-
+  private EditorDeTextoFrame editor;
 
   private Symbol symbol(int type) {
     return new Symbol(type, yyline+1, yycolumn+1);
@@ -30,9 +32,10 @@ Digitos = 0 | [1-9][0-9]*
     return new Symbol(type, yyline+1, yycolumn+1, value);
   }
 
- /*   public AnalizadorLexicoCodigo(java.io.Reader in) {
+    public AnalizadorLexicoCodigo(java.io.Reader in,EditorDeTextoFrame editor) {
     this.zzReader = in;
-  }*/
+    this.editor=editor;
+  }
 
 %}
 
