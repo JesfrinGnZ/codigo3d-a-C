@@ -136,6 +136,7 @@ Digitos = 0 | [1-9][0-9]*
     "void" {return symbol(VOID,yytext());}
     "return" {return symbol(RETURN,yytext());}
     "MAIN"  {return symbol(MAIN,yytext());}
+    "%%%"   {return symbol(SEPARADOR,yytext());}
    //************************Comentarios**************************************
 
     "--"~"\n"      {/*Se ignoran*/}

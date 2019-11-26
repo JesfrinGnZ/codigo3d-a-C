@@ -16,11 +16,15 @@ public class NodoLogico implements Nodo{
     private OperacionLogica operacion;
     private Nodo nodo1;
     private Nodo nodo2;
+    private int linea;
+    private int columna;
 
-    public NodoLogico(OperacionLogica operacion, Nodo nodo1, Nodo nodo2) {
+    public NodoLogico(OperacionLogica operacion, Nodo nodo1, Nodo nodo2,int linea,int columna) {
         this.operacion = operacion;
         this.nodo1 = nodo1;
         this.nodo2 = nodo2;
+        this.linea=linea;
+        this.columna=columna;
     }
 
     public OperacionLogica getOperacion() {

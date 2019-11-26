@@ -21,15 +21,15 @@ parser code {:
 
     //Metodo al que se llama automaticamente ante algun error sintactico
     public void syntax_error(Symbol s){
-        int columna = s.right;
-        int linea = s.left;
+        int columna = s.right+1;
+        int linea = s.left+1;
         System.out.println("Error SINTACTICO:" + s.value + " en:" + linea + ":" + columna);
 }
 
     //Metodo al que se llama en el momento en que ya no es posible una recuperacion de errores
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
-        int columna = s.right;
-        int linea = s.left;
+        int columna = s.right+1;
+        int linea = s.left+1;
         System.out.println("Error SINTACTICO:" + s.value + " en:" + linea + ":" + columna);
  }
 
@@ -70,6 +70,8 @@ terminal String     VOID,RETURN;
 
 terminal String     MAIN;
 
+terminal String     SEPARADOR;
+
 //terminal String     COMENTARIO_LINEA,COMENTARIO_DE_BLOQUE;
 
 
@@ -96,7 +98,7 @@ non terminal Object     condicion;
 
 //******************************************************************Asignacion de variables******************************************
 
-non terminal Object     asignacionDeVariable;
+non terminal Nodo     asignacionDeVariable;
 
 //******************************************************************Declaracion de arreglos******************************************
 
@@ -148,8 +150,9 @@ non terminal Object     unSubPrograma;
 non terminal Object     tipoDeRetorno;
 non terminal Object     conjuntoDeParametros;
 non terminal Object     unParametro;
-non terminal Object     cuerpoDeFuncion,cuerpoDeFuncionReturn;
-
+non terminal Object     cuerpoDeFuncion,instruccionReturn;
+non terminal Object     llamadaDeFuncion;
+non terminal Object     listaDeParametros,miParametro;
 //***********************************************************************************Funcion Main***************************************************
 non terminal Object funcionMain;
 
@@ -180,18 +183,21 @@ expresion::=NUMERO_ENTERO:i{:RESULT=new NodoHojaExpresion(TipoDeHoja.NUMERO_ENTE
 expresion::=NUMERO_DECIMAL:i{:RESULT=new NodoHojaExpresion(TipoDeHoja.NUMERO_DECIMAL,i,ileft,iright);:};
 expresion::=NUMERO_DECIMALF:i{:RESULT=new NodoHojaExpresion(TipoDeHoja.NUMERO_DECIMALF,i,ileft,iright);:};
 expresion::=DECLARACION_STRING:i{:RESULT=new NodoHojaExpresion(TipoDeHoja.DECLARACION_STRING,i,ileft,iright);:};
+expresion::=IDENTIFICADOR PARENTESIS_ABIERTO PARENTESIS_CERRADO;
+expresion::=IDENTIFICADOR PARENTESIS_ABIERTO listaDeParametros PARENTESIS_CERRADO;
+listaDeParametros::=listaDeParametros COMA miParametro | miParametro;
+miParametro::=comparacion;
 
-
-comparacion::= comparacion:n1 AND comparacion:n2{:RESULT = new NodoLogico(OperacionLogica.AND,n1,n2);:};
-comparacion::= comparacion:n1 OR comparacion:n2{:RESULT = new NodoLogico(OperacionLogica.OR,n1,n2);:};
+comparacion::= comparacion:n1 AND:i comparacion:n2{:RESULT = new NodoLogico(OperacionLogica.AND,n1,n2,ileft,iright);:};
+comparacion::= comparacion:n1 OR:i comparacion:n2{:RESULT = new NodoLogico(OperacionLogica.OR,n1,n2,ileft,iright);:};
 comparacion::= NOT comparacion:n1;
 //comparacion::= PARENTESIS_ABIERTO comparacion PARENTESIS_CERRADO;
-comparacion::=expresion:n1 MENOR expresion:n2{:RESULT= new NodoComparacion(OperacionComparacion.MENOR,n1,n2);:};
-comparacion::=expresion:n1 MAYOR expresion:n2{:RESULT= new NodoComparacion(OperacionComparacion.MAYOR,n1,n2);:};
-comparacion::=expresion:n1 MENOR_IGUAL expresion:n2{:RESULT= new NodoComparacion(OperacionComparacion.MENOR_IGUAL,n1,n2);:};
-comparacion::=expresion:n1 MAYOR_IGUAL expresion:n2{:RESULT= new NodoComparacion(OperacionComparacion.MAYOR_IGUAL,n1,n2);:};
-comparacion::=expresion:n1 DISTINTO_DE expresion:n2{:RESULT= new NodoComparacion(OperacionComparacion.DISTINTO_DE,n1,n2);:};
-comparacion::=expresion:n1 IGUAL_A expresion:n2{:RESULT= new NodoComparacion(OperacionComparacion.IGUAL_A,n1,n2);:};
+comparacion::=expresion:n1 MENOR:i expresion:n2{:RESULT= new NodoComparacion(OperacionComparacion.MENOR,n1,n2,ileft,iright);:};
+comparacion::=expresion:n1 MAYOR:i expresion:n2{:RESULT= new NodoComparacion(OperacionComparacion.MAYOR,n1,n2,ileft,iright);:};
+comparacion::=expresion:n1 MENOR_IGUAL:i expresion:n2{:RESULT= new NodoComparacion(OperacionComparacion.MENOR_IGUAL,n1,n2,ileft,iright);:};
+comparacion::=expresion:n1 MAYOR_IGUAL:i expresion:n2{:RESULT= new NodoComparacion(OperacionComparacion.MAYOR_IGUAL,n1,n2,ileft,iright);:};
+comparacion::=expresion:n1 DISTINTO_DE:i expresion:n2{:RESULT= new NodoComparacion(OperacionComparacion.DISTINTO_DE,n1,n2,ileft,iright);:};
+comparacion::=expresion:n1 IGUAL_A:i expresion:n2{:RESULT= new NodoComparacion(OperacionComparacion.IGUAL_A,n1,n2,ileft,iright);:};
 comparacion::=expresion:n1 {:RESULT=n1;:};
 
 tipoDeVariable::=STRING{:RESULT=TipoDeVariable.STRING;:};
@@ -202,6 +208,7 @@ tipoDeVariable::=INT{:RESULT=TipoDeVariable.INT;:};
 tipoDeVariable::=LONG{:RESULT=TipoDeVariable.LONG;:};
 tipoDeVariable::=FLOAT{:RESULT=TipoDeVariable.FLOAT;:};
 tipoDeVariable::=DOUBLE{:RESULT=TipoDeVariable.DOUBLE;:};
+tipoDeVariable::=VOID{:RESULT=TipoDeVariable.VOID;:};
 
 
 //******************************************************************Inicio**********************************************************
@@ -209,12 +216,16 @@ tipoDeVariable::=DOUBLE{:RESULT=TipoDeVariable.DOUBLE;:};
 inicio::=conjuntoDeDeclaraciones:declaraciones
 {:ManejadorDeDeclaraciones man = new ManejadorDeDeclaraciones(declaraciones,editor);
 :};
-inicio::= conjuntoDeDeclaraciones conjuntoDeSubprogramas PORCENTAJE PORCENTAJE PORCENTAJE funcionMain;
-inicio::= conjuntoDeDeclaraciones  PORCENTAJE PORCENTAJE PORCENTAJE funcionMain;
-inicio::= conjuntoDeSubprogramas  PORCENTAJE PORCENTAJE PORCENTAJE funcionMain;
-inicio::= PORCENTAJE PORCENTAJE PORCENTAJE funcionMain;
+inicio::= conjuntoDeDeclaraciones:declaraciones conjuntoDeSubprogramas SEPARADOR funcionMain
+{:ManejadorDeDeclaraciones man = new ManejadorDeDeclaraciones(declaraciones,editor);
+:};
+inicio::= conjuntoDeDeclaraciones  SEPARADOR funcionMain;
+inicio::= conjuntoDeSubprogramas  SEPARADOR funcionMain;
+inicio::= SEPARADOR funcionMain;
 
+conjuntoDeInstrucciones::=conjuntoDeInstrucciones unaInstruccion | unaInstruccion;
 
+//******************************************************************Conjunto de declaraciones**********************************************************
 conjuntoDeDeclaraciones::=conjuntoDeDeclaraciones:lista unaDeclaracion:n1
 {:lista.add(n1);RESULT=lista;:}
  |
@@ -224,16 +235,16 @@ conjuntoDeDeclaraciones::=conjuntoDeDeclaraciones:lista unaDeclaracion:n1
    RESULT=lista;
  :};
 unaDeclaracion::=declaracionDeVariables:n1{:RESULT=n1;:};
+unaDeclaracion::=asignacionDeVariable:n1{:RESULT=n1;:};
 unaDeclaracion::=declaracionDeArreglos;
-
-conjuntoDeInstrucciones::=conjuntoDeInstrucciones unaInstruccion | unaInstruccion;
+unaDeclaracion::=asignacionDeArreglo;
 
 //******************************************************************Error**********************************************************
 
 unaInstruccion::=error;
 
 //******************************************************************Declaracion de variables****************************************************
-unaInstruccion::=declaracionDeVariables:n1{:RESULT =n1;:};
+unaInstruccion::=declaracionDeVariables;
 declaracionDeVariables::=tipoDeVariable:tipo conjuntoDeIdentificadoresParaVariables:lista PCOMA
 {:RESULT = new NodoDeclaracion(tipo,lista);:};
 conjuntoDeIdentificadoresParaVariables::=
@@ -250,8 +261,8 @@ unIdentificadorParaVariable::=IDENTIFICADOR:i {:RESULT= new NodoId(i,null,ileft,
 unIdentificadorParaVariable::=IDENTIFICADOR:i ASIGNACION comparacion:n1 {:RESULT= new NodoId(i,n1,ileft,iright);:};
 
 //******************************************************************Asignacion de variables****************************************************
-unaInstruccion::=asignacionDeVariable;
-asignacionDeVariable::=IDENTIFICADOR ASIGNACION comparacion PCOMA;
+unaInstruccion::=asignacionDeVariable:n1 {:RESULT=n1;:};
+asignacionDeVariable::=IDENTIFICADOR:i ASIGNACION comparacion:n1 PCOMA {:RESULT = new NodoId(i,n1,ileft,iright);:};
 
 //*******************************************************************Declaracion de arreglos********************************************
 unaInstruccion::=declaracionDeArreglos;
@@ -264,8 +275,6 @@ unIdentificadorParaArreglo::=IDENTIFICADOR;
 //*******************************************************************Asignacion de arreglos********************************************
 unaInstruccion::=asignacionDeArreglo;
 asignacionDeArreglo::=IDENTIFICADOR conjuntoDeDimensiones ASIGNACION comparacion PCOMA;
-
-
 
 //*******************************************************************Instruccion IF ***************************************************
 unaInstruccion::=declaracionDeEstructuraIf;
@@ -319,29 +328,30 @@ declaracionDeFuncionesPredefinidas::= SCANN CORCHETE_ABIERTO IDENTIFICADOR CORCH
 conjuntoDeTexto::= conjuntoDeTexto COMA unTexto | unTexto;
 unTexto::=expresion;
 
+//************************************************************Return*************************************************************************
+unaInstruccion::=instruccionReturn;
+instruccionReturn::=RETURN comparacion PCOMA;
+
+//************************************************************Llamada a funciones*************************************************************************
+unaInstruccion::=llamadaDeFuncion;
+llamadaDeFuncion::=IDENTIFICADOR PARENTESIS_ABIERTO conjuntoDeParametros PARENTESIS_CERRADO PCOMA;
+
 //*********************************************************Subprogramas**********************************************************************
 
 conjuntoDeSubprogramas::= conjuntoDeSubprogramas unSubPrograma| unSubPrograma;
 unSubPrograma::=tipoDeVariable IDENTIFICADOR PARENTESIS_ABIERTO conjuntoDeParametros PARENTESIS_CERRADO
-                CORCHETE_ABIERTO cuerpoDeFuncionReturn CORCHETE_CERRADO;
+                CORCHETE_ABIERTO cuerpoDeFuncion CORCHETE_CERRADO;
 
-unSubPrograma::=VOID IDENTIFICADOR PARENTESIS_ABIERTO conjuntoDeParametros PARENTESIS_CERRADO
+unSubPrograma::=tipoDeVariable IDENTIFICADOR PARENTESIS_ABIERTO  PARENTESIS_CERRADO
                                 CORCHETE_ABIERTO cuerpoDeFuncion CORCHETE_CERRADO;
 
-
-conjuntoDeParametros::= conjuntoDeParametros COMA unParametro | unParametro |;
+conjuntoDeParametros::= conjuntoDeParametros COMA unParametro | unParametro;
 unParametro::= tipoDeVariable IDENTIFICADOR;
 
-cuerpoDeFuncionReturn::=conjuntoDeDeclaraciones PORCENTAJE PORCENTAJE PORCENTAJE conjuntoDeInstrucciones RETURN comparacion;
-cuerpoDeFuncionReturn::=conjuntoDeDeclaraciones PORCENTAJE PORCENTAJE PORCENTAJE RETURN comparacion;
-cuerpoDeFuncionReturn::= PORCENTAJE PORCENTAJE PORCENTAJE conjuntoDeInstrucciones RETURN comparacion;
-cuerpoDeFuncionReturn::= PORCENTAJE PORCENTAJE PORCENTAJE RETURN comparacion;
-
-
-cuerpoDeFuncion::=conjuntoDeDeclaraciones PORCENTAJE PORCENTAJE PORCENTAJE conjuntoDeInstrucciones;
-cuerpoDeFuncion::=conjuntoDeDeclaraciones PORCENTAJE PORCENTAJE PORCENTAJE;
-cuerpoDeFuncion::= PORCENTAJE PORCENTAJE PORCENTAJE conjuntoDeInstrucciones;
-conjuntoDeInstrucciones::=PORCENTAJE PORCENTAJE PORCENTAJE;
+cuerpoDeFuncion::=conjuntoDeDeclaraciones SEPARADOR conjuntoDeInstrucciones;
+cuerpoDeFuncion::=conjuntoDeDeclaraciones SEPARADOR;
+cuerpoDeFuncion::= SEPARADOR conjuntoDeInstrucciones;
+cuerpoDeFuncion::= SEPARADOR;
 
 //***************************************************************funcionMain************************************************************
 funcionMain::= MAIN PARENTESIS_ABIERTO PARENTESIS_CERRADO CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO;

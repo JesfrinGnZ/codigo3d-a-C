@@ -16,11 +16,15 @@ public class NodoComparacion implements Nodo{
     private OperacionComparacion operacion;
     private Nodo nodo1;
     private Nodo nodo2;
+    private int linea;
+    private int columna;
 
-    public NodoComparacion(OperacionComparacion operacion, Nodo nodo1, Nodo nodo2) {
+    public NodoComparacion(OperacionComparacion operacion, Nodo nodo1, Nodo nodo2,int linea,int columna) {
         this.operacion = operacion;
         this.nodo1 = nodo1;
         this.nodo2 = nodo2;
+        this.linea=linea;
+        this.columna=columna;
     }
 
     public OperacionComparacion getOperacion() {
@@ -47,8 +51,20 @@ public class NodoComparacion implements Nodo{
         this.nodo2 = nodo2;
     }
 
-    
-    
-    
-    
+    public int getLinea() {
+        return linea;
+    }
+
+    public void setLinea(int linea) {
+        this.linea = linea;
+    }
+
+    public int getColumna() {
+        return columna;
+    }
+
+    public void setColumna(int columna) {
+        this.columna = columna;
+    }
+
 }

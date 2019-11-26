@@ -11,6 +11,21 @@ package gnz.backend.nodoComparacion;
  */
 public enum OperacionComparacion {
 
-    MENOR,MAYOR,MENOR_IGUAL,MAYOR_IGUAL,DISTINTO_DE,IGUAL_A;
+    MENOR("<"),MAYOR(">"),MENOR_IGUAL("<="),MAYOR_IGUAL(">="),DISTINTO_DE("!="),IGUAL_A("==");
+    
+    private String simbolo;
+
+    private OperacionComparacion(String simbolo) {
+        this.simbolo = simbolo;
+    }
+
+    public String getSimbolo() {
+        return simbolo;
+    }
+
+    public void setSimbolo(String simbolo) {
+        this.simbolo = simbolo;
+    }
+    
     
 }

@@ -90,8 +90,20 @@ public class ManejadorDeTablas {
                     break;
                 }
                 case SOLO_EXPRESION: {
-                    this.editor.getCodigo3dTextArea().append(cuarteto.getResultado() + "=" + cuarteto.getOperador1() +cuarteto.getOperando()+cuarteto.getOperador2()+"\n");
+                    this.editor.getCodigo3dTextArea().append(cuarteto.getResultado() + "=" + cuarteto.getOperador1() + cuarteto.getOperando() + cuarteto.getOperador2() + "\n");
                     break;
+                }
+                case IF: {
+                    this.editor.getCodigo3dTextArea().append("If("+cuarteto.getOperador1()+ cuarteto.getOperando()+ cuarteto.getOperador2()+") goto " + cuarteto.getResultado()+ "\n");
+                    break;
+                }
+                case GOTO: {//Tiene el padre de si y el que no
+                    this.editor.getCodigo3dTextArea().append("goto "+cuarteto.getResultado()+"\n");
+                    this.editor.getCodigo3dTextArea().append(cuarteto.getOperador1()+"\n");
+                    break;
+                }
+                case SOLO_ETIQUETA: {
+                    this.editor.getCodigo3dTextArea().append(cuarteto.getResultado()+"\n");
                 }
 
             }

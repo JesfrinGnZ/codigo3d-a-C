@@ -20,6 +20,7 @@ public class sym {
   public static final int PRINTLN = 48;
   public static final int ARRAY = 46;
   public static final int DECLARACION_STRING = 20;
+  public static final int SEPARADOR = 54;
   public static final int PARENTESIS_ABIERTO = 35;
   public static final int FOR = 44;
   public static final int IDENTIFICADOR = 5;
@@ -116,7 +117,8 @@ public class sym {
   "SCANN",
   "VOID",
   "RETURN",
-  "MAIN"
+  "MAIN",
+  "SEPARADOR"
   };
 }
 
