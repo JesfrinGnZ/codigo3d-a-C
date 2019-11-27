@@ -51,6 +51,22 @@ public class NodoLogico implements Nodo{
         this.nodo2 = nodo2;
     }
 
+    public int getLinea() {
+        return linea;
+    }
+
+    public void setLinea(int linea) {
+        this.linea = linea;
+    }
+
+    public int getColumna() {
+        return columna;
+    }
+
+    public void setColumna(int columna) {
+        this.columna = columna;
+    }
+
    
     
 }

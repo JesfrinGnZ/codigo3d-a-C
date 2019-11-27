@@ -3,13 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gnz.backend.cuarteto;
+package gnz.backend.estructurasDeControl;
+
+import gnz.backend.nodo.Nodo;
 
 /**
  *
  * @author jesfrin
  */
-public enum TipoDeCuarteto {
+public class NodoWhile implements Nodo{
     
-    SOLO_HOJA,SOLO_EXPRESION,IF,GOTO,SOLO_ETIQUETA,GOTOSALIDA;
+    
 }

@@ -11,6 +11,7 @@ import gnz.backend.errores.ManejadorDeErrores;
 import gnz.backend.nodo.Nodo;
 import gnz.backend.nodoComparacion.NodoComparacion;
 import gnz.backend.nodoComparacion.NodoLogico;
+import gnz.backend.nodoComparacion.OperacionLogica;
 import gnz.backend.nodoExpresion.NodoExpresion;
 import gnz.backend.nodoExpresion.NodoHojaExpresion;
 import gnz.backend.nodoExpresion.OperacionAritmetica;
@@ -28,11 +29,175 @@ public class ManejadorDeDeclaraciones {
 
     private LinkedList<Nodo> declaraciones;
     private EditorDeTextoFrame editor;
+    private NodoArregloDeclaracion nodoArregloDeclaracion;
+    private NodoAsignacionArreglo nodoAsigArreglo;
 
     public ManejadorDeDeclaraciones(LinkedList<Nodo> declaraciones, EditorDeTextoFrame editor) {
         this.declaraciones = declaraciones;
         this.editor = editor;
         crearCuartetos();
+    }
+//Prueba declaracioens y asignaciones
+
+    public ManejadorDeDeclaraciones(Nodo nodo, EditorDeTextoFrame editor) {
+        this.editor = editor;
+        crearCuartetosParaDeclaracionesYASignaciones(nodo);
+    }
+
+//Para declaracion de arreglos
+    public ManejadorDeDeclaraciones(NodoArregloDeclaracion nodoArreglo, EditorDeTextoFrame editor) {
+        this.nodoArregloDeclaracion = nodoArreglo;
+        this.editor = editor;
+        crearCuartetoParaDeclaracionesDeArreglos();
+    }
+
+//Para asignacion de arreglos
+    public ManejadorDeDeclaraciones(NodoAsignacionArreglo nodoAsignacionArreglo, EditorDeTextoFrame editor) {
+        this.nodoAsigArreglo = nodoAsignacionArreglo;
+        this.editor = editor;
+        crearCuartetoParaAsignacionDeArreglos();
+    }
+
+//Para solo evaluarComparacion
+    public ManejadorDeDeclaraciones(EditorDeTextoFrame editor){
+        this.editor=editor;
+    }
+    
+    private void crearCuartetoParaAsignacionDeArreglos() {
+        String nombreId = this.nodoAsigArreglo.getId();
+        TuplaDeSimbolo var = this.editor.getManTablas().buscarVariable(nombreId);
+        if (var != null && var.getCategoria() == Categoria.Arreglo) {
+            LinkedList<String> dimensionesDeArreglo = new LinkedList<>();
+            NodoDeclaracion nodoDeclaracion = new NodoDeclaracion(var.getTipo(), null);
+            for (Nodo expresion : nodoAsigArreglo.getExpresionesDeDimension()) {
+                NodoId nodoId = new NodoId("identificadores", expresion, nodoAsigArreglo.getLinea(), nodoAsigArreglo.getColumna());
+
+                if (nodoId.getAsignacion() instanceof NodoExpresion) {
+                    NodoExpresion n3 = (NodoExpresion) nodoId.getAsignacion();
+                    String dimension = evaluacionDeNodoExpresion(nodoDeclaracion, n3, nodoId, false);
+                    if (dimension != null) {
+                        dimensionesDeArreglo.add(dimension);
+                    }
+                    this.editor.getManTablas().getTablaDeCuarteto().remove(this.editor.getManTablas().getTablaDeCuarteto().size() - 1);
+
+                } else if (nodoId.getAsignacion() instanceof NodoHojaExpresion) {
+                    NodoHojaExpresion nodoHoja = (NodoHojaExpresion) nodoId.getAsignacion();
+                    TipoDeHoja tipo = nodoHoja.getTipo();
+
+                    if (tipo == TipoDeHoja.NUMERO_ENTERO) {//Comprende Long,byte,int,char
+                        dimensionesDeArreglo.add(nodoHoja.getValor());
+                    } else if (tipo == TipoDeHoja.IDENTIFICADOR) {
+                        TuplaDeSimbolo variable = this.editor.getManTablas().buscarVariable(nodoHoja.getValor());
+                        if (variable != null) {
+                            if (variable.getTipo() == TipoDeVariable.BOOLEAN || variable.getTipo() == TipoDeVariable.STRING) {
+                                String mensaje = "Tipos incompatibles, dimensiones deben ser expresion aritmetica.Linea" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
+                                ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                            } else {
+                                dimensionesDeArreglo.add(nodoHoja.getValor());
+                            }
+                        } else {
+                            String mensaje = "Error SEMANTICO la variable:" + nodoId.getId() + " no ha sido declarada." + "Linea:" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
+                            ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                        }
+                    } else {
+                        String mensaje = "Tipos incompatibles, dimensiones deben ser expresion aritmetica.Linea" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
+                        ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                    }
+
+                } else {
+                    //ERROR,tipos no compatibles
+                    String mensaje = "Tipos incompatibles, dimensiones deben ser expresion aritmetica.Linea" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
+                    ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                }
+            }
+
+            //Ahora se debe evaluar la expresion
+        } else {
+            String mensaje = "Error SEMANTICO la variable:" + nombreId + " no ha sido declarada o no es de TIPO ARREGLO." + "Linea:" + nodoAsigArreglo.getLinea() + " Columna:" + nodoAsigArreglo.getColumna();
+            ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+        }
+
+        //
+    }
+
+    private void crearCuartetoParaDeclaracionesDeArreglos() {
+        NodoDeclaracion nodoDeclaracion = new NodoDeclaracion(nodoArregloDeclaracion.getTipo(), null);
+        LinkedList<String> dimensionesDeArreglo = new LinkedList<>();
+        for (Nodo expresion : nodoArregloDeclaracion.getExpresiones()) {
+            NodoId nodoId = new NodoId("identificadores", expresion, nodoArregloDeclaracion.getLinea(), nodoArregloDeclaracion.getColumna());
+            if (nodoId.getAsignacion() instanceof NodoExpresion) {
+                NodoExpresion n3 = (NodoExpresion) nodoId.getAsignacion();
+                String dimension = evaluacionDeNodoExpresion(nodoDeclaracion, n3, nodoId, false);
+                if (dimension != null) {
+                    dimensionesDeArreglo.add(dimension);
+                }
+                this.editor.getManTablas().getTablaDeCuarteto().remove(this.editor.getManTablas().getTablaDeCuarteto().size() - 1);
+
+            } else if (nodoId.getAsignacion() instanceof NodoHojaExpresion) {
+                NodoHojaExpresion nodoHoja = (NodoHojaExpresion) nodoId.getAsignacion();
+                TipoDeHoja tipo = nodoHoja.getTipo();
+
+                if (tipo == TipoDeHoja.NUMERO_ENTERO) {//Comprende Long,byte,int,char
+                    dimensionesDeArreglo.add(nodoHoja.getValor());
+                } else if (tipo == TipoDeHoja.IDENTIFICADOR) {
+                    TuplaDeSimbolo variable = this.editor.getManTablas().buscarVariable(nodoHoja.getValor());
+                    if (variable != null) {
+                        if (variable.getTipo() == TipoDeVariable.BOOLEAN || variable.getTipo() == TipoDeVariable.STRING) {
+                            String mensaje = "Tipos incompatibles, dimensiones deben ser expresion aritmetica.Linea" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
+                            ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                        } else {
+                            dimensionesDeArreglo.add(nodoHoja.getValor());
+                        }
+                    } else {
+                        String mensaje = "Error SEMANTICO la variable:" + nodoId.getId() + " no ha sido declarada." + "Linea:" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
+                        ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                    }
+                } else {
+                    String mensaje = "Tipos incompatibles, dimensiones deben ser expresion aritmetica.Linea" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
+                    ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                }
+
+            } else {
+                //ERROR,tipos no compatibles
+                String mensaje = "Tipos incompatibles, dimensiones deben ser expresion aritmetica.Linea" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
+                ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+            }
+        }
+
+        for (String string : dimensionesDeArreglo) {
+            System.out.println("Dimension:" + string);
+        }
+        //Guardar los ids
+        for (NodoId nodoId : nodoArregloDeclaracion.getListaDeIds()) {
+            TuplaDeSimbolo variableAGuardar = new TuplaDeSimbolo(0, nodoId.getId(), nodoDeclaracion.getTipo(), Categoria.Arreglo, dimensionesDeArreglo.size(), 0, dimensionesDeArreglo);
+            //public TuplaDeSimbolo(int numero, String nombre, TipoDeVariable tipo, Categoria categoria, Integer numeroDeParametros, int numeroDimensiones, ArrayList<String> dimensionesArreglo) {
+
+            this.editor.getManTablas().guardarNuevaVariable(variableAGuardar, nodoId.getLinea(), nodoId.getColumna());
+
+        }
+    }
+
+    private void crearCuartetosParaDeclaracionesYASignaciones(Nodo nodo) {
+        if (nodo instanceof NodoDeclaracion) {
+            NodoDeclaracion nodoDeclaracion = (NodoDeclaracion) nodo;
+            for (Nodo nodoId : nodoDeclaracion.getIds()) {
+                NodoId n1 = (NodoId) (nodoId);
+                System.out.print("ID::::::" + n1.getId() + " Tipo:" + nodoDeclaracion.getTipo().name());
+                busquedaDeTipoDeNodo(nodoDeclaracion, n1, true);
+            }
+        } else if (nodo instanceof NodoId) {
+            //Buscar en la tabla de simbolos
+            NodoId nodoId = (NodoId) nodo;
+            TuplaDeSimbolo variable = this.editor.getManTablas().buscarVariable(nodoId.getId());
+            if (variable != null) {//La variable ya fue declarada por lo que la asignacion es correcta
+                NodoDeclaracion nodoDeclaracion = new NodoDeclaracion(variable.getTipo(), null);
+                busquedaDeTipoDeNodo(nodoDeclaracion, nodoId, false);
+            } else {
+                String mensaje = "Error SEMANTICO la variable:" + nodoId.getId() + " no ha sido declarada." + "Linea:" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
+                ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+            }
+        }
+
     }
 
     private void crearCuartetos() {
@@ -87,30 +252,162 @@ public class ManejadorDeDeclaraciones {
             if (nodoDeclaracion.getTipo() == TipoDeVariable.BOOLEAN) {
                 //El NodoComparacion tiene 2 nodos de tipo NodoExpresion
                 NodoComparacion nodoComparacion = (NodoComparacion) nodoId.getAsignacion();
-                evaluarNodoComparacion(nodoDeclaracion, nodoId, nodoComparacion, false);
+                evaluarNodoComparacion(nodoDeclaracion, nodoId, nodoComparacion, seDebeGuardarLaVariable, true);
             } else {
                 //ERROR
                 String mensaje = "Tipos incompatibles, booleano no puede ser expresion.Linea" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
                 ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
             }
-        } else if (nodoId.getAsignacion() instanceof NodoLogico) {
+        } else if (nodoId.getAsignacion() instanceof NodoLogico) {//Solo para booleano
             System.out.println(" NodoLogico");
+            NodoLogico nodoLogico = (NodoLogico) nodoId.getAsignacion();
+            evaluarNodoLogico(nodoDeclaracion, nodoId, nodoLogico, seDebeGuardarLaVariable, true);
         }
 
     }
+    //*******************************Para evaluar expreciones de condicional y ciclos**************************************************************************
+    public Cuarteto[] evaluarExpresionDeCicloOCondicional(Nodo nodo,int linea,int columna){
+        NodoId nodoId = new NodoId("Expresion estructura", nodo, linea, columna);
+        NodoDeclaracion nodoDeclaracion = new NodoDeclaracion(TipoDeVariable.BOOLEAN, null);
+        boolean seDebeGuardarLaVariable =false;
+        if (nodoId.getAsignacion() instanceof NodoComparacion) {//Solo para booleano
+            System.out.println(" NodoComparacion");
+            if (nodoDeclaracion.getTipo() == TipoDeVariable.BOOLEAN) {
+                //El NodoComparacion tiene 2 nodos de tipo NodoExpresion
+                NodoComparacion nodoComparacion = (NodoComparacion) nodoId.getAsignacion();
+                return evaluarNodoComparacion(nodoDeclaracion, nodoId, nodoComparacion, seDebeGuardarLaVariable, false);
+            } else {
+                //ERROR
+                String mensaje = "Tipos incompatibles, booleano no puede ser expresion.Linea" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
+                ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+            }
+        } else if (nodoId.getAsignacion() instanceof NodoLogico) {//Solo para booleano
+            System.out.println(" NodoLogico");
+            NodoLogico nodoLogico = (NodoLogico) nodoId.getAsignacion();
+            return evaluarNodoLogico(nodoDeclaracion, nodoId, nodoLogico, seDebeGuardarLaVariable, false);
+        }else{
+            //Error ya que la expresion no es Logica o booleana
+        }
+        return null;
+    }
+    
+    //*****************************************************************Operaciones Logicas********************************************************
+    private Cuarteto[] evaluarNodoLogico(NodoDeclaracion nodoDeclaracion, NodoId nodoId, NodoLogico nodoLogico, boolean seDebeGenerarELAceptado, boolean seDebeGuardar) {
+        Cuarteto[] cuartetos = recorrerNodoLogico(nodoDeclaracion, nodoId, nodoLogico, seDebeGuardar);
+        cuartetos[1].setOperador1(cuartetos[0].getResultado());//Se modifica si,(Ahora se tiene conocimiento de si y de no)
+        if (true) {
+            
+            String labelSalida = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
+            Cuarteto cuartetoSi = new Cuarteto(null, "1", null, nodoId.getId(), TipoDeCuarteto.SOLO_HOJA);//n=1
+            Cuarteto cuartetoSalida = new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.GOTOSALIDA);
+            Cuarteto cuartetoEtiquetaNo = new Cuarteto("goto", cuartetos[1].getOperador1(), null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_ETIQUETA);
+            Cuarteto cuartetoNo = new Cuarteto(null, "0", null, nodoId.getId(), TipoDeCuarteto.SOLO_HOJA);//n=0
+            Cuarteto cuartetoFin = new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.SOLO_ETIQUETA);
+
+            this.editor.getManTablas().anadirCuarteto(cuartetoSi);
+            this.editor.getManTablas().anadirCuarteto(cuartetoSalida);
+            this.editor.getManTablas().anadirCuarteto(cuartetoEtiquetaNo);
+            this.editor.getManTablas().anadirCuarteto(cuartetoNo);
+            this.editor.getManTablas().anadirCuarteto(cuartetoFin);
+
+        }
+        return cuartetos;
+    }
+
+    private Cuarteto[] recorrerNodoLogico(NodoDeclaracion nodoDeclaracion, NodoId nodoId, Nodo nodo, boolean seDebeGuardarLaVariable) {//Este puede ser el nodoLogico
+        if (nodo instanceof NodoComparacion) {//Aca ya se retorna algo
+            NodoComparacion nodoComparacion = (NodoComparacion) nodo;
+            Cuarteto[] c1 = evaluarNodoComparacion(nodoDeclaracion, nodoId, nodoComparacion, false, false);
+            return c1;
+
+        } else if (nodo instanceof NodoHojaExpresion) {
+            //Tendria que ser un ID o TRUE o FALSE, de lo contrario error
+            NodoHojaExpresion nodoHoja = (NodoHojaExpresion) nodo;
+            if (nodoHoja.getTipo() == TipoDeHoja.TRUE) {
+                System.out.println("Es TRUE");
+                //Se genera un cuarteto para if, se devuelve el cuarteto de SI y No
+                String labelSi = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
+                String labelNo = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
+
+                Cuarteto cuartetoIf = new Cuarteto("==", "1", "1", labelSi, TipoDeCuarteto.IF);
+                Cuarteto cuartetoEtiqueta = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.GOTO);
+                this.editor.getManTablas().anadirCuarteto(cuartetoIf);
+                this.editor.getManTablas().anadirCuarteto(cuartetoEtiqueta);
+                Cuarteto[] c1 = {cuartetoIf, cuartetoEtiqueta};
+                return c1;
+
+            } else if (nodoHoja.getTipo() == TipoDeHoja.FALSE) {
+                //Se genera un cuarteto para if, se devuelve el cuarteto de SI y No
+                System.out.println("ES FASLE");
+                String labelSi = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
+                String labelNo = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
+
+                Cuarteto cuartetoIf = new Cuarteto("==", "0", "1", labelSi, TipoDeCuarteto.IF);
+                Cuarteto cuartetoEtiqueta = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.GOTO);
+                this.editor.getManTablas().anadirCuarteto(cuartetoIf);
+                this.editor.getManTablas().anadirCuarteto(cuartetoEtiqueta);
+                Cuarteto[] c1 = {cuartetoIf, cuartetoEtiqueta};
+                return c1;
+
+            } else if (nodoHoja.getTipo() == TipoDeHoja.IDENTIFICADOR) {
+                TuplaDeSimbolo variable = this.editor.getManTablas().buscarVariable(nodoHoja.getValor());
+                if (variable != null) {
+                    if (variable.getTipo() == TipoDeVariable.BOOLEAN) {
+                        String labelSi = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
+                        String labelNo = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
+
+                        Cuarteto cuartetoIf = new Cuarteto("==", variable.getNombre(), "1", labelSi, TipoDeCuarteto.IF);
+                        Cuarteto cuartetoEtiqueta = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.GOTO);
+                        this.editor.getManTablas().anadirCuarteto(cuartetoIf);
+                        this.editor.getManTablas().anadirCuarteto(cuartetoEtiqueta);
+                        Cuarteto[] c1 = {cuartetoIf, cuartetoEtiqueta};
+                        return c1;
+                    } else {
+                        String mensaje = "La variable " + nodoHoja.getValor() + " no es de tipo booleano.Linea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                        ManejadorDeErrores.escribirErrorSemantico(mensaje, this.editor.getErroresTextArea());
+                    }
+                } else {
+                    String mensaje = "La variable " + nodoHoja.getValor() + " no ha sido declarada.Linea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                    ManejadorDeErrores.escribirErrorSemantico(mensaje, this.editor.getErroresTextArea());
+
+                }
+            }
+        } else {//Aun es nodo logico
+            String numTemporal = "";
+            NodoLogico nodoLogico = (NodoLogico) nodo;
+            Cuarteto[] c1 = recorrerNodoLogico(nodoDeclaracion, nodoId, nodoLogico.getNodo1(), seDebeGuardarLaVariable);
+            Cuarteto[] c2 = recorrerNodoLogico(nodoDeclaracion, nodoId, nodoLogico.getNodo2(), seDebeGuardarLaVariable);
+            if (c1 != null && c2 != null) {
+                if (nodoLogico.getOperacion() == OperacionLogica.AND) {
+                    System.out.println("ES AND");
+                    c2[1].setResultado(c1[1].getResultado());
+                    return c2;
+                } else if (nodoLogico.getOperacion() == OperacionLogica.OR) {
+                    System.out.println("ES OR");
+                    c1[1].setOperador1(c1[1].getResultado());//Cuarteto goto
+                    c2[0].setResultado(c1[0].getResultado());
+                    return c2;
+                } else if (nodoLogico.getOperacion() == OperacionLogica.NOT) {
+
+                }
+            }
+            return c2;
+        }
+        return null;
+    }
 
     //****************************************************************Comparaciones*****************************************************************************
-    private void evaluarNodoComparacion(NodoDeclaracion nodoDeclaracion, NodoId nodoId, NodoComparacion nodoComparacion, boolean seDebeGuardarVariable) {
+    private Cuarteto[] evaluarNodoComparacion(NodoDeclaracion nodoDeclaracion, NodoId nodoId, NodoComparacion nodoComparacion, boolean seDebeGuardarVariable, boolean seDebeGenerarElAceptado) {
         String temporal1 = "";
         String temporal2 = "";
         if (nodoComparacion.getNodo1() instanceof NodoExpresion) {
-            temporal1 = evaluacionDeNodoExpresion(nodoDeclaracion, (NodoExpresion) nodoComparacion.getNodo1(), nodoId, seDebeGuardarVariable);
+            temporal1 = evaluacionDeNodoExpresion(nodoDeclaracion, (NodoExpresion) nodoComparacion.getNodo1(), nodoId, false);
             //Eliminar el ultimo cuarteto
             this.editor.getManTablas().getTablaDeCuarteto().remove(this.editor.getManTablas().getTablaDeCuarteto().size() - 1);
         }
 
         if (nodoComparacion.getNodo2() instanceof NodoExpresion) {
-            temporal2 = evaluacionDeNodoExpresion(nodoDeclaracion, (NodoExpresion) nodoComparacion.getNodo2(), nodoId, seDebeGuardarVariable);
+            temporal2 = evaluacionDeNodoExpresion(nodoDeclaracion, (NodoExpresion) nodoComparacion.getNodo2(), nodoId, false);
             //Eliminar el ultimo cuarteto
             this.editor.getManTablas().getTablaDeCuarteto().remove(this.editor.getManTablas().getTablaDeCuarteto().size() - 1);
         }
@@ -135,16 +432,29 @@ public class ManejadorDeDeclaraciones {
 
         Cuarteto cuartetoIf = new Cuarteto(nodoComparacion.getOperacion().getSimbolo(), temporal1, temporal2, labelSi, TipoDeCuarteto.IF);
         Cuarteto cuartetoEtiqueta = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.GOTO);
-        Cuarteto cuartetoSi = new Cuarteto(null, "1", null, nodoId.getId(), TipoDeCuarteto.SOLO_HOJA);
-        Cuarteto cuartetoEtiquetaNo = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.SOLO_ETIQUETA);
-        Cuarteto cuartetoNo = new Cuarteto(null, "0", null, nodoId.getId(), TipoDeCuarteto.SOLO_HOJA);
-
         this.editor.getManTablas().anadirCuarteto(cuartetoIf);
         this.editor.getManTablas().anadirCuarteto(cuartetoEtiqueta);
-        this.editor.getManTablas().anadirCuarteto(cuartetoSi);
-        this.editor.getManTablas().anadirCuarteto(cuartetoEtiquetaNo);
-        this.editor.getManTablas().anadirCuarteto(cuartetoNo);
 
+        if (seDebeGenerarElAceptado) {
+                        String labelSalida = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
+
+            Cuarteto cuartetoSi = new Cuarteto(null, "1", null, nodoId.getId(), TipoDeCuarteto.SOLO_HOJA);
+            Cuarteto cuartetoEtiquetaNo = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.SOLO_ETIQUETA);
+            Cuarteto cuartetoNo = new Cuarteto(null, "0", null, nodoId.getId(), TipoDeCuarteto.SOLO_HOJA);
+
+            this.editor.getManTablas().anadirCuarteto(cuartetoSi);
+            this.editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.GOTOSALIDA));
+            this.editor.getManTablas().anadirCuarteto(cuartetoEtiquetaNo);
+            this.editor.getManTablas().anadirCuarteto(cuartetoNo);
+            this.editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.SOLO_ETIQUETA));
+
+        }
+        if (seDebeGuardarVariable) {
+            TuplaDeSimbolo e = new TuplaDeSimbolo(0, nodoId.getId(), TipoDeVariable.BOOLEAN, Categoria.Variable, null);
+            this.editor.getManTablas().getTablaDeSimbolos().add(e);
+        }
+        Cuarteto[] c = {cuartetoIf, cuartetoEtiqueta};
+        return c;
     }
 
     private boolean evaluarSiHojaEsSoloNUmerico(NodoHojaExpresion nodoHoja) {

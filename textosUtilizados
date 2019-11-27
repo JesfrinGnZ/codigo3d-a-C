@@ -8,7 +8,17 @@ int n<-1+2+3+4+5+6,j<-f+2;
 
 int n<-5+1+2+3;
 n<-5+8;
+boolean n<- 5+8>3 AND 1+2<4;
 
+ARRAY int[1][2][3] id;
+ARRAY int[1+2+3][5*3] id;
+boolean n<- 5+8>3 AND TRUE;
+boolean n<-TRUE AND TRUE;
+boolean n<-TRUE OR FALSE ;
+boolean n<-TRUE OR FALSE OR TRUE OR TRUE ;
+boolean n<-TRUE AND FALSE OR TRUE ;
+boolean n<-TRUE AND FALSE OR TRUE ;
+boolean n<-TRUE AND FALSE OR TRUE AND TRUE;
 ****************************************************Codigo jony************************
 int x;
 int y;
@@ -43,3 +53,46 @@ MAIN() [
   PRINTLN[suma];
 ]
 *********************************************************************************************
+int x;
+int y;
+int a;
+boolean id1;
+float f1, f2, f3;
+
+int suma(int mm, int mmm) [
+     int resultado <- a + a;
+%%%
+     return resultado;
+]
+
+%%%
+MAIN() [
+  x<-6;
+  y<-1;
+  WHILE(x>0) [
+     y<-y*x;
+     x<-x-1;
+  ]
+]
+//******************While solo una instruccion****************************
+int x;
+int y;
+int a;
+boolean id1;
+float f1, f2, f3;
+
+int suma(int mm, int mmm) [
+     int resultado <- a + a;
+%%%
+     return resultado;
+]
+
+%%%
+MAIN() [
+  x<-6;
+  y<-1;
+  WHILE(x>0)
+     y<-y*x;
+     x<-x-1;
+
+]

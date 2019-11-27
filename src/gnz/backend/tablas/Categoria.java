@@ -11,5 +11,5 @@ package gnz.backend.tablas;
  */
 public enum Categoria {
 
-    Variable,Subprograma,Parametro;
+    Variable,Arreglo,Subprograma,Parametro;
 }

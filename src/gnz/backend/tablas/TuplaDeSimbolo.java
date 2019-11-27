@@ -6,6 +6,8 @@
 package gnz.backend.tablas;
 
 import gnz.backend.nodoDeclaracion.TipoDeVariable;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  *
@@ -18,6 +20,9 @@ public class TuplaDeSimbolo {
     private TipoDeVariable tipo;
     private Categoria categoria;
     private Integer numeroDeParametros;
+    private int numeroDimensiones;
+    private LinkedList<String> dimensionesArreglo;
+    private String ambito;
 
     public TuplaDeSimbolo(int numero, String nombre, TipoDeVariable tipo, Categoria categoria, Integer numeroDeParametros) {
         this.numero = numero;
@@ -26,6 +31,20 @@ public class TuplaDeSimbolo {
         this.categoria = categoria;
         this.numeroDeParametros = numeroDeParametros;
     }
+
+    public TuplaDeSimbolo(int numero, String nombre, TipoDeVariable tipo, Categoria categoria, Integer numeroDeParametros, int numeroDimensiones, LinkedList<String> dimensionesArreglo) {
+        this.numero = numero;
+        this.nombre = nombre;
+        this.tipo = tipo;
+        this.categoria = categoria;
+        this.numeroDeParametros = numeroDeParametros;
+        this.numeroDimensiones = numeroDimensiones;
+        this.dimensionesArreglo = dimensionesArreglo;
+    }
+
+   
+    
+    
 
     public int getNumero() {
         return numero;
@@ -66,7 +85,32 @@ public class TuplaDeSimbolo {
     public void setNumeroDeParametros(Integer numeroDeParametros) {
         this.numeroDeParametros = numeroDeParametros;
     }
-    
+
+    public int getNumeroDimensiones() {
+        return numeroDimensiones;
+    }
+
+    public void setNumeroDimensiones(int numeroDimensiones) {
+        this.numeroDimensiones = numeroDimensiones;
+    }
+
+    public LinkedList<String> getDimensionesArreglo() {
+        return dimensionesArreglo;
+    }
+
+    public void setDimensionesArreglo(LinkedList<String> dimensionesArreglo) {
+        this.dimensionesArreglo = dimensionesArreglo;
+    }
+
+    public String getAmbito() {
+        return ambito;
+    }
+
+    public void setAmbito(String ambito) {
+        this.ambito = ambito;
+    }
+
+  
     
     
 }

@@ -104,6 +104,11 @@ public class ManejadorDeTablas {
                 }
                 case SOLO_ETIQUETA: {
                     this.editor.getCodigo3dTextArea().append(cuarteto.getResultado()+"\n");
+                    break;
+                }
+                case GOTOSALIDA:{
+                    this.editor.getCodigo3dTextArea().append(cuarteto.getOperando()+" "+cuarteto.getResultado()+"\n");
+                    break;
                 }
 
             }

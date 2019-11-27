@@ -1,1 +1,0 @@
-gnz.frontend.editorDeTexto.ManejadorDeArchivos
