@@ -5,8 +5,8 @@
  */
 package gnz.backend.tablas;
 
+import gnz.backend.funcion.Parametro;
 import gnz.backend.nodoDeclaracion.TipoDeVariable;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -14,22 +14,33 @@ import java.util.LinkedList;
  * @author jesfrin
  */
 public class TuplaDeSimbolo {
-    
+
     private int numero;
     private String nombre;
-    private TipoDeVariable tipo;
+    private TipoDeVariable tipo;//De retorno para una funcion
     private Categoria categoria;
-    private Integer numeroDeParametros;
+    private String ambito;//Global="", o el nombre de la funcion
+    //Arreglo
     private int numeroDimensiones;
     private LinkedList<String> dimensionesArreglo;
-    private String ambito;
+    //Funciones
+    private Integer numeroDeParametros;
+    private LinkedList<Parametro> parametrosDeFuncion;
 
-    public TuplaDeSimbolo(int numero, String nombre, TipoDeVariable tipo, Categoria categoria, Integer numeroDeParametros) {
+    //Para funciones
+    public TuplaDeSimbolo(String nombre,TipoDeVariable tipoDeRetorno){
+        this.categoria=Categoria.Subprograma;
+        
+    }
+    
+    
+    public TuplaDeSimbolo(int numero, String nombre, TipoDeVariable tipo, Categoria categoria, Integer numeroDeParametros,String ambito) {
         this.numero = numero;
         this.nombre = nombre;
         this.tipo = tipo;
         this.categoria = categoria;
         this.numeroDeParametros = numeroDeParametros;
+        this.ambito=ambito;
     }
 
     public TuplaDeSimbolo(int numero, String nombre, TipoDeVariable tipo, Categoria categoria, Integer numeroDeParametros, int numeroDimensiones, LinkedList<String> dimensionesArreglo) {
@@ -41,8 +52,6 @@ public class TuplaDeSimbolo {
         this.numeroDimensiones = numeroDimensiones;
         this.dimensionesArreglo = dimensionesArreglo;
     }
-
-   
     
     
 
@@ -110,7 +119,4 @@ public class TuplaDeSimbolo {
         this.ambito = ambito;
     }
 
-  
-    
-    
 }

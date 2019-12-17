@@ -85,7 +85,7 @@ public class ManejadorDeTablas {
     public void escribirCuartetos() {
         for (Cuarteto cuarteto : tablaDeCuarteto) {
             switch (cuarteto.getTipoDeCuarteto()) {
-                case SOLO_HOJA: {
+                case ASIGNACION: {
                     this.editor.getCodigo3dTextArea().append(cuarteto.getResultado() + "=" + cuarteto.getOperador1() + "\n");
                     break;
                 }

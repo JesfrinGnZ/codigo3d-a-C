@@ -5,6 +5,7 @@
  */
 package gnz.backend.nodoExpresion;
 import gnz.backend.nodo.Nodo;
+import gnz.backend.nodoDeclaracion.TipoDeVariable;
 
 /**
  *
@@ -16,12 +17,19 @@ public class NodoHojaExpresion implements Nodo{
     String valor;
     private int linea;
     private int columna;
+    private TipoDeVariable tipoDEVariable;
 
     public NodoHojaExpresion(TipoDeHoja tipo, String valor,int linea, int columna) {
         this.tipo = tipo;
         this.valor = valor;
         this.linea=linea;
         this.columna=columna;
+        this.tipoDEVariable=null;
+    }
+    
+    public NodoHojaExpresion(TipoDeVariable tipoDeVariable, String valor){
+        this.tipoDEVariable=tipoDeVariable;
+        this.valor=valor;
     }
 
     public TipoDeHoja getTipo() {
@@ -54,6 +62,14 @@ public class NodoHojaExpresion implements Nodo{
 
     public void setColumna(int columna) {
         this.columna = columna;
+    }
+
+    public TipoDeVariable getTipoDEVariable() {
+        return tipoDEVariable;
+    }
+
+    public void setTipoDEVariable(TipoDeVariable tipoDEVariable) {
+        this.tipoDEVariable = tipoDEVariable;
     }
     
     

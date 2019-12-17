@@ -1,4 +1,4 @@
-/*
+    /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -31,36 +31,36 @@ public class ManejadorDeDeclaraciones {
     private EditorDeTextoFrame editor;
     private NodoArregloDeclaracion nodoArregloDeclaracion;
     private NodoAsignacionArreglo nodoAsigArreglo;
+    private String nombreDeFuncion;
 
-    public ManejadorDeDeclaraciones(LinkedList<Nodo> declaraciones, EditorDeTextoFrame editor) {
-        this.declaraciones = declaraciones;
-        this.editor = editor;
-        crearCuartetos();
-    }
 //Prueba declaracioens y asignaciones
 
-    public ManejadorDeDeclaraciones(Nodo nodo, EditorDeTextoFrame editor) {
+    public ManejadorDeDeclaraciones(Nodo nodo, EditorDeTextoFrame editor,String nombreDeFuncion) {
         this.editor = editor;
+        this.nombreDeFuncion=nombreDeFuncion;
         crearCuartetosParaDeclaracionesYASignaciones(nodo);
     }
 
 //Para declaracion de arreglos
-    public ManejadorDeDeclaraciones(NodoArregloDeclaracion nodoArreglo, EditorDeTextoFrame editor) {
+    public ManejadorDeDeclaraciones(NodoArregloDeclaracion nodoArreglo, EditorDeTextoFrame editor,String nombreDeFuncion) {
         this.nodoArregloDeclaracion = nodoArreglo;
         this.editor = editor;
+        this.nombreDeFuncion=nombreDeFuncion;
         crearCuartetoParaDeclaracionesDeArreglos();
     }
 
 //Para asignacion de arreglos
-    public ManejadorDeDeclaraciones(NodoAsignacionArreglo nodoAsignacionArreglo, EditorDeTextoFrame editor) {
+    public ManejadorDeDeclaraciones(NodoAsignacionArreglo nodoAsignacionArreglo, EditorDeTextoFrame editor,String nombreDeFuncion) {
         this.nodoAsigArreglo = nodoAsignacionArreglo;
         this.editor = editor;
+        this.nombreDeFuncion=nombreDeFuncion;
         crearCuartetoParaAsignacionDeArreglos();
     }
 
 //Para solo evaluarComparacion
-    public ManejadorDeDeclaraciones(EditorDeTextoFrame editor){
+    public ManejadorDeDeclaraciones(EditorDeTextoFrame editor,String nombreDeFuncion){
         this.editor=editor;
+        this.nombreDeFuncion=nombreDeFuncion;
     }
     
     private void crearCuartetoParaAsignacionDeArreglos() {
@@ -228,7 +228,7 @@ public class ManejadorDeDeclaraciones {
 
     private void busquedaDeTipoDeNodo(NodoDeclaracion nodoDeclaracion, NodoId nodoId, boolean seDebeGuardarLaVariable) {
         if (nodoId.getAsignacion() == null) {
-            TuplaDeSimbolo variableAGuardar = new TuplaDeSimbolo(0, nodoId.getId(), nodoDeclaracion.getTipo(), Categoria.Variable, null);
+            TuplaDeSimbolo variableAGuardar = new TuplaDeSimbolo(0, nodoId.getId(), nodoDeclaracion.getTipo(), Categoria.Variable, null,this.nombreDeFuncion);
             if (seDebeGuardarLaVariable) {
                 this.editor.getManTablas().guardarNuevaVariable(variableAGuardar, nodoId.getLinea(), nodoId.getColumna());
             }
@@ -275,7 +275,7 @@ public class ManejadorDeDeclaraciones {
             if (nodoDeclaracion.getTipo() == TipoDeVariable.BOOLEAN) {
                 //El NodoComparacion tiene 2 nodos de tipo NodoExpresion
                 NodoComparacion nodoComparacion = (NodoComparacion) nodoId.getAsignacion();
-                return evaluarNodoComparacion(nodoDeclaracion, nodoId, nodoComparacion, seDebeGuardarLaVariable, false);
+                return evaluarNodoComparacion(nodoDeclaracion, nodoId, nodoComparacion, false, false);
             } else {
                 //ERROR
                 String mensaje = "Tipos incompatibles, booleano no puede ser expresion.Linea" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
@@ -284,7 +284,7 @@ public class ManejadorDeDeclaraciones {
         } else if (nodoId.getAsignacion() instanceof NodoLogico) {//Solo para booleano
             System.out.println(" NodoLogico");
             NodoLogico nodoLogico = (NodoLogico) nodoId.getAsignacion();
-            return evaluarNodoLogico(nodoDeclaracion, nodoId, nodoLogico, seDebeGuardarLaVariable, false);
+            return evaluarNodoLogico(nodoDeclaracion, nodoId, nodoLogico, false, false);
         }else{
             //Error ya que la expresion no es Logica o booleana
         }
@@ -295,13 +295,13 @@ public class ManejadorDeDeclaraciones {
     private Cuarteto[] evaluarNodoLogico(NodoDeclaracion nodoDeclaracion, NodoId nodoId, NodoLogico nodoLogico, boolean seDebeGenerarELAceptado, boolean seDebeGuardar) {
         Cuarteto[] cuartetos = recorrerNodoLogico(nodoDeclaracion, nodoId, nodoLogico, seDebeGuardar);
         cuartetos[1].setOperador1(cuartetos[0].getResultado());//Se modifica si,(Ahora se tiene conocimiento de si y de no)
-        if (true) {
+        if (seDebeGenerarELAceptado) {
             
             String labelSalida = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
-            Cuarteto cuartetoSi = new Cuarteto(null, "1", null, nodoId.getId(), TipoDeCuarteto.SOLO_HOJA);//n=1
+            Cuarteto cuartetoSi = new Cuarteto(null, "1", null, nodoId.getId(), TipoDeCuarteto.ASIGNACION);//n=1
             Cuarteto cuartetoSalida = new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.GOTOSALIDA);
             Cuarteto cuartetoEtiquetaNo = new Cuarteto("goto", cuartetos[1].getOperador1(), null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_ETIQUETA);
-            Cuarteto cuartetoNo = new Cuarteto(null, "0", null, nodoId.getId(), TipoDeCuarteto.SOLO_HOJA);//n=0
+            Cuarteto cuartetoNo = new Cuarteto(null, "0", null, nodoId.getId(), TipoDeCuarteto.ASIGNACION);//n=0
             Cuarteto cuartetoFin = new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.SOLO_ETIQUETA);
 
             this.editor.getManTablas().anadirCuarteto(cuartetoSi);
@@ -438,9 +438,9 @@ public class ManejadorDeDeclaraciones {
         if (seDebeGenerarElAceptado) {
                         String labelSalida = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
 
-            Cuarteto cuartetoSi = new Cuarteto(null, "1", null, nodoId.getId(), TipoDeCuarteto.SOLO_HOJA);
+            Cuarteto cuartetoSi = new Cuarteto(null, "1", null, nodoId.getId(), TipoDeCuarteto.ASIGNACION);
             Cuarteto cuartetoEtiquetaNo = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.SOLO_ETIQUETA);
-            Cuarteto cuartetoNo = new Cuarteto(null, "0", null, nodoId.getId(), TipoDeCuarteto.SOLO_HOJA);
+            Cuarteto cuartetoNo = new Cuarteto(null, "0", null, nodoId.getId(), TipoDeCuarteto.ASIGNACION);
 
             this.editor.getManTablas().anadirCuarteto(cuartetoSi);
             this.editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.GOTOSALIDA));
@@ -450,7 +450,7 @@ public class ManejadorDeDeclaraciones {
 
         }
         if (seDebeGuardarVariable) {
-            TuplaDeSimbolo e = new TuplaDeSimbolo(0, nodoId.getId(), TipoDeVariable.BOOLEAN, Categoria.Variable, null);
+            TuplaDeSimbolo e = new TuplaDeSimbolo(0, nodoId.getId(), TipoDeVariable.BOOLEAN, Categoria.Variable, null,this.nombreDeFuncion);
             this.editor.getManTablas().getTablaDeSimbolos().add(e);
         }
         Cuarteto[] c = {cuartetoIf, cuartetoEtiqueta};
@@ -479,8 +479,8 @@ public class ManejadorDeDeclaraciones {
 
     //****************************************************************Expresiones*******************************************************************************
     private void guardarVariableYCuarteto(String operador1, TipoDeVariable tipo, NodoId nodoId, boolean seDebeGuardarLaVariable) {
-        Cuarteto cuarteto = new Cuarteto(null, operador1, null, nodoId.getId(), TipoDeCuarteto.SOLO_HOJA);
-        TuplaDeSimbolo variableAGuardar = new TuplaDeSimbolo(0, nodoId.getId(), tipo, Categoria.Variable, null);
+        Cuarteto cuarteto = new Cuarteto(null, operador1, null, nodoId.getId(), TipoDeCuarteto.ASIGNACION);
+        TuplaDeSimbolo variableAGuardar = new TuplaDeSimbolo(0, nodoId.getId(), tipo, Categoria.Variable, null,this.nombreDeFuncion);
         this.editor.getManTablas().anadirCuarteto(cuarteto);
         if (seDebeGuardarLaVariable) {
             this.editor.getManTablas().guardarNuevaVariable(variableAGuardar, nodoId.getLinea(), nodoId.getColumna());
@@ -749,8 +749,8 @@ public class ManejadorDeDeclaraciones {
 
         //Recorrido de arbol
         String ultimaTemporal = recorrerArbol(nodoDeclaracion, nodoExpresion);
-        Cuarteto nuevoCuarteto = new Cuarteto(null, ultimaTemporal, null, nodoId.getId(), TipoDeCuarteto.SOLO_HOJA);
-        TuplaDeSimbolo simbolo = new TuplaDeSimbolo(0, nodoId.getId(), nodoDeclaracion.getTipo(), Categoria.Variable, null);
+        Cuarteto nuevoCuarteto = new Cuarteto(null, ultimaTemporal, null, nodoId.getId(), TipoDeCuarteto.ASIGNACION);
+        TuplaDeSimbolo simbolo = new TuplaDeSimbolo(0, nodoId.getId(), nodoDeclaracion.getTipo(), Categoria.Variable, null,this.nombreDeFuncion);
         this.editor.getManTablas().anadirCuarteto(nuevoCuarteto);
         if (seDebeGuardarLaVariable) {
             this.editor.getManTablas().guardarNuevaVariable(simbolo, nodoId.getLinea(), nodoId.getColumna());

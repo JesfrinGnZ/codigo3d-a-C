@@ -52,7 +52,7 @@ MAIN() [
   int suma <-9;
   PRINTLN[suma];
 ]
-*********************************************************************************************
+********************************************While mas de una instruccion*************************************************
 int x;
 int y;
 int a;
@@ -74,7 +74,7 @@ MAIN() [
      x<-x-1;
   ]
 ]
-//******************While solo una instruccion****************************
+//******************DoWhile mas de una instruccion****************************
 int x;
 int y;
 int a;
@@ -91,8 +91,102 @@ int suma(int mm, int mmm) [
 MAIN() [
   x<-6;
   y<-1;
-  WHILE(x>0)
-     y<-y*x;
-     x<-x-1;
+  DO [
+  y<-y*x;
+  x<-x-1;
+] WHILE(x>0)
 
+]
+
+//******************Do While solo una instruccion****************************
+int x;
+int y;
+int a;
+boolean id1;
+float f1, f2, f3;
+
+int suma(int mm, int mmm) [
+     int resultado <- a + a;
+%%%
+     return resultado;
+]
+
+%%%
+MAIN() [
+  x<-6;
+  y<-1;
+  DO
+  y<-y*x;
+ WHILE(x>0)
+
+]
+********************************************For*****************************
+int x;
+int y;
+int a;
+boolean id1;
+float f1, f2, f3;
+
+int suma(int mm, int mmm) [
+     int resultado <- a + a;
+%%%
+     return resultado;
+]
+
+%%%
+MAIN() [
+  x<-6;
+  y<-1;
+FOR(id<-0:id < 6 :+1) [
+     y<-y*x;
+
+]
+IF (conds) [
+
+]
+]
+************************************************IF****************************************
+int x;
+int y;
+int a;
+boolean id1;
+float f1, f2, f3;
+
+int suma(int mm, int mmm) [
+     int resultado <- a + a;
+%%%
+     return resultado;
+]
+
+%%%
+MAIN() [
+  x<-6;
+  y<-1;
+IF (x>y)
+     y<-y*x;
+
+]
+
+***********************************If ELSE****************************
+int x;
+int y;
+int a;
+boolean id1;
+float f1, f2, f3;
+
+int suma(int mm, int mmm) [
+     int resultado <- a + a;
+%%%
+     return resultado;
+]
+
+%%%
+MAIN() [
+  x<-6;
+  y<-1;
+IF (x>y)[
+     y<-y*x;
+]ELSE[
+   y<-1+2;
+]
 ]
