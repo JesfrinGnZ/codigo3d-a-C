@@ -48,6 +48,42 @@ public class ManejadorDeTablas {
     }
 
     //****************************************************Acciones para tabla de simbolos**********************************************
+    /**
+     * Busca una variable en su ambito
+     * @param nombre
+     * @param ambito
+     * @return 
+     */
+    public TuplaDeSimbolo buscarVariable(String nombre, String ambito) {
+        TuplaDeSimbolo tupla = null;
+        for (TuplaDeSimbolo s : tablaDeSimbolos) {
+            if (s.getNombre().equals(nombre) && s.getAmbito().equalsIgnoreCase(ambito)) {
+                tupla = s;
+            }
+        }
+        return tupla;
+    }
+    /**
+     * Recibe una tupla a guardar con su respectivo ambito,
+     * revisa si ya ha sido declarada en ese ambito
+     * @param simbolo
+     * @param linea
+     * @param columna 
+     */
+    public void guardarVariable(TuplaDeSimbolo simbolo, int linea, int columna) {
+        TuplaDeSimbolo tupla = buscarVariable(simbolo.getNombre(), simbolo.getAmbito());//simbolo.getAmbito
+        if (tupla == null) {//La variable no ha sido declarada en ese ambito
+            tablaDeSimbolos.add(simbolo);
+        } else {//Error semantico
+            String mensaje = "Error SEMANTICO La variable:" + simbolo.getNombre() + " ya ha sido declarada.Linea:" + linea + " Columna:" + columna;
+            ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+        }
+    }
+
+    
+    
+    
+    
     public TuplaDeSimbolo buscarVariable(String nombre) {
         for (TuplaDeSimbolo simbolo : tablaDeSimbolos) {
             if (simbolo.getNombre().equals(nombre)) {
@@ -94,20 +130,20 @@ public class ManejadorDeTablas {
                     break;
                 }
                 case IF: {
-                    this.editor.getCodigo3dTextArea().append("If("+cuarteto.getOperador1()+ cuarteto.getOperando()+ cuarteto.getOperador2()+") goto " + cuarteto.getResultado()+ "\n");
+                    this.editor.getCodigo3dTextArea().append("If(" + cuarteto.getOperador1() + cuarteto.getOperando() + cuarteto.getOperador2() + ") goto " + cuarteto.getResultado() + "\n");
                     break;
                 }
                 case GOTO: {//Tiene el padre de si y el que no
-                    this.editor.getCodigo3dTextArea().append("goto "+cuarteto.getResultado()+"\n");
-                    this.editor.getCodigo3dTextArea().append(cuarteto.getOperador1()+"\n");
+                    this.editor.getCodigo3dTextArea().append("goto " + cuarteto.getResultado() + "\n");
+                    //this.editor.getCodigo3dTextArea().append(cuarteto.getOperador1()+"\n");
                     break;
                 }
-                case SOLO_ETIQUETA: {
-                    this.editor.getCodigo3dTextArea().append(cuarteto.getResultado()+"\n");
+                case SOLO_LABEL: {
+                    this.editor.getCodigo3dTextArea().append(cuarteto.getResultado() + "\n");
                     break;
                 }
-                case GOTOSALIDA:{
-                    this.editor.getCodigo3dTextArea().append(cuarteto.getOperando()+" "+cuarteto.getResultado()+"\n");
+                case GOTOSALIDA: {
+                    this.editor.getCodigo3dTextArea().append(cuarteto.getOperando() + " " + cuarteto.getResultado() + "\n");
                     break;
                 }
 

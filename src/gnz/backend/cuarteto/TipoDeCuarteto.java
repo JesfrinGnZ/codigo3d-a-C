@@ -11,5 +11,5 @@ package gnz.backend.cuarteto;
  */
 public enum TipoDeCuarteto {
     
-    ASIGNACION,SOLO_EXPRESION,IF,GOTO,SOLO_ETIQUETA,GOTOSALIDA;
+    ASIGNACION,SOLO_EXPRESION,IF,GOTO,SOLO_LABEL,GOTOSALIDA;
 }

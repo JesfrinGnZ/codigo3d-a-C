@@ -300,9 +300,9 @@ public class ManejadorDeDeclaraciones {
             String labelSalida = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
             Cuarteto cuartetoSi = new Cuarteto(null, "1", null, nodoId.getId(), TipoDeCuarteto.ASIGNACION);//n=1
             Cuarteto cuartetoSalida = new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.GOTOSALIDA);
-            Cuarteto cuartetoEtiquetaNo = new Cuarteto("goto", cuartetos[1].getOperador1(), null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_ETIQUETA);
+            Cuarteto cuartetoEtiquetaNo = new Cuarteto("goto", cuartetos[1].getOperador1(), null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_LABEL);
             Cuarteto cuartetoNo = new Cuarteto(null, "0", null, nodoId.getId(), TipoDeCuarteto.ASIGNACION);//n=0
-            Cuarteto cuartetoFin = new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.SOLO_ETIQUETA);
+            Cuarteto cuartetoFin = new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.SOLO_LABEL);
 
             this.editor.getManTablas().anadirCuarteto(cuartetoSi);
             this.editor.getManTablas().anadirCuarteto(cuartetoSalida);
@@ -439,14 +439,14 @@ public class ManejadorDeDeclaraciones {
                         String labelSalida = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
 
             Cuarteto cuartetoSi = new Cuarteto(null, "1", null, nodoId.getId(), TipoDeCuarteto.ASIGNACION);
-            Cuarteto cuartetoEtiquetaNo = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.SOLO_ETIQUETA);
+            Cuarteto cuartetoEtiquetaNo = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.SOLO_LABEL);
             Cuarteto cuartetoNo = new Cuarteto(null, "0", null, nodoId.getId(), TipoDeCuarteto.ASIGNACION);
 
             this.editor.getManTablas().anadirCuarteto(cuartetoSi);
             this.editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.GOTOSALIDA));
             this.editor.getManTablas().anadirCuarteto(cuartetoEtiquetaNo);
             this.editor.getManTablas().anadirCuarteto(cuartetoNo);
-            this.editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.SOLO_ETIQUETA));
+            this.editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.SOLO_LABEL));
 
         }
         if (seDebeGuardarVariable) {

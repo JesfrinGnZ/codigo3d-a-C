@@ -16,7 +16,7 @@ public class ManejadorDeErrores {
     public static boolean hayError=false;
     
     public static void escribirErrorSemantico(String mensaje,JTextArea textArea){
-        textArea.append(mensaje+"\n");
+        textArea.append(mensaje+"\n\n");
         hayError=true;
     }
     

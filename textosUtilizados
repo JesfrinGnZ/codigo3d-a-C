@@ -19,6 +19,24 @@ boolean n<-TRUE OR FALSE OR TRUE OR TRUE ;
 boolean n<-TRUE AND FALSE OR TRUE ;
 boolean n<-TRUE AND FALSE OR TRUE ;
 boolean n<-TRUE AND FALSE OR TRUE AND TRUE;
+
+/*****************************************************************
+
+boolean n<-TRUE AND TRUE;
+int x;
+int y;
+int a;
+boolean id1;
+float f1, f2, f3;
+
+
+
+%%%
+MAIN() [
+
+]
+
+
 ****************************************************Codigo jony************************
 int x;
 int y;

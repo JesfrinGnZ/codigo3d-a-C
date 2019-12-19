@@ -39,7 +39,7 @@ public class parser extends java_cup.runtime.lr_parser {
   /** Production table. */
   protected static final short _production_table[][] = 
     unpackFromStrings(new String[] {
-    "\000\204\000\002\002\004\000\002\013\005\000\002\013" +
+    "\000\205\000\002\002\004\000\002\013\005\000\002\013" +
     "\005\000\002\013\005\000\002\013\005\000\002\013\005" +
     "\000\002\013\005\000\002\013\006\000\002\013\003\000" +
     "\002\013\003\000\002\013\003\000\002\013\003\000\002" +
@@ -79,7 +79,8 @@ public class parser extends java_cup.runtime.lr_parser {
     "\004\000\002\044\003\000\002\067\002\000\002\045\013" +
     "\000\002\045\011\000\002\047\005\000\002\047\003\000" +
     "\002\050\004\000\002\051\005\000\002\051\004\000\002" +
-    "\051\004\000\002\051\003\000\002\056\010" });
+    "\051\004\000\002\051\003\000\002\070\002\000\002\056" +
+    "\011" });
 
   /** Access to production table. */
   public short[][] production_table() {return _production_table;}
@@ -87,7 +88,7 @@ public class parser extends java_cup.runtime.lr_parser {
   /** Parse-action table. */
   protected static final short[][] _action_table = 
     unpackFromStrings(new String[] {
-    "\000\u010f\000\032\007\025\010\014\013\007\015\010\016" +
+    "\000\u0110\000\032\007\025\010\014\013\007\015\010\016" +
     "\006\017\004\020\021\021\031\025\020\060\030\065\027" +
     "\070\017\001\002\000\006\007\uffdd\047\uffdd\001\002\000" +
     "\034\002\uffd1\007\uffd1\010\uffd1\013\uffd1\015\uffd1\016\uffd1" +
@@ -100,8 +101,8 @@ public class parser extends java_cup.runtime.lr_parser {
     "\017\uffce\020\uffce\021\uffce\025\uffce\060\uffce\065\uffce\070" +
     "\uffce\001\002\000\034\002\uffd9\007\025\010\014\013\007" +
     "\015\010\016\006\017\004\020\021\021\031\025\020\060" +
-    "\030\065\027\070\u010d\001\002\000\006\007\uffe1\047\uffe1" +
-    "\001\002\000\004\007\u010c\001\002\000\004\002\u010b\001" +
+    "\030\065\027\070\u010e\001\002\000\006\007\uffe1\047\uffe1" +
+    "\001\002\000\004\007\u010d\001\002\000\004\002\u010c\001" +
     "\002\000\004\067\u0104\001\002\000\006\007\uffe2\047\uffe2" +
     "\001\002\000\006\007\uffdc\047\uffdc\001\002\000\034\002" +
     "\uffd0\007\uffd0\010\uffd0\013\uffd0\015\uffd0\016\uffd0\017\uffd0" +
@@ -612,21 +613,21 @@ public class parser extends java_cup.runtime.lr_parser {
     "\050\u0102\001\002\000\026\010\uff87\013\uff87\015\uff87\016" +
     "\uff87\017\uff87\020\uff87\021\uff87\025\uff87\065\uff87\070\uff87" +
     "\001\002\000\004\002\uffd6\001\002\000\004\045\u0105\001" +
-    "\002\000\004\046\u0106\001\002\000\004\047\u0107\001\002" +
-    "\000\054\003\177\007\167\010\014\013\007\015\010\016" +
-    "\006\017\004\020\021\021\031\025\020\051\170\054\203" +
-    "\055\210\056\164\060\030\061\207\062\163\063\206\064" +
-    "\211\065\027\066\173\001\002\000\056\003\177\007\167" +
-    "\010\014\013\007\015\010\016\006\017\004\020\021\021" +
-    "\031\025\020\050\u0109\051\170\054\203\055\210\056\164" +
-    "\060\030\061\207\062\163\063\206\064\211\065\027\066" +
-    "\173\001\002\000\004\002\uff7e\001\002\000\004\002\uffd5" +
-    "\001\002\000\004\002\001\001\002\000\012\004\uffc7\005" +
-    "\371\006\uffc7\045\146\001\002\000\004\067\u0104\001\002" +
-    "\000\026\010\014\013\007\015\010\016\006\017\004\020" +
-    "\021\021\031\025\020\065\027\070\u010f\001\002\000\004" +
-    "\067\u0104\001\002\000\004\002\uffd8\001\002\000\004\002" +
-    "\uffd7\001\002" });
+    "\002\000\004\046\uff7e\001\002\000\004\046\u0107\001\002" +
+    "\000\004\047\u0108\001\002\000\054\003\177\007\167\010" +
+    "\014\013\007\015\010\016\006\017\004\020\021\021\031" +
+    "\025\020\051\170\054\203\055\210\056\164\060\030\061" +
+    "\207\062\163\063\206\064\211\065\027\066\173\001\002" +
+    "\000\056\003\177\007\167\010\014\013\007\015\010\016" +
+    "\006\017\004\020\021\021\031\025\020\050\u010a\051\170" +
+    "\054\203\055\210\056\164\060\030\061\207\062\163\063" +
+    "\206\064\211\065\027\066\173\001\002\000\004\002\uff7d" +
+    "\001\002\000\004\002\uffd5\001\002\000\004\002\001\001" +
+    "\002\000\012\004\uffc7\005\371\006\uffc7\045\146\001\002" +
+    "\000\004\067\u0104\001\002\000\026\010\014\013\007\015" +
+    "\010\016\006\017\004\020\021\021\031\025\020\065\027" +
+    "\070\u0110\001\002\000\004\067\u0104\001\002\000\004\002" +
+    "\uffd8\001\002\000\004\002\uffd7\001\002" });
 
   /** Access to parse-action table. */
   public short[][] action_table() {return _action_table;}
@@ -634,14 +635,14 @@ public class parser extends java_cup.runtime.lr_parser {
   /** <code>reduce_goto</code> table. */
   protected static final short[][] _reduce_table = 
     unpackFromStrings(new String[] {
-    "\000\u010f\000\026\002\015\005\012\006\004\007\021\010" +
+    "\000\u0110\000\026\002\015\005\012\006\004\007\021\010" +
     "\014\016\025\017\011\024\023\044\022\045\010\001\001" +
     "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
     "\002\001\001\000\002\001\001\000\002\001\001\000\002" +
     "\001\001\000\022\006\372\007\021\010\014\016\025\017" +
-    "\011\024\023\044\u010d\045\010\001\001\000\002\001\001" +
+    "\011\024\023\044\u010e\045\010\001\001\000\002\001\001" +
     "\000\006\011\364\012\363\001\001\000\002\001\001\000" +
-    "\004\056\u0109\001\001\000\002\001\001\000\002\001\001" +
+    "\004\056\u010a\001\001\000\002\001\001\000\002\001\001" +
     "\000\002\001\001\000\006\010\143\045\142\001\001\000" +
     "\002\001\001\000\006\021\133\022\032\001\001\000\002" +
     "\001\001\000\002\001\001\000\004\010\031\001\001\000" +
@@ -798,16 +799,17 @@ public class parser extends java_cup.runtime.lr_parser {
     "\001\000\002\001\001\000\022\005\151\006\004\007\021" +
     "\010\152\016\025\017\011\024\023\051\u0100\001\001\000" +
     "\002\001\001\000\002\001\001\000\002\001\001\000\002" +
-    "\001\001\000\002\001\001\000\002\001\001\000\044\003" +
-    "\u0107\004\160\007\175\010\152\016\203\017\165\024\161" +
-    "\025\200\026\204\027\177\032\156\034\173\035\171\036" +
-    "\157\041\201\052\164\053\170\001\001\000\042\004\242" +
-    "\007\175\010\152\016\203\017\165\024\161\025\200\026" +
-    "\204\027\177\032\156\034\173\035\171\036\157\041\201" +
-    "\052\164\053\170\001\001\000\002\001\001\000\002\001" +
-    "\001\000\002\001\001\000\002\001\001\000\004\056\u0110" +
-    "\001\001\000\006\010\143\045\142\001\001\000\004\056" +
-    "\u010f\001\001\000\002\001\001\000\002\001\001" });
+    "\001\001\000\004\070\u0105\001\001\000\002\001\001\000" +
+    "\002\001\001\000\044\003\u0108\004\160\007\175\010\152" +
+    "\016\203\017\165\024\161\025\200\026\204\027\177\032" +
+    "\156\034\173\035\171\036\157\041\201\052\164\053\170" +
+    "\001\001\000\042\004\242\007\175\010\152\016\203\017" +
+    "\165\024\161\025\200\026\204\027\177\032\156\034\173" +
+    "\035\171\036\157\041\201\052\164\053\170\001\001\000" +
+    "\002\001\001\000\002\001\001\000\002\001\001\000\002" +
+    "\001\001\000\004\056\u0111\001\001\000\006\010\143\045" +
+    "\142\001\001\000\004\056\u0110\001\001\000\002\001\001" +
+    "\000\002\001\001" });
 
   /** Access to <code>reduce_goto</code> table. */
   public short[][] reduce_table() {return _reduce_table;}
@@ -849,7 +851,7 @@ public class parser extends java_cup.runtime.lr_parser {
 
     private EditorDeTextoFrame editor;
     private ManejadorDeDeclaraciones man;
-    private String nombreDeFuncion="";
+    private String ambito="global";
 
     public parser(AnalizadorLexicoCodigo lex,EditorDeTextoFrame editor){
         super(lex);
@@ -873,7 +875,7 @@ public class parser extends java_cup.runtime.lr_parser {
   /*  public Cuarteto[] evaluarComparacionDeCiclo(Nodo n1,int ileft,int iright){
       //Label al inicio para que regrese
       String label = "L"+editor.getManTablas().obtenerNuevoNumeroDeLabel();
-      Cuarteto inicioDeWhile=new Cuarteto("goto", null, null, label, TipoDeCuarteto.SOLO_ETIQUETA);
+      Cuarteto inicioDeWhile=new Cuarteto("goto", null, null, label, TipoDeCuarteto.SOLO_LABEL);
       editor.getManTablas().anadirCuarteto(inicioDeWhile);
       //Se analiza la expresion
       ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor);
@@ -1594,9 +1596,9 @@ class CUP$parser$actions {
 		LinkedList<NodoId> lista = (LinkedList<NodoId>)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
 //NodoDeclaracion n1 = new NodoDeclaracion(tipo,lista);
-//man = new ManejadorDeDeclaraciones( n1,editor,nombreDeFuncion);
+//man = new ManejadorDeDeclaraciones( n1,editor,ambito);
 //RESULT=n1;
-DeclaracionDeVariable declaracion = new DeclaracionDeVariable(tipo,lista,tipoleft,tiporight);
+DeclaracionDeVariable declaracion = new DeclaracionDeVariable(tipo,lista,ambito,tipoleft,tiporight);
 CreadorDeVariables.declararVariables(declaracion,editor);
   
               CUP$parser$result = parser.getSymbolFactory().newSymbol("declaracionDeVariables",5, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -1680,7 +1682,8 @@ CreadorDeVariables.declararVariables(declaracion,editor);
 		int n1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		Nodo n1 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		NodoId nodo = new NodoId(i,n1,ileft,iright);
-  man = new ManejadorDeDeclaraciones( nodo,editor,nombreDeFuncion);
+  //man = new ManejadorDeDeclaraciones( nodo,editor,ambito);
+  CreadorDeVariables.asignarVariable(nodo,editor,ambito);
   RESULT=nodo;
   
               CUP$parser$result = parser.getSymbolFactory().newSymbol("asignacionDeVariable",12, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -1717,7 +1720,7 @@ CreadorDeVariables.declararVariables(declaracion,editor);
 		LinkedList<NodoId> listaIds = (LinkedList<NodoId>)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
 NodoArregloDeclaracion nodo = new NodoArregloDeclaracion( tipo, listaIds,dimensiones,ileft,iright);
-man = new ManejadorDeDeclaraciones(nodo,editor,nombreDeFuncion);
+man = new ManejadorDeDeclaraciones(nodo,editor,ambito);
 RESULT=nodo;
 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("declaracionDeArreglos",13, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -1836,7 +1839,7 @@ RESULT=lista;
 		int expresionright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		Nodo expresion = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		NodoAsignacionArreglo n1 = new NodoAsignacionArreglo(id,expresiones,expresion,idleft,idright);
-  man = new ManejadorDeDeclaraciones( n1,editor,nombreDeFuncion);
+  man = new ManejadorDeDeclaraciones( n1,editor,ambito);
   RESULT=n1;
   
               CUP$parser$result = parser.getSymbolFactory().newSymbol("asignacionDeArreglo",18, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -1852,7 +1855,7 @@ RESULT=lista;
 		Cuarteto[] cuartetos = (Cuarteto[])((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
   //Cuarteto que genera la etiqueta final
- editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_ETIQUETA));
+ editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_LABEL));
 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("unaInstruccion",2, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1869,7 +1872,7 @@ RESULT=lista;
 		int n1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		Nodo n1 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 
-ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,nombreDeFuncion);
+ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,ambito);
 Cuarteto[] cuartetos=manejador.evaluarExpresionDeCicloOCondicional(n1,ileft,iright);
 RESULT=cuartetos;
   
@@ -1905,7 +1908,7 @@ RESULT=cuartetos;
 		int n1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		Nodo n1 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 
-  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,nombreDeFuncion);
+  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,ambito);
   Cuarteto[] cuartetos=manejador.evaluarExpresionDeCicloOCondicional(n1,ileft,iright);
   RESULT=cuartetos;
 
@@ -1938,7 +1941,7 @@ RESULT=cuartetos;
 		int labelFinalright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String labelFinal = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-  editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, labelFinal, TipoDeCuarteto.SOLO_ETIQUETA)) ;
+  editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, labelFinal, TipoDeCuarteto.SOLO_LABEL)) ;
 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("unaInstruccion",2, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1956,7 +1959,7 @@ RESULT=cuartetos;
 String labelSalida = "L" + editor.getManTablas().obtenerNuevoNumeroDeLabel();
 editor.getManTablas().anadirCuarteto(new Cuarteto("goto", labelSalida, null, labelSalida, TipoDeCuarteto.GOTOSALIDA)) ;
    //Cuarteto que genera la etiqueta final
-editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_ETIQUETA));
+editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_LABEL));
 RESULT= labelSalida;
 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$2",47, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -1989,7 +1992,7 @@ RESULT= labelSalida;
 String labelSalida = "L" + editor.getManTablas().obtenerNuevoNumeroDeLabel();
 editor.getManTablas().anadirCuarteto(new Cuarteto("goto", labelSalida, null, labelSalida, TipoDeCuarteto.GOTOSALIDA)) ;
    //Cuarteto que genera la etiqueta final
- editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_ETIQUETA));
+ editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_LABEL));
  RESULT= labelSalida;
   
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$3",48, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -2094,7 +2097,7 @@ editor.getManTablas().anadirCuarteto(new Cuarteto("goto", labelSalida, null, lab
     //Cuarteto que permite volver hacia arriba
     editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[0].getResultado(), TipoDeCuarteto.GOTOSALIDA));
     //Cuarteto que genera la etiqueta final
-   editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_ETIQUETA));
+   editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_LABEL));
 
   }
   
@@ -2115,10 +2118,10 @@ editor.getManTablas().anadirCuarteto(new Cuarteto("goto", labelSalida, null, lab
 
   //Se crea la etiqueta que permitiria el ciclo
   String label = "L"+editor.getManTablas().obtenerNuevoNumeroDeLabel();
-  Cuarteto inicioDeWhile=new Cuarteto("goto", null, null, label, TipoDeCuarteto.SOLO_ETIQUETA);
+  Cuarteto inicioDeWhile=new Cuarteto("goto", null, null, label, TipoDeCuarteto.SOLO_LABEL);
   editor.getManTablas().anadirCuarteto(inicioDeWhile);
   //Se analiza la expresion
-  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,nombreDeFuncion);
+  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,ambito);
   Cuarteto[] cuartetos=manejador.evaluarExpresionDeCicloOCondicional(n1,ileft,iright);
   cuartetos[0]=inicioDeWhile;
   RESULT=cuartetos;
@@ -2156,10 +2159,10 @@ editor.getManTablas().anadirCuarteto(new Cuarteto("goto", labelSalida, null, lab
 
   //Se crea la etiqueta que permitiria el ciclo
   String label = "L"+editor.getManTablas().obtenerNuevoNumeroDeLabel();
-  Cuarteto inicioDeWhile=new Cuarteto("goto", null, null, label, TipoDeCuarteto.SOLO_ETIQUETA);
+  Cuarteto inicioDeWhile=new Cuarteto("goto", null, null, label, TipoDeCuarteto.SOLO_LABEL);
   editor.getManTablas().anadirCuarteto(inicioDeWhile);
   //Se analiza la expresion
-  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,nombreDeFuncion);
+  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,ambito);
   Cuarteto[] cuartetos=manejador.evaluarExpresionDeCicloOCondicional(n1,ileft,iright);
   cuartetos[0]=inicioDeWhile;
   RESULT=cuartetos;
@@ -2208,13 +2211,13 @@ editor.getManTablas().anadirCuarteto(new Cuarteto("goto", labelSalida, null, lab
 		int n1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		Nodo n1 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
-  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,nombreDeFuncion);
+  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,ambito);
   Cuarteto[] cuartetos=manejador.evaluarExpresionDeCicloOCondicional(n1,ileft,iright);
   cuartetos[0]=cuartetoInicio;
   //Cuarteto que permite volver hacia arriba
   editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[0].getResultado(), TipoDeCuarteto.GOTOSALIDA));
   //Cuarteto que genera la etiqueta final
- editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_ETIQUETA));
+ editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_LABEL));
   RESULT=cuartetos;
   
               CUP$parser$result = parser.getSymbolFactory().newSymbol("declaracionDeEstructuraDoWhile",26, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-5)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -2235,13 +2238,13 @@ editor.getManTablas().anadirCuarteto(new Cuarteto("goto", labelSalida, null, lab
 		int n1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		Nodo n1 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
-  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,nombreDeFuncion);
+  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,ambito);
   Cuarteto[] cuartetos=manejador.evaluarExpresionDeCicloOCondicional(n1,ileft,iright);
   cuartetos[0]=cuartetoInicio;
   //Cuarteto que permite volver hacia arriba
   editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[0].getResultado(), TipoDeCuarteto.GOTOSALIDA));
   //Cuarteto que genera la etiqueta final
- editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_ETIQUETA));
+ editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_LABEL));
   RESULT=cuartetos;
   
               CUP$parser$result = parser.getSymbolFactory().newSymbol("declaracionDeEstructuraDoWhile",26, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-7)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -2253,7 +2256,7 @@ editor.getManTablas().anadirCuarteto(new Cuarteto("goto", labelSalida, null, lab
             {
               Cuarteto RESULT =null;
 		  String label = "L"+editor.getManTablas().obtenerNuevoNumeroDeLabel();
-  Cuarteto inicioDeWhile=new Cuarteto("goto", null, null, label, TipoDeCuarteto.SOLO_ETIQUETA);
+  Cuarteto inicioDeWhile=new Cuarteto("goto", null, null, label, TipoDeCuarteto.SOLO_LABEL);
   editor.getManTablas().anadirCuarteto(inicioDeWhile);
   RESULT= inicioDeWhile;
   
@@ -2272,7 +2275,7 @@ editor.getManTablas().anadirCuarteto(new Cuarteto("goto", labelSalida, null, lab
   //Cuarteto que permite volver hacia arriba
   editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[0].getResultado(), TipoDeCuarteto.GOTOSALIDA));
   //Cuarteto que genera la etiqueta final
-  editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_ETIQUETA));
+  editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_LABEL));
   
               CUP$parser$result = parser.getSymbolFactory().newSymbol("unaInstruccion",2, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -2295,7 +2298,7 @@ editor.getManTablas().anadirCuarteto(new Cuarteto("goto", labelSalida, null, lab
 		int incrright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		IncrementoDecremento incr = (IncrementoDecremento)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 
-  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,nombreDeFuncion);
+  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,ambito);
   Cuarteto[] cuartetos=manejador.evaluarExpresionDeCicloOCondicional(n1,ileft,iright);
   cuartetos[0]=cuartetoInicio;
   RESULT=cuartetos;
@@ -2348,7 +2351,7 @@ editor.getManTablas().anadirCuarteto(new Cuarteto("goto", labelSalida, null, lab
 		int incrright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		IncrementoDecremento incr = (IncrementoDecremento)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 
-  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,nombreDeFuncion);
+  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,ambito);
   Cuarteto[] cuartetos=manejador.evaluarExpresionDeCicloOCondicional(n1,ileft,iright);
   cuartetos[0]=cuartetoInicio;
   RESULT=cuartetos;
@@ -2394,9 +2397,9 @@ editor.getManTablas().anadirCuarteto(new Cuarteto("goto", labelSalida, null, lab
 		int n1right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Nodo n1 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		NodoId nodoId = new NodoId(i,n1,ileft,iright);
-  man = new ManejadorDeDeclaraciones(nodoId,editor,nombreDeFuncion);
+  man = new ManejadorDeDeclaraciones(nodoId,editor,ambito);
   String label = "L"+editor.getManTablas().obtenerNuevoNumeroDeLabel();
-  Cuarteto inicioDeFor=new Cuarteto("goto", i, null, label, TipoDeCuarteto.SOLO_ETIQUETA);
+  Cuarteto inicioDeFor=new Cuarteto("goto", i, null, label, TipoDeCuarteto.SOLO_LABEL);
   editor.getManTablas().anadirCuarteto(inicioDeFor);
   //Se crea la etiqueta de inicio
   RESULT=inicioDeFor;
@@ -2568,7 +2571,7 @@ editor.getManTablas().anadirCuarteto(new Cuarteto("goto", labelSalida, null, lab
 		int ileft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-nombreDeFuncion=i;System.out.println("\n\n\n"+i+"\n\n\n");
+ambito=i;System.out.println("\n\n\n"+i+"\n\n\n");
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$8",53, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -2585,7 +2588,7 @@ nombreDeFuncion=i;System.out.println("\n\n\n"+i+"\n\n\n");
 		int parametrosleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).left;
 		int parametrosright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).right;
 		Object parametros = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-4)).value;
-		nombreDeFuncion="";
+		ambito="";
               CUP$parser$result = parser.getSymbolFactory().newSymbol("unSubPrograma",35, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-8)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -2663,11 +2666,28 @@ nombreDeFuncion=i;System.out.println("\n\n\n"+i+"\n\n\n");
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 131: // funcionMain ::= MAIN PARENTESIS_ABIERTO PARENTESIS_CERRADO CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO 
+          case 131: // NT$9 ::= 
             {
               Object RESULT =null;
+		int ileft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
+		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
+		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+ambito=i;
+              CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$9",54, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
+            }
+          return CUP$parser$result;
 
-              CUP$parser$result = parser.getSymbolFactory().newSymbol("funcionMain",44, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-5)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 132: // funcionMain ::= MAIN PARENTESIS_ABIERTO NT$9 PARENTESIS_CERRADO CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO 
+            {
+              Object RESULT =null;
+              // propagate RESULT from NT$9
+                RESULT = (Object) ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-4)).value;
+		int ileft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)).left;
+		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)).right;
+		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-6)).value;
+
+              CUP$parser$result = parser.getSymbolFactory().newSymbol("funcionMain",44, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
 

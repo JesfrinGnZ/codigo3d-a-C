@@ -33,6 +33,15 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
         initComponents();
         crearOyenteDeEdicion();
         this.manejadorEditor = new ManejadorDeEditorDeTexto(codigoTextArea, editManager, this);
+        //Para lineas de codigo
+        TextLineNumber lineNumber = new TextLineNumber(codigoTextArea);
+        codigojScrollPane.setRowHeaderView(lineNumber);
+        //Para lineas de error
+        TextLineNumber lineNumber2 = new TextLineNumber(erroresTextArea);
+        erroresScrollPane.setRowHeaderView(lineNumber2);
+        //Para lineas de 
+        TextLineNumber linerNumber3 = new TextLineNumber(codigo3dTextArea);
+        codigoTresDireccionesjScrollPane.setRowHeaderView(linerNumber3);
     }
 
     @SuppressWarnings("unchecked")
@@ -40,21 +49,20 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        codigojScrollPane = new javax.swing.JScrollPane();
         codigoTextArea = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jScrollPane3 = new javax.swing.JScrollPane();
+        codigoTresDireccionesjScrollPane = new javax.swing.JScrollPane();
         codigo3dTextArea = new javax.swing.JTextArea();
         filaColumnaLabel = new javax.swing.JLabel();
         jToolBar1 = new javax.swing.JToolBar();
         analizarCodigoButton = new javax.swing.JButton();
         limpiarCodigo3dYErroresButton = new javax.swing.JButton();
         limpiarAreaDeTextoButton = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        erroresScrollPane = new javax.swing.JScrollPane();
         erroresTextArea = new javax.swing.JTextArea();
+        jLabel3 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         nuevoArchivoMenuItem = new javax.swing.JMenuItem();
@@ -77,7 +85,7 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
                 codigoTextAreaCaretUpdate(evt);
             }
         });
-        jScrollPane2.setViewportView(codigoTextArea);
+        codigojScrollPane.setViewportView(codigoTextArea);
 
         jLabel1.setText("Codigo");
 
@@ -85,12 +93,11 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
 
         codigo3dTextArea.setColumns(20);
         codigo3dTextArea.setRows(5);
-        jScrollPane3.setViewportView(codigo3dTextArea);
+        codigoTresDireccionesjScrollPane.setViewportView(codigo3dTextArea);
 
         filaColumnaLabel.setFont(new java.awt.Font("Manjari Bold", 0, 8)); // NOI18N
         filaColumnaLabel.setText("1:1");
 
-        jToolBar1.setOrientation(javax.swing.SwingConstants.VERTICAL);
         jToolBar1.setRollover(true);
 
         analizarCodigoButton.setText("Analizar");
@@ -120,26 +127,40 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
         });
         jToolBar1.add(limpiarAreaDeTextoButton);
 
+        erroresTextArea.setColumns(20);
+        erroresTextArea.setRows(5);
+        erroresScrollPane.setViewportView(erroresTextArea);
+
+        jLabel3.setText("Errores");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(209, 209, 209)
+                .addGap(172, 172, 172)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel2)
-                .addGap(152, 152, 152))
+                .addGap(135, 135, 135))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(filaColumnaLabel)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 416, Short.MAX_VALUE)
-                .addGap(21, 21, 21))
+                    .addComponent(codigojScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(60, 60, 60)
+                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(200, 200, 200)
+                        .addComponent(jLabel3))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addComponent(erroresScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 439, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(7, 7, 7)
+                .addComponent(codigoTresDireccionesjScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -150,39 +171,19 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
                     .addComponent(jLabel2))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)
+                    .addComponent(codigoTresDireccionesjScrollPane)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(32, 32, 32)
-                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(8, 8, 8)
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(erroresScrollPane))
+                            .addComponent(codigojScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 528, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 17, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(filaColumnaLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-
-        jLabel3.setText("Errores");
-
-        erroresTextArea.setColumns(20);
-        erroresTextArea.setRows(5);
-        jScrollPane1.setViewportView(erroresTextArea);
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel3)
-                .addContainerGap(959, Short.MAX_VALUE))
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1015, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(8, 8, 8)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
         );
 
         jMenu1.setText("Archivo");
@@ -272,19 +273,16 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         pack();
@@ -388,9 +386,12 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
     private javax.swing.JButton analizarCodigoButton;
     private javax.swing.JTextArea codigo3dTextArea;
     private javax.swing.JTextArea codigoTextArea;
+    private javax.swing.JScrollPane codigoTresDireccionesjScrollPane;
+    private javax.swing.JScrollPane codigojScrollPane;
     private javax.swing.JMenuItem copiarMenuItem;
     private javax.swing.JMenuItem cortarMenuItem;
     private javax.swing.JMenuItem deshacerMenuItem;
+    private javax.swing.JScrollPane erroresScrollPane;
     private javax.swing.JTextArea erroresTextArea;
     private javax.swing.JLabel filaColumnaLabel;
     private javax.swing.JMenuItem guardarArchivoMenuItem3;
@@ -402,10 +403,6 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JButton limpiarAreaDeTextoButton;
     private javax.swing.JButton limpiarCodigo3dYErroresButton;

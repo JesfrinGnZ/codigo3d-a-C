@@ -7,6 +7,7 @@ package gnz.backend.manejoDeVariables;
 
 import gnz.backend.cuarteto.Cuarteto;
 import gnz.backend.cuarteto.TipoDeCuarteto;
+import gnz.backend.errores.ManejadorDeErrores;
 import gnz.backend.nodo.Nodo;
 import gnz.backend.nodoDeclaracion.TipoDeVariable;
 import gnz.backend.nodoExpresion.NodoExpresion;
@@ -19,16 +20,14 @@ import gnz.gui.frames.EditorDeTextoFrame;
  *
  * @author jesfrin
  */
-public class ManejadorDeVariablesNumericas {
+public class ManejadorDeExpresionesNumericas {
 
     private EditorDeTextoFrame editor;
+    private String ambito;
 
-    public ManejadorDeVariablesNumericas(EditorDeTextoFrame editor) {
+    public ManejadorDeExpresionesNumericas(EditorDeTextoFrame editor, String ambito) {
         this.editor = editor;
-    }
-
-    public ManejadorDeVariablesNumericas() {
-
+        this.ambito = ambito;
     }
 
     /**
@@ -44,9 +43,12 @@ public class ManejadorDeVariablesNumericas {
         } else if (nodo instanceof NodoHojaExpresion) {
             //Los tipos numericos
             TipoDeVariable tipo = verificarTipoDeVariableParaExpresionMatematica((NodoHojaExpresion) nodo);
-            nodoHoja = new NodoHojaExpresion(tipo, ((NodoHojaExpresion) nodo).getValor());
+            if (tipo != null) {
+                nodoHoja = new NodoHojaExpresion(tipo, ((NodoHojaExpresion) nodo).getValor());
+            }
         } else {// ERROR NO se puede convertir booleano a numerico
-
+            String mensaje = "Error SEMANTICO, no se puede convertir booleano a numerico.\n" + CreadorDeVariables.averiguarTipoDeNodo(nodo);
+            ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
         }
         return nodoHoja;
     }
@@ -62,15 +64,27 @@ public class ManejadorDeVariablesNumericas {
         TipoDeHoja tipo = nodoHoja.getTipo();
         switch (tipo) {
             case IDENTIFICADOR:
-                TuplaDeSimbolo tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor());
+                TuplaDeSimbolo tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), ambito);
                 if (tupla != null) {
                     TipoDeVariable tipoDeVariable = tupla.getTipo();
                     if (tipoDeVariable == TipoDeVariable.BYTE || tipoDeVariable == TipoDeVariable.CHAR || tipoDeVariable == TipoDeVariable.DOUBLE || tipoDeVariable == TipoDeVariable.FLOAT
                             || tipoDeVariable == TipoDeVariable.INT || tipoDeVariable == TipoDeVariable.LONG) {
                         return tipoDeVariable;
                     }
-                } else {//ERROR la variable no ha sido declarada
-                    return null;
+                } else {
+                    tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), "global");
+                    if (tupla != null) {
+                        TipoDeVariable tipoDeVariable = tupla.getTipo();
+                        if (tipoDeVariable == TipoDeVariable.BYTE || tipoDeVariable == TipoDeVariable.CHAR || tipoDeVariable == TipoDeVariable.DOUBLE || tipoDeVariable == TipoDeVariable.FLOAT
+                                || tipoDeVariable == TipoDeVariable.INT || tipoDeVariable == TipoDeVariable.LONG) {
+                            return tipoDeVariable;
+                        }
+                    } else {//ERROR la variable no ha sido declarada
+                        String mensaje = "Error SEMANTICO, la variable " + nodoHoja.getValor() + " No ha sido declarada.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                        ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                        return null;
+                    }
+
                 }
                 break;
             case NUMERO_DECIMAL:
@@ -83,6 +97,8 @@ public class ManejadorDeVariablesNumericas {
                 break;
         }
         //ERROR elemento no es numerico
+        String mensaje = "Error SEMANTICO, no se puede convertir " + nodoHoja.getTipo() + "(" + nodoHoja.getValor() + ")" + " a numerico.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+        ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
         return null;
     }
 

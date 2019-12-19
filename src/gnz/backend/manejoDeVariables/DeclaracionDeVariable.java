@@ -5,7 +5,6 @@
  */
 package gnz.backend.manejoDeVariables;
 
-import gnz.backend.nodo.Nodo;
 import gnz.backend.nodoDeclaracion.NodoId;
 import gnz.backend.nodoDeclaracion.TipoDeVariable;
 import java.util.LinkedList;
@@ -15,18 +14,19 @@ import java.util.LinkedList;
  * @author jesfrin
  */
 public class DeclaracionDeVariable {
- 
-    
-      private TipoDeVariable tipo;
+
+    private TipoDeVariable tipo;
     private LinkedList<NodoId> ids;
+    private String ambito;
     private int linea;
     private int columna;
 
-    public DeclaracionDeVariable(TipoDeVariable tipo, LinkedList<NodoId> ids,int linea, int columna) {
+    public DeclaracionDeVariable(TipoDeVariable tipo, LinkedList<NodoId> ids,String ambito, int linea, int columna) {
         this.tipo = tipo;
         this.ids = ids;
-        this.linea=linea;
-        this.columna=columna;
+        this.linea = linea;
+        this.columna = columna;
+        this.ambito=ambito;
     }
 
     public TipoDeVariable getTipo() {
@@ -60,4 +60,14 @@ public class DeclaracionDeVariable {
     public void setColumna(int columna) {
         this.columna = columna;
     }
+
+    public String getAmbito() {
+        return ambito;
+    }
+
+    public void setAmbito(String ambito) {
+        this.ambito = ambito;
+    }
+    
+    
 }
