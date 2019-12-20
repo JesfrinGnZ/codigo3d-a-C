@@ -155,11 +155,9 @@ int suma(int mm, int mmm) [
 MAIN() [
   x<-6;
   y<-1;
+int id;
 FOR(id<-0:id < 6 :+1) [
      y<-y*x;
-
-]
-IF (conds) [
 
 ]
 ]
@@ -205,6 +203,33 @@ MAIN() [
 IF (x>y)[
      y<-y*x;
 ]ELSE[
+   y<-8+8*3;
+]
+]
+
+/*******************************************ELSIF**************************************************************
+
+int x;
+int y;
+int a;
+boolean id1;
+float f1, f2, f3;
+
+int suma(int mm, int mmm) [
+     int resultado <- a + a;
+%%%
+     return resultado;
+]
+
+%%%
+MAIN() [
+  x<-6;
+  y<-1;
+IF (x>y)[
+     y<-y*x;
+]ELSIF(TRUE)[
    y<-1+2;
+]ELSIF(FALSE)[
+   y<-5+5+5;
 ]
 ]

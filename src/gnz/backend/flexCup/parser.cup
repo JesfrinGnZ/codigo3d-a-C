@@ -26,29 +26,116 @@ parser code {:
 
     //Metodo al que se llama automaticamente ante algun error sintactico
     public void syntax_error(Symbol s){
-        int columna = s.right+1;
-        int linea = s.left+1;
+        int columna = s.right;
+        int linea = s.left;
         System.out.println("Error SINTACTICO:" + s.value + " en:" + linea + ":" + columna);
 }
 
     //Metodo al que se llama en el momento en que ya no es posible una recuperacion de errores
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
-        int columna = s.right+1;
-        int linea = s.left+1;
+        int columna = s.right;
+        int linea = s.left;
         System.out.println("Error SINTACTICO:" + s.value + " en:" + linea + ":" + columna);
  }
+//********************************************************Metodos para If y variantes********************************************************
+    private Cuarteto crearInstruccionDeIf(Nodo n1){
+      if(n1!=null){
+        ManejadorDeExpresionesBooleanas manejadorBooleano = new ManejadorDeExpresionesBooleanas(editor,ambito);
+        Cuarteto ultimoCuarteto=manejadorBooleano.evaluarExpresionBooleana(n1);
+        if(ultimoCuarteto!=null){
+          Cuarteto labelSi = new Cuarteto(null, null, null, ultimoCuarteto.getOperador1(), TipoDeCuarteto.SOLO_LABEL);
+          editor.getManTablas().anadirCuarteto(labelSi);
+        }
+        return ultimoCuarteto;
+      }
+      return null;
+    }
 
-  /*  public Cuarteto[] evaluarComparacionDeCiclo(Nodo n1,int ileft,int iright){
-      //Label al inicio para que regrese
-      String label = "L"+editor.getManTablas().obtenerNuevoNumeroDeLabel();
-      Cuarteto inicioDeWhile=new Cuarteto("goto", null, null, label, TipoDeCuarteto.SOLO_LABEL);
-      editor.getManTablas().anadirCuarteto(inicioDeWhile);
-      //Se analiza la expresion
-      ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor);
-      Cuarteto[] cuartetos=manejador.evaluarExpresionDeCicloOCondicional(n1,ileft,iright);
-      cuartetos[0]=inicioDeWhile;
-      return cuartetos;
-    }*/
+    private String crearInstruccionFinalIf(Cuarteto ultimoCuarteto){
+      String labelSalida=null;
+      if(ultimoCuarteto!=null){
+        labelSalida = "L" + editor.getManTablas().obtenerNuevoNumeroDeLabel();
+        Cuarteto cuartetoGoto = new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.GOTO);
+        Cuarteto labelNo = new Cuarteto(null, null, null, ultimoCuarteto.getResultado(), TipoDeCuarteto.SOLO_LABEL);
+        editor.getManTablas().anadirCuarteto(cuartetoGoto);
+        editor.getManTablas().anadirCuarteto(labelNo);
+      }
+      return labelSalida;
+    }
+
+    private void crearInstruccionFInalElsIf(Cuarteto ultimoCuarteto){
+      if(ultimoCuarteto!=null){
+        Cuarteto cuartetoGoto = new Cuarteto("goto", null, null, null, TipoDeCuarteto.GOTO);
+        Cuarteto labelNo = new Cuarteto(null, null, null, ultimoCuarteto.getResultado(), TipoDeCuarteto.SOLO_LABEL);
+        editor.getManTablas().anadirCuarteto(cuartetoGoto);
+        editor.getManTablas().anadirCuarteto(labelNo);
+      }
+    }
+
+    private void cambiarLabelSalida(String labelSalida){
+      if(labelSalida!=null){
+        for(Cuarteto cuarteto:editor.getManTablas().getTablaDeCuarteto()){
+            if(cuarteto.getResultado()==null && cuarteto.getTipoDeCuarteto()==TipoDeCuarteto.GOTO){
+              cuarteto.setResultado(labelSalida);
+            }
+        }
+        Cuarteto labelNo = new Cuarteto(null, null, null, labelSalida, TipoDeCuarteto.SOLO_LABEL);
+        editor.getManTablas().anadirCuarteto(labelNo);
+      }
+    }
+
+//*******************************************************Metodos para While*****************************************************
+private Cuarteto[] crearInstruccionDeWhile(Nodo n1){
+  Cuarteto[] arreglo=new Cuarteto[2];
+  if(n1!=null){
+    String labelInicio = "L" + editor.getManTablas().obtenerNuevoNumeroDeLabel();
+    Cuarteto cuartetoRepetir = new Cuarteto(null, null, null, labelInicio, TipoDeCuarteto.SOLO_LABEL);
+    editor.getManTablas().anadirCuarteto(cuartetoRepetir);
+    Cuarteto ultimoCuarteto=crearInstruccionDeIf(n1);
+    arreglo[0]=cuartetoRepetir;
+    arreglo[1]=ultimoCuarteto;
+  }
+  return arreglo;
+}
+
+private void crearInstruccionFinalWhile(Cuarteto[] cuartetos){
+    Cuarteto cuartetoRepetir= cuartetos[0];
+    Cuarteto cuartetoNo= cuartetos[1];
+    if(cuartetoRepetir!=null && cuartetoNo!=null){
+      Cuarteto cuartetoGoto = new Cuarteto("goto", null, null, cuartetoRepetir.getResultado(), TipoDeCuarteto.GOTO);
+      Cuarteto labelNo = new Cuarteto(null, null, null, cuartetoNo.getResultado(), TipoDeCuarteto.SOLO_LABEL);
+      editor.getManTablas().anadirCuarteto(cuartetoGoto);
+      editor.getManTablas().anadirCuarteto(labelNo);
+
+    }
+}
+
+//************************************************Metodos para do while****************************************************
+private void finalicacionDeWhile(Nodo n1,Cuarteto cuartetoInicio){
+    ManejadorDeExpresionesBooleanas manejadorBooleano = new ManejadorDeExpresionesBooleanas(editor,ambito);
+    Cuarteto ultimoCuarteto = manejadorBooleano.evaluarExpresionBooleana(n1);
+    if(ultimoCuarteto!=null){
+      //Modificar el penultimo
+      int penultimaPosicion=editor.getManTablas().getTablaDeCuarteto().size()-2;
+      editor.getManTablas().getTablaDeCuarteto().get(penultimaPosicion).setResultado(cuartetoInicio.getResultado());
+      //Modificar el ultimo
+      ultimoCuarteto.setOperador1(cuartetoInicio.getResultado());
+      Cuarteto labelNo = new Cuarteto(null, null, null, ultimoCuarteto.getResultado(), TipoDeCuarteto.SOLO_LABEL);
+      editor.getManTablas().anadirCuarteto(labelNo);
+    }
+}
+
+//**********************************************Metodos para for***************************************************************
+private void finalizacionDeFor(Cuarteto ultimoCuarteto,Cuarteto cuartetoInicio,IncrementoDecremento incr){
+  if(ultimoCuarteto!=null && cuartetoInicio!=null){
+    String numTemporal = "t" + String.valueOf(editor.getManTablas().obtenerNuevoTemporal());
+    editor.getManTablas().anadirCuarteto(new Cuarteto(incr.getTipo(),cuartetoInicio.getOperador1(),incr.getNumero(),cuartetoInicio.getOperador1(),TipoDeCuarteto.SOLO_EXPRESION));
+    //Cuarteto que permite volver hacia arriba
+    editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetoInicio.getResultado(), TipoDeCuarteto.GOTOSALIDA));
+    //Cuarteto que genera la etiqueta final
+    editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, ultimoCuarteto.getResultado(), TipoDeCuarteto.SOLO_LABEL));
+  }
+}
 
 :}
 
@@ -109,8 +196,6 @@ non terminal Nodo     expresion;
 //******************************************************************Condicion y comparacion******************************************
 
 non terminal Nodo     comparacion;
-non terminal Object     condicion;
-
 
 //******************************************************************Asignacion de variables******************************************
 
@@ -127,19 +212,20 @@ non terminal Nodo     asignacionDeArreglo;
 
 //******************************************************************Declaracion de estructura If******************************************
 
-non terminal Cuarteto[]     declaracionDeEstructuraIf;
+non terminal Cuarteto     puenteIf;
+non terminal String     declaracionDeEstructuraIf;
 
 //******************************************************************Declaracion de estructura IF-ELSE******************************************
 
 non terminal String     declaracionDeEstructuraIfElse;
 
 //******************************************************************Declaracion de estructura ELSEIF******************************************
-
+non terminal Cuarteto   puenteElsIf;
 non terminal Object     declaracionDeEstructuraElseIf,conjuntoDeElseIf,unElseIf;
-
 
 //******************************************************************DeclaracionCHAR de estructura While******************************************
 
+non terminal Cuarteto[]     puenteWhile;
 non terminal Cuarteto[]     declaracionDeEstructuraWhile;
 non terminal Object     instrucccionWhile;
 
@@ -153,7 +239,7 @@ non terminal Cuarteto     declaracionDo;
 non terminal Cuarteto[]     declaracionDeEstructuraFor;
 non terminal IncrementoDecremento incrementoDecremento;
 non terminal Cuarteto     asignacionParaFor;
-
+non terminal Cuarteto     comparacionParaFor;
 //******************************************************************declaracion de funciones Predefinidas********************************************
 
 non terminal Object     declaracionDeFuncionesPredefinidas;
@@ -269,14 +355,11 @@ unaInstruccion::=error;
 unaInstruccion::=declaracionDeVariables;
 declaracionDeVariables::=tipoDeVariable:tipo conjuntoDeIdentificadoresParaVariables:lista PCOMA
 {:
-//NodoDeclaracion n1 = new NodoDeclaracion(tipo,lista);
-//man = new ManejadorDeDeclaraciones( n1,editor,ambito);
-//RESULT=n1;
 DeclaracionDeVariable declaracion = new DeclaracionDeVariable(tipo,lista,ambito,tipoleft,tiporight);
 CreadorDeVariables.declararVariables(declaracion,editor);
-  :};
-conjuntoDeIdentificadoresParaVariables::=
-conjuntoDeIdentificadoresParaVariables:lista COMA unIdentificadorParaVariable:n1
+:};
+
+conjuntoDeIdentificadoresParaVariables::= conjuntoDeIdentificadoresParaVariables:lista COMA unIdentificadorParaVariable:n1
 {:lista.add(n1);RESULT = lista;:}
   |
 unIdentificadorParaVariable:n1
@@ -292,7 +375,6 @@ unIdentificadorParaVariable::=IDENTIFICADOR:i ASIGNACION comparacion:n1 {:RESULT
 unaInstruccion::=asignacionDeVariable;
 asignacionDeVariable::=IDENTIFICADOR:i ASIGNACION comparacion:n1 PCOMA
 {:NodoId nodo = new NodoId(i,n1,ileft,iright);
-  //man = new ManejadorDeDeclaraciones( nodo,editor,ambito);
   CreadorDeVariables.asignarVariable(nodo,editor,ambito);
   RESULT=nodo;
   :};
@@ -338,131 +420,74 @@ asignacionDeArreglo::=IDENTIFICADOR:id conjuntoDeDimensiones:expresiones ASIGNAC
   :};
 
 //*******************************************************************Instruccion IF ***************************************************
-unaInstruccion::=declaracionDeEstructuraIf:cuartetos
-{:
-  //Cuarteto que genera la etiqueta final
- editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_LABEL));
-:};
+unaInstruccion::=declaracionDeEstructuraIf:labelFinal
+{:if(labelFinal!=null){
+  Cuarteto labelSalida = new Cuarteto(null, null, null, labelFinal, TipoDeCuarteto.SOLO_LABEL);
+  editor.getManTablas().anadirCuarteto(labelSalida);
+}:};
+
+puenteIf::= IF PARENTESIS_ABIERTO:i comparacion:n1 PARENTESIS_CERRADO
+{:RESULT=crearInstruccionDeIf(n1);:};
 //------>1
-declaracionDeEstructuraIf::= IF PARENTESIS_ABIERTO:i comparacion:n1 PARENTESIS_CERRADO
-{:
-ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,ambito);
-Cuarteto[] cuartetos=manejador.evaluarExpresionDeCicloOCondicional(n1,ileft,iright);
-RESULT=cuartetos;
-  :}
-unaInstruccion;
+declaracionDeEstructuraIf::= puenteIf:ultimoCuarteto unaInstruccion
+{:RESULT=crearInstruccionFinalIf(ultimoCuarteto);:};
 //------>2
-declaracionDeEstructuraIf::= IF PARENTESIS_ABIERTO:i comparacion:n1 PARENTESIS_CERRADO
-{:
-  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,ambito);
-  Cuarteto[] cuartetos=manejador.evaluarExpresionDeCicloOCondicional(n1,ileft,iright);
-  RESULT=cuartetos;
-:} CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO {::};
+declaracionDeEstructuraIf::= puenteIf:ultimoCuarteto  CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO
+{:RESULT=crearInstruccionFinalIf(ultimoCuarteto);:};
 
 //*****************************************************************Instruccion IF-ELSE*****************************************************
-unaInstruccion::=declaracionDeEstructuraIfElse:labelFinal
+unaInstruccion::=declaracionDeEstructuraIfElse:labelSalida
 {:
-  editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, labelFinal, TipoDeCuarteto.SOLO_LABEL)) ;
+  if(labelSalida!=null){
+    Cuarteto labelFinal = new Cuarteto(null, null, null, labelSalida, TipoDeCuarteto.SOLO_LABEL);
+    editor.getManTablas().anadirCuarteto(labelFinal);
+  }
 :};
 //------->1
-declaracionDeEstructuraIfElse::= declaracionDeEstructuraIf:cuartetos ELSE
-{:
-  //Etiqueta que saque
-String labelSalida = "L" + editor.getManTablas().obtenerNuevoNumeroDeLabel();
-editor.getManTablas().anadirCuarteto(new Cuarteto("goto", labelSalida, null, labelSalida, TipoDeCuarteto.GOTOSALIDA)) ;
-   //Cuarteto que genera la etiqueta final
-editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_LABEL));
-RESULT= labelSalida;
-:} unaInstruccion;
+declaracionDeEstructuraIfElse::= declaracionDeEstructuraIf:labelSalida ELSE unaInstruccion
+{:RESULT=labelSalida;:};
 //------->2
-declaracionDeEstructuraIfElse::= declaracionDeEstructuraIf:cuartetos ELSE CORCHETE_ABIERTO
-{:  //Cuarteto que genera la etiqueta final
-  //Etiqueta que saque
-String labelSalida = "L" + editor.getManTablas().obtenerNuevoNumeroDeLabel();
-editor.getManTablas().anadirCuarteto(new Cuarteto("goto", labelSalida, null, labelSalida, TipoDeCuarteto.GOTOSALIDA)) ;
-   //Cuarteto que genera la etiqueta final
- editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_LABEL));
- RESULT= labelSalida;
-  :} conjuntoDeInstrucciones CORCHETE_CERRADO;
+declaracionDeEstructuraIfElse::= declaracionDeEstructuraIf:labelSalida ELSE CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO
+{:RESULT=labelSalida;:};
 //****************************************************************Instruccion ELSEIF*******************************************************
 unaInstruccion::=declaracionDeEstructuraElseIf;
 //------->1
-declaracionDeEstructuraElseIf::=declaracionDeEstructuraIf  conjuntoDeElseIf ;
+declaracionDeEstructuraElseIf::=declaracionDeEstructuraIf:labelSalida conjuntoDeElseIf
+{:cambiarLabelSalida(labelSalida);:};
 //------->2
-declaracionDeEstructuraElseIf::=declaracionDeEstructuraIf  conjuntoDeElseIf ELSE unaInstruccion;
+declaracionDeEstructuraElseIf::=declaracionDeEstructuraIf:labelSalida conjuntoDeElseIf ELSE unaInstruccion
+{:cambiarLabelSalida(labelSalida);:};
 //------->3
-declaracionDeEstructuraElseIf::=declaracionDeEstructuraIf conjuntoDeElseIf ELSE CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO;
+declaracionDeEstructuraElseIf::=declaracionDeEstructuraIf:labelSalida conjuntoDeElseIf ELSE CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO
+{:cambiarLabelSalida(labelSalida);:};
 //conjuntoDeIdentificadoresParaVariables
 conjuntoDeElseIf::=conjuntoDeElseIf unElseIf|unElseIf;
-unElseIf::=ELSIF PARENTESIS_ABIERTO comparacion PARENTESIS_CERRADO unaInstruccion;
-unElseIf::=ELSIF PARENTESIS_ABIERTO comparacion PARENTESIS_CERRADO CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO;
+
+puenteElsIf::=ELSIF PARENTESIS_ABIERTO comparacion:n1 PARENTESIS_CERRADO
+{:RESULT=crearInstruccionDeIf(n1);:};
+
+unElseIf::=puenteElsIf:ultimoCuarteto unaInstruccion
+{:crearInstruccionFInalElsIf(ultimoCuarteto);:};
+
+unElseIf::=puenteElsIf:ultimoCuarteto CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO
+{:crearInstruccionFInalElsIf(ultimoCuarteto);:};
 
 
 //**********************************************************Instruccion While*************************************************************
-unaInstruccion::=declaracionDeEstructuraWhile:cuartetos
-{:
-  if(cuartetos!=null){
-    //Cuarteto que permite volver hacia arriba
-    editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[0].getResultado(), TipoDeCuarteto.GOTOSALIDA));
-    //Cuarteto que genera la etiqueta final
-   editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_LABEL));
+unaInstruccion::=declaracionDeEstructuraWhile:cuartetos;
 
-  }
-  :};
+puenteWhile::=WHILE PARENTESIS_ABIERTO comparacion:n1 PARENTESIS_CERRADO
+{:RESULT=crearInstruccionDeWhile(n1);:};
 
-declaracionDeEstructuraWhile::= WHILE PARENTESIS_ABIERTO:i comparacion:n1 PARENTESIS_CERRADO
-{:
-  //Se crea la etiqueta que permitiria el ciclo
-  String label = "L"+editor.getManTablas().obtenerNuevoNumeroDeLabel();
-  Cuarteto inicioDeWhile=new Cuarteto("goto", null, null, label, TipoDeCuarteto.SOLO_LABEL);
-  editor.getManTablas().anadirCuarteto(inicioDeWhile);
-  //Se analiza la expresion
-  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,ambito);
-  Cuarteto[] cuartetos=manejador.evaluarExpresionDeCicloOCondicional(n1,ileft,iright);
-  cuartetos[0]=inicioDeWhile;
-  RESULT=cuartetos;:} unaInstruccion;
-
-declaracionDeEstructuraWhile::= WHILE PARENTESIS_ABIERTO:i comparacion:n1 PARENTESIS_CERRADO
-{:
-  //Se crea la etiqueta que permitiria el ciclo
-  String label = "L"+editor.getManTablas().obtenerNuevoNumeroDeLabel();
-  Cuarteto inicioDeWhile=new Cuarteto("goto", null, null, label, TipoDeCuarteto.SOLO_LABEL);
-  editor.getManTablas().anadirCuarteto(inicioDeWhile);
-  //Se analiza la expresion
-  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,ambito);
-  Cuarteto[] cuartetos=manejador.evaluarExpresionDeCicloOCondicional(n1,ileft,iright);
-  cuartetos[0]=inicioDeWhile;
-  RESULT=cuartetos;
-:} CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO;
+declaracionDeEstructuraWhile::= puenteWhile:cuartetos unaInstruccion
+{:crearInstruccionFinalWhile(cuartetos);:};
+//------->2
+declaracionDeEstructuraWhile::=puenteWhile:cuartetos CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO
+{:crearInstruccionFinalWhile(cuartetos);:};
 
 //*********************************************************Instruccion Do-While***********************************************************
 unaInstruccion::=declaracionDeEstructuraDoWhile
 {::};
-
-declaracionDeEstructuraDoWhile::= declaracionDo:cuartetoInicio unaInstruccion WHILE PARENTESIS_ABIERTO:i comparacion:n1 PARENTESIS_CERRADO
-{:
-  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,ambito);
-  Cuarteto[] cuartetos=manejador.evaluarExpresionDeCicloOCondicional(n1,ileft,iright);
-  cuartetos[0]=cuartetoInicio;
-  //Cuarteto que permite volver hacia arriba
-  editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[0].getResultado(), TipoDeCuarteto.GOTOSALIDA));
-  //Cuarteto que genera la etiqueta final
- editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_LABEL));
-  RESULT=cuartetos;
-  :};
-
-declaracionDeEstructuraDoWhile::= declaracionDo:cuartetoInicio CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO WHILE PARENTESIS_ABIERTO:i comparacion:n1 PARENTESIS_CERRADO
-{:
-  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,ambito);
-  Cuarteto[] cuartetos=manejador.evaluarExpresionDeCicloOCondicional(n1,ileft,iright);
-  cuartetos[0]=cuartetoInicio;
-  //Cuarteto que permite volver hacia arriba
-  editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[0].getResultado(), TipoDeCuarteto.GOTOSALIDA));
-  //Cuarteto que genera la etiqueta final
- editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_LABEL));
-  RESULT=cuartetos;
-  :};
-
 
 declaracionDo::=DO
 {:  String label = "L"+editor.getManTablas().obtenerNuevoNumeroDeLabel();
@@ -470,63 +495,42 @@ declaracionDo::=DO
   editor.getManTablas().anadirCuarteto(inicioDeWhile);
   RESULT= inicioDeWhile;
   :};
+
+declaracionDeEstructuraDoWhile::= declaracionDo:cuartetoInicio unaInstruccion WHILE PARENTESIS_ABIERTO:i comparacion:n1 PARENTESIS_CERRADO
+{:finalicacionDeWhile(n1,cuartetoInicio);:};
+
+declaracionDeEstructuraDoWhile::= declaracionDo:cuartetoInicio CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO WHILE PARENTESIS_ABIERTO:i comparacion:n1 PARENTESIS_CERRADO
+{:finalicacionDeWhile(n1,cuartetoInicio);:};
+
 //*********************************************************Instruccion For*****************************************************************
-unaInstruccion::=declaracionDeEstructuraFor:cuartetos
-{:
-  //Cuarteto que permite volver hacia arriba
-  editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[0].getResultado(), TipoDeCuarteto.GOTOSALIDA));
-  //Cuarteto que genera la etiqueta final
-  editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_LABEL));
-  :};
+unaInstruccion::=declaracionDeEstructuraFor:cuartetos{::};
 
-declaracionDeEstructuraFor::=FOR PARENTESIS_ABIERTO asignacionParaFor:cuartetoInicio DOS_PUNTOS:i comparacion:n1 DOS_PUNTOS incrementoDecremento:incr PARENTESIS_CERRADO
-{:
-  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,ambito);
-  Cuarteto[] cuartetos=manejador.evaluarExpresionDeCicloOCondicional(n1,ileft,iright);
-  cuartetos[0]=cuartetoInicio;
-  RESULT=cuartetos;
+asignacionParaFor::=FOR PARENTESIS_ABIERTO IDENTIFICADOR:i ASIGNACION comparacion:n1
+  {:
+    //ASIGNACION y primera etiqueta
+    NodoId nodo = new NodoId(i,n1,ileft,iright);
+    CreadorDeVariables.asignarVariable(nodo,editor,ambito);
+    String label = "L"+editor.getManTablas().obtenerNuevoNumeroDeLabel();
+    Cuarteto inicioDeFor=new Cuarteto("goto", i, null, label, TipoDeCuarteto.SOLO_LABEL);
+    editor.getManTablas().anadirCuarteto(inicioDeFor);
+    RESULT=inicioDeFor;
+    :};
 
-:}unaInstruccion
-{:
-  String numTemporal = "t" + String.valueOf(editor.getManTablas().obtenerNuevoTemporal());
-   editor.getManTablas().anadirCuarteto(new Cuarteto(incr.getTipo(),cuartetoInicio.getOperador1(),incr.getNumero(),cuartetoInicio.getOperador1(),TipoDeCuarteto.SOLO_EXPRESION));
-  :};
+comparacionParaFor::=DOS_PUNTOS:i comparacion:n2 DOS_PUNTOS
+{:RESULT=crearInstruccionDeIf(n2);:};
+
+declaracionDeEstructuraFor::=asignacionParaFor:cuartetoInicio comparacionParaFor:ultimoCuarteto incrementoDecremento:incr PARENTESIS_CERRADO unaInstruccion
+{:finalizacionDeFor(ultimoCuarteto,cuartetoInicio,incr);:};
 
 
-declaracionDeEstructuraFor::=FOR PARENTESIS_ABIERTO asignacionParaFor:cuartetoInicio DOS_PUNTOS:i comparacion:n1 DOS_PUNTOS incrementoDecremento:incr PARENTESIS_CERRADO
-{:
-  ManejadorDeDeclaraciones manejador = new ManejadorDeDeclaraciones(editor,ambito);
-  Cuarteto[] cuartetos=manejador.evaluarExpresionDeCicloOCondicional(n1,ileft,iright);
-  cuartetos[0]=cuartetoInicio;
-  RESULT=cuartetos;
-  :}
-                             CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO
-{:
-  String numTemporal = "t" + String.valueOf(editor.getManTablas().obtenerNuevoTemporal());
-   editor.getManTablas().anadirCuarteto(new Cuarteto(incr.getTipo(),cuartetoInicio.getOperador1(),incr.getNumero(),cuartetoInicio.getOperador1(),TipoDeCuarteto.SOLO_EXPRESION));
-  :};
-
-asignacionParaFor::=IDENTIFICADOR:i ASIGNACION comparacion:n1
-{:NodoId nodoId = new NodoId(i,n1,ileft,iright);
-  man = new ManejadorDeDeclaraciones(nodoId,editor,ambito);
-  String label = "L"+editor.getManTablas().obtenerNuevoNumeroDeLabel();
-  Cuarteto inicioDeFor=new Cuarteto("goto", i, null, label, TipoDeCuarteto.SOLO_LABEL);
-  editor.getManTablas().anadirCuarteto(inicioDeFor);
-  //Se crea la etiqueta de inicio
-  RESULT=inicioDeFor;
-  :};
+declaracionDeEstructuraFor::=asignacionParaFor:cuartetoInicio comparacionParaFor:ultimoCuarteto incrementoDecremento:incr PARENTESIS_CERRADO CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO
+{:finalizacionDeFor(ultimoCuarteto,cuartetoInicio,incr);:};
 
 incrementoDecremento::= MAS NUMERO_ENTERO:i
-{:
-  //String numTemporal = "t" + String.valueOf(editor.getManTablas().obtenerNuevoTemporal());
-  //RESULT = new Cuarteto("+",cuartetoInicio.getResultado(),i,cuartetoInicio.getResultado(),TipoDeCuarteto.SOLO_EXPRESION);
-  RESULT = new IncrementoDecremento("+",i);
-  :};
+{:RESULT = new IncrementoDecremento("+",i);:};
 
 incrementoDecremento::= MENOS NUMERO_ENTERO:i
-{:
-  RESULT = new IncrementoDecremento("-",i);
-:};
+{:RESULT = new IncrementoDecremento("-",i);:};
 
 //*********************************************************Funciones predefinidas************************************************************
 unaInstruccion::=declaracionDeFuncionesPredefinidas;
