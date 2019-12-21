@@ -57,7 +57,7 @@ public class ManejadorDeTablas {
     public TuplaDeSimbolo buscarVariable(String nombre, String ambito) {
         TuplaDeSimbolo tupla = null;
         for (TuplaDeSimbolo s : tablaDeSimbolos) {
-            if (s.getNombre().equals(nombre) && s.getAmbito().equalsIgnoreCase(ambito)) {
+            if (s.getNombre().equals(nombre) && s.getAmbito().equalsIgnoreCase(ambito) && s.getCategoria()==Categoria.Variable) {
                 tupla = s;
             }
         }

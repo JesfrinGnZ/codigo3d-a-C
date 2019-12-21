@@ -17,7 +17,7 @@ public class TuplaDeSimbolo {
 
     private int numero;
     private String nombre;
-    private TipoDeVariable tipo;//De retorno para una funcion
+    private TipoDeVariable tipo;//Para una funcion sera su tipo de retorno
     private Categoria categoria;
     private String ambito;//Global="", o el nombre de la funcion
     //Arreglo

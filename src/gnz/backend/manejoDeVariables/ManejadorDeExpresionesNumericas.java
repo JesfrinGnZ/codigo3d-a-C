@@ -24,6 +24,7 @@ public class ManejadorDeExpresionesNumericas {
 
     private EditorDeTextoFrame editor;
     private String ambito;
+    private String ambitoActualDeVariable = "";
 
     public ManejadorDeExpresionesNumericas(EditorDeTextoFrame editor, String ambito) {
         this.editor = editor;
@@ -44,7 +45,7 @@ public class ManejadorDeExpresionesNumericas {
             //Los tipos numericos
             TipoDeVariable tipo = verificarTipoDeVariableParaExpresionMatematica((NodoHojaExpresion) nodo);
             if (tipo != null) {
-                nodoHoja = new NodoHojaExpresion(tipo, ((NodoHojaExpresion) nodo).getValor());
+                nodoHoja = new NodoHojaExpresion(tipo, ((NodoHojaExpresion) nodo).getValor() + ambitoActualDeVariable);
             }
         } else {// ERROR NO se puede convertir booleano a numerico
             String mensaje = "Error SEMANTICO, no se puede convertir booleano a numerico.\n" + CreadorDeVariables.averiguarTipoDeNodo(nodo);
@@ -69,6 +70,7 @@ public class ManejadorDeExpresionesNumericas {
                     TipoDeVariable tipoDeVariable = tupla.getTipo();
                     if (tipoDeVariable == TipoDeVariable.BYTE || tipoDeVariable == TipoDeVariable.CHAR || tipoDeVariable == TipoDeVariable.DOUBLE || tipoDeVariable == TipoDeVariable.FLOAT
                             || tipoDeVariable == TipoDeVariable.INT || tipoDeVariable == TipoDeVariable.LONG) {
+                        ambitoActualDeVariable = ambito;
                         return tipoDeVariable;
                     }
                 } else {
@@ -77,6 +79,7 @@ public class ManejadorDeExpresionesNumericas {
                         TipoDeVariable tipoDeVariable = tupla.getTipo();
                         if (tipoDeVariable == TipoDeVariable.BYTE || tipoDeVariable == TipoDeVariable.CHAR || tipoDeVariable == TipoDeVariable.DOUBLE || tipoDeVariable == TipoDeVariable.FLOAT
                                 || tipoDeVariable == TipoDeVariable.INT || tipoDeVariable == TipoDeVariable.LONG) {
+                            ambitoActualDeVariable = "global";
                             return tipoDeVariable;
                         }
                     } else {//ERROR la variable no ha sido declarada
@@ -88,10 +91,13 @@ public class ManejadorDeExpresionesNumericas {
                 }
                 break;
             case NUMERO_DECIMAL:
+                ambitoActualDeVariable = "";
                 return TipoDeVariable.DOUBLE;
             case NUMERO_DECIMALF:
+                ambitoActualDeVariable = "";
                 return TipoDeVariable.FLOAT;
             case NUMERO_ENTERO:
+                ambitoActualDeVariable = "";
                 return verificarTipoDeVariableEntero(nodoHoja.getValor());
             default:
                 break;
@@ -132,6 +138,7 @@ public class ManejadorDeExpresionesNumericas {
             TipoDeVariable tipo = verificarTipoDeVariableParaExpresionMatematica((NodoHojaExpresion) nodo);
             if (tipo != null) {
                 ((NodoHojaExpresion) nodo).setTipoDEVariable(tipo);
+                ((NodoHojaExpresion) nodo).setAmbito(ambitoActualDeVariable);
                 return (NodoHojaExpresion) nodo;
             }
             return null;
@@ -144,7 +151,7 @@ public class ManejadorDeExpresionesNumericas {
                 TipoDeVariable tipoMayor = buscarElMayorTipoDeVariable(nodo1.getTipoDEVariable(), nodo2.getTipoDEVariable());
                 //Se crea un cuarteto
                 String numTemporal = "t" + String.valueOf(this.editor.getManTablas().obtenerNuevoTemporal());
-                Cuarteto nuevoCuarteto = new Cuarteto(nodoExpresion.getOperacion().getSigno(), nodo1.getValor(), nodo2.getValor(), numTemporal, TipoDeCuarteto.SOLO_EXPRESION);
+                Cuarteto nuevoCuarteto = new Cuarteto(nodoExpresion.getOperacion().getSigno(), nodo1.getValor() + nodo1.getAmbito(), nodo2.getValor() + nodo2.getAmbito(), numTemporal, TipoDeCuarteto.SOLO_EXPRESION);
                 this.editor.getManTablas().anadirCuarteto(nuevoCuarteto);
                 return new NodoHojaExpresion(tipoMayor, numTemporal);
             }

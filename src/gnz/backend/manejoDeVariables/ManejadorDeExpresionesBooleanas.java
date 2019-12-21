@@ -59,7 +59,7 @@ public class ManejadorDeExpresionesBooleanas {
                     if (tupla.getTipo() == TipoDeVariable.BOOLEAN) {
                         String labelSi = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
                         String labelNo = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
-                        Cuarteto cuartetoIf = new Cuarteto("==", tupla.getNombre(), "1", labelSi, TipoDeCuarteto.IF);
+                        Cuarteto cuartetoIf = new Cuarteto("==", tupla.getNombre()+tupla.getAmbito(), "1", labelSi, TipoDeCuarteto.IF);
                         Cuarteto cuartetoGoto = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.GOTO);
                         this.editor.getManTablas().anadirCuarteto(cuartetoIf);
                         this.editor.getManTablas().anadirCuarteto(cuartetoGoto);
@@ -71,7 +71,7 @@ public class ManejadorDeExpresionesBooleanas {
                         if (tupla.getTipo() == TipoDeVariable.BOOLEAN) {
                             String labelSi = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
                             String labelNo = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
-                            Cuarteto cuartetoIf = new Cuarteto("==", tupla.getNombre(), "1", labelSi, TipoDeCuarteto.IF);
+                            Cuarteto cuartetoIf = new Cuarteto("==", tupla.getNombre()+"global", "1", labelSi, TipoDeCuarteto.IF);
                             Cuarteto cuartetoGoto = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.GOTO);
                             this.editor.getManTablas().anadirCuarteto(cuartetoIf);
                             this.editor.getManTablas().anadirCuarteto(cuartetoGoto);

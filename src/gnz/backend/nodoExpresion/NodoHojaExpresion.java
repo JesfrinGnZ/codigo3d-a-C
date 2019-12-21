@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package gnz.backend.nodoExpresion;
+
 import gnz.backend.nodo.Nodo;
 import gnz.backend.nodoDeclaracion.TipoDeVariable;
 
@@ -11,25 +12,28 @@ import gnz.backend.nodoDeclaracion.TipoDeVariable;
  *
  * @author jesfrin
  */
-public class NodoHojaExpresion implements Nodo{
-    
+public class NodoHojaExpresion implements Nodo {
+
     TipoDeHoja tipo;
     String valor;
     private int linea;
     private int columna;
     private TipoDeVariable tipoDEVariable;
+    private String ambito;
 
-    public NodoHojaExpresion(TipoDeHoja tipo, String valor,int linea, int columna) {
+    public NodoHojaExpresion(TipoDeHoja tipo, String valor, int linea, int columna) {
         this.tipo = tipo;
         this.valor = valor;
-        this.linea=linea;
-        this.columna=columna;
-        this.tipoDEVariable=null;
+        this.linea = linea;
+        this.columna = columna;
+        this.tipoDEVariable = null;
+        this.ambito = "";
     }
-    
-    public NodoHojaExpresion(TipoDeVariable tipoDeVariable, String valor){
-        this.tipoDEVariable=tipoDeVariable;
-        this.valor=valor;
+
+    public NodoHojaExpresion(TipoDeVariable tipoDeVariable, String valor) {
+        this.tipoDEVariable = tipoDeVariable;
+        this.valor = valor;
+        this.ambito = "";
     }
 
     public TipoDeHoja getTipo() {
@@ -71,6 +75,13 @@ public class NodoHojaExpresion implements Nodo{
     public void setTipoDEVariable(TipoDeVariable tipoDEVariable) {
         this.tipoDEVariable = tipoDEVariable;
     }
-    
-    
+
+    public String getAmbito() {
+        return ambito;
+    }
+
+    public void setAmbito(String ambito) {
+        this.ambito = ambito;
+    }
+
 }

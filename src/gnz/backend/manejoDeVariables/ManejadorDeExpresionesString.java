@@ -25,6 +25,7 @@ public class ManejadorDeExpresionesString {
 
     private EditorDeTextoFrame editor;
     private String ambito;
+    private String ambitoActualDeVariable = "";
     private int contadorDeString;
 
     public ManejadorDeExpresionesString(EditorDeTextoFrame editor, String ambito) {
@@ -54,7 +55,7 @@ public class ManejadorDeExpresionesString {
         } else if (nodo instanceof NodoHojaExpresion) {
             verificarSiVariableEsDeTipoString((NodoHojaExpresion) nodo);
             if (contadorDeString > 0) {
-                nodoHoja = new NodoHojaExpresion(TipoDeVariable.STRING, ((NodoHojaExpresion) nodo).getValor());
+                nodoHoja = new NodoHojaExpresion(TipoDeVariable.STRING, ((NodoHojaExpresion) nodo).getValor() + ambitoActualDeVariable);
             } else {//Error falto String
                 String mensaje = "Error SEMANTICO, falta un elemento String no se puede convertir a Cadena.\n" + CreadorDeVariables.averiguarTipoDeNodo(nodo);
                 ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
@@ -77,12 +78,14 @@ public class ManejadorDeExpresionesString {
             case IDENTIFICADOR:
                 TuplaDeSimbolo tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), ambito);
                 if (tupla != null) {
+                    ambitoActualDeVariable = ambito;
                     if (tupla.getTipo() == TipoDeVariable.STRING) {
                         this.contadorDeString++;
                     }
                 } else {
                     tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), "global");
                     if (tupla != null) {
+                        ambitoActualDeVariable = "global";
                         if (tupla.getTipo() == TipoDeVariable.STRING) {
                             this.contadorDeString++;
                         }
@@ -96,7 +99,10 @@ public class ManejadorDeExpresionesString {
                 int fin = nodoHoja.getValor().length() - 1;
                 nodoHoja.setValor(nodoHoja.getValor().substring(1, fin));
                 this.contadorDeString++;
+                ambitoActualDeVariable = "";
+                break;
             default:
+                ambitoActualDeVariable = "";
                 break;
         }
     }
@@ -104,6 +110,8 @@ public class ManejadorDeExpresionesString {
     public NodoHojaExpresion recorrerExpresion(Nodo nodo) {
         if (nodo instanceof NodoHojaExpresion) {
             verificarSiVariableEsDeTipoString((NodoHojaExpresion) nodo);
+            System.out.println("\n\n\n\nAMBITO ACTUAL:" + ambitoActualDeVariable + "\n\n\n\n\n\n\n");
+            ((NodoHojaExpresion) nodo).setAmbito(ambitoActualDeVariable);
             return (NodoHojaExpresion) nodo;
         } else {//Nodo expresion
             NodoExpresion nodoExpresion = (NodoExpresion) nodo;
@@ -112,7 +120,7 @@ public class ManejadorDeExpresionesString {
             if (nodo1 != null && nodo2 != null) {
                 if (nodoExpresion.getOperacion() == OperacionAritmetica.MAS) {
                     String numTemporal = "t" + String.valueOf(this.editor.getManTablas().obtenerNuevoTemporal());
-                    Cuarteto nuevoCuarteto = new Cuarteto(nodoExpresion.getOperacion().getSigno(), nodo1.getValor(), nodo2.getValor(), numTemporal, TipoDeCuarteto.SOLO_EXPRESION);
+                    Cuarteto nuevoCuarteto = new Cuarteto(nodoExpresion.getOperacion().getSigno(), nodo1.getValor() + nodo1.getAmbito(), nodo2.getValor() + nodo2.getAmbito(), numTemporal, TipoDeCuarteto.SOLO_EXPRESION);
                     this.editor.getManTablas().anadirCuarteto(nuevoCuarteto);
                     return new NodoHojaExpresion(TipoDeVariable.STRING, numTemporal);
                 } else {//Error la operacion no es valida para cadena

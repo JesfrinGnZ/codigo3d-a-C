@@ -1778,10 +1778,7 @@ CreadorDeVariables.declararVariables(declaracion,editor);
           case 62: // unaInstruccion ::= declaracionDeArreglos 
             {
               Nodo RESULT =null;
-		int n1left = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
-		int n1right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		NodoArregloDeclaracion n1 = (NodoArregloDeclaracion)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		RESULT=n1;
+
               CUP$parser$result = parser.getSymbolFactory().newSymbol("unaInstruccion",2, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1802,10 +1799,10 @@ CreadorDeVariables.declararVariables(declaracion,editor);
 		int listaIdsleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int listaIdsright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		LinkedList<NodoId> listaIds = (LinkedList<NodoId>)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		
-NodoArregloDeclaracion nodo = new NodoArregloDeclaracion( tipo, listaIds,dimensiones,ileft,iright);
-man = new ManejadorDeDeclaraciones(nodo,editor,ambito);
-RESULT=nodo;
+		//LIsta de comparaciones
+  //lISTA DE NODOiD
+
+
 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("declaracionDeArreglos",12, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1822,7 +1819,7 @@ RESULT=nodo;
 		int n1right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Nodo n1 = (Nodo)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		lista.add(n1);
-  RESULT=lista;
+RESULT=lista;
               CUP$parser$result = parser.getSymbolFactory().newSymbol("conjuntoDeDimensiones",14, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1837,7 +1834,6 @@ RESULT=nodo;
 		LinkedList<Nodo> lista = new LinkedList<>();
 lista.add(n1);
 RESULT = lista;
-
               CUP$parser$result = parser.getSymbolFactory().newSymbol("conjuntoDeDimensiones",14, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1878,9 +1874,9 @@ RESULT=lista;
 		int n1right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		NodoId n1 = (NodoId)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		LinkedList<NodoId> lista = new LinkedList<>();
-    lista.add(n1);
-    RESULT=lista;
-    
+lista.add(n1);
+RESULT=lista;
+
               CUP$parser$result = parser.getSymbolFactory().newSymbol("conjuntoDeIdentificadoresParaArreglo",16, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

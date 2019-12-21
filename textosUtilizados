@@ -233,3 +233,38 @@ IF (x>y)[
    y<-5+5+5;
 ]
 ]
+
+//***********************************************************Ambitos*************************************************
+int x;
+string cadena<-"Hola"+x;
+int y<-x+x;
+int a;
+boolean id1;
+float f1, f2, f3;
+
+int suma(int mm, int mmm) [
+     int resultado <- a + a;
+%%%
+     return resultado;
+]
+
+%%%
+MAIN() [
+  x<-6;
+  y<-1;
+  WHILE(x>0) [
+     y<-y*x;
+     x<-x-1;
+  ]
+  PRINTLN["El factorial de 6 es : ",y];
+  PRINT["\n"];
+  PRINTLN["El valor de x+1 es : ",x+1];
+
+  IF(a==1) [
+     y<-12;
+  ] ELSE [
+     f1<-13.2f;
+  ]
+  int suma <-9;
+  PRINTLN[suma];
+]

@@ -18,7 +18,7 @@ public class NodoExpresion implements Nodo{
     private Nodo hoja2;
     private int linea;
     private int columna;
-
+    
     public NodoExpresion(OperacionAritmetica operacion, Nodo hoja1, Nodo hoja2,int linea,int columna) {
         this.operacion = operacion;
         this.hoja1 = hoja1;
@@ -67,8 +67,6 @@ public class NodoExpresion implements Nodo{
         this.columna = columna;
     }
 
-   
-    
     
     
 }

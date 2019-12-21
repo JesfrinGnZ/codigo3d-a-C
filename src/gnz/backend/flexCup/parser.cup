@@ -380,34 +380,34 @@ asignacionDeVariable::=IDENTIFICADOR:i ASIGNACION comparacion:n1 PCOMA
   :};
 
 //*******************************************************************Declaracion de arreglos********************************************
-unaInstruccion::=declaracionDeArreglos:n1{:RESULT=n1;:};
+unaInstruccion::=declaracionDeArreglos;
 declaracionDeArreglos::=ARRAY:i tipoDeVariable:tipo conjuntoDeDimensiones:dimensiones conjuntoDeIdentificadoresParaArreglo:listaIds PCOMA
-{:
-NodoArregloDeclaracion nodo = new NodoArregloDeclaracion( tipo, listaIds,dimensiones,ileft,iright);
-man = new ManejadorDeDeclaraciones(nodo,editor,ambito);
-RESULT=nodo;
+{://LIsta de comparaciones
+  //lISTA DE NODOiD
+
+
 :};
 conjuntoDeDimensiones::=conjuntoDeDimensiones:lista unaDimension:n1
 {:lista.add(n1);
-  RESULT=lista;:}
-|
-unaDimension:n1
+RESULT=lista;:};
+
+conjuntoDeDimensiones::=unaDimension:n1
 {:LinkedList<Nodo> lista = new LinkedList<>();
 lista.add(n1);
-RESULT = lista;
-:};
+RESULT = lista;:};
 
-unaDimension::=CORCHETE_ABIERTO comparacion:n1 CORCHETE_CERRADO{:RESULT = n1;:};
+unaDimension::=CORCHETE_ABIERTO comparacion:n1 CORCHETE_CERRADO
+{:RESULT = n1;:};
 
 conjuntoDeIdentificadoresParaArreglo::=conjuntoDeIdentificadoresParaArreglo:lista COMA unIdentificadorParaArreglo:i
 {:lista.add(i);
-RESULT=lista;:}
- |
-  unIdentificadorParaArreglo:n1
-  {:LinkedList<NodoId> lista = new LinkedList<>();
-    lista.add(n1);
-    RESULT=lista;
-    :};
+RESULT=lista;:};
+
+conjuntoDeIdentificadoresParaArreglo::= unIdentificadorParaArreglo:n1
+{:LinkedList<NodoId> lista = new LinkedList<>();
+lista.add(n1);
+RESULT=lista;
+:};
 
 unIdentificadorParaArreglo::=IDENTIFICADOR:i{:RESULT= new NodoId(i,null,ileft,iright);:};
 
