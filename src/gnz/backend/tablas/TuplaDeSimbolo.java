@@ -7,6 +7,7 @@ package gnz.backend.tablas;
 
 import gnz.backend.funcion.Parametro;
 import gnz.backend.nodoDeclaracion.TipoDeVariable;
+import gnz.backend.nodoExpresion.NodoHojaExpresion;
 import java.util.LinkedList;
 
 /**
@@ -17,13 +18,14 @@ public class TuplaDeSimbolo {
 
     private int numero;
     private String nombre;
-    private TipoDeVariable tipo;//Para una funcion sera su tipo de retorno
+    private TipoDeVariable tipo;//
     private Categoria categoria;
     private String ambito;//Global="", o el nombre de la funcion
     //Arreglo
     private int numeroDimensiones;
-    private LinkedList<String> dimensionesArreglo;
+    private LinkedList<NodoHojaExpresion> dimensionesArreglo;
     //Funciones
+    private TipoDeVariable tipoDeRetorno;
     private Integer numeroDeParametros;
     private LinkedList<Parametro> parametrosDeFuncion;
 
@@ -33,26 +35,56 @@ public class TuplaDeSimbolo {
         
     }
     
-    
-    public TuplaDeSimbolo(int numero, String nombre, TipoDeVariable tipo, Categoria categoria, Integer numeroDeParametros,String ambito) {
+    /**
+     * Para variables normales
+     * @param numero
+     * @param nombre
+     * @param tipo
+     * @param ambito 
+     */
+    public TuplaDeSimbolo(int numero, String nombre, TipoDeVariable tipo,String ambito) {
         this.numero = numero;
         this.nombre = nombre;
         this.tipo = tipo;
-        this.categoria = categoria;
-        this.numeroDeParametros = numeroDeParametros;
+        this.categoria = Categoria.Variable;
         this.ambito=ambito;
+        this.numeroDimensiones=0;
     }
-
-    public TuplaDeSimbolo(int numero, String nombre, TipoDeVariable tipo, Categoria categoria, Integer numeroDeParametros, int numeroDimensiones, LinkedList<String> dimensionesArreglo) {
+    /**
+     * Para arreglos
+     * @param numero
+     * @param nombre
+     * @param tipo
+     * @param numeroDimensiones
+     * @param dimensionesArreglo 
+     */
+    public TuplaDeSimbolo(int numero, String nombre, TipoDeVariable tipo, int numeroDimensiones, LinkedList<NodoHojaExpresion> dimensionesArreglo,String ambito) {
         this.numero = numero;
         this.nombre = nombre;
         this.tipo = tipo;
-        this.categoria = categoria;
-        this.numeroDeParametros = numeroDeParametros;
+        this.categoria = Categoria.Arreglo;
         this.numeroDimensiones = numeroDimensiones;
         this.dimensionesArreglo = dimensionesArreglo;
+        this.ambito=ambito;
     }
     
+    /**
+     * Para funciones
+     * @param numero
+     * @param nombre
+     * @param tipoDeRetorno
+     * @param numeroDeParametros
+     * @param parametrosDeFuncion 
+     */
+    public TuplaDeSimbolo(int numero,String nombre,TipoDeVariable tipoDeRetorno,Integer numeroDeParametros,LinkedList<Parametro> parametrosDeFuncion){
+        this.ambito="";
+        this.categoria=Categoria.Subprograma;
+        this.numero=numero;
+        this.nombre=nombre;
+        this.tipoDeRetorno=tipoDeRetorno;
+        this.numeroDeParametros=numeroDeParametros;
+        this.parametrosDeFuncion=parametrosDeFuncion;
+    }
     
 
     public int getNumero() {
@@ -103,13 +135,22 @@ public class TuplaDeSimbolo {
         this.numeroDimensiones = numeroDimensiones;
     }
 
-    public LinkedList<String> getDimensionesArreglo() {
+    public LinkedList<NodoHojaExpresion> getDimensionesArreglo() {
         return dimensionesArreglo;
     }
 
-    public void setDimensionesArreglo(LinkedList<String> dimensionesArreglo) {
+    public void setDimensionesArreglo(LinkedList<NodoHojaExpresion> dimensionesArreglo) {
         this.dimensionesArreglo = dimensionesArreglo;
     }
+
+    public LinkedList<Parametro> getParametrosDeFuncion() {
+        return parametrosDeFuncion;
+    }
+
+    public void setParametrosDeFuncion(LinkedList<Parametro> parametrosDeFuncion) {
+        this.parametrosDeFuncion = parametrosDeFuncion;
+    }
+
 
     public String getAmbito() {
         return ambito;

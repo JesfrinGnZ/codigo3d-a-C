@@ -8,6 +8,7 @@ package gnz.backend.manejoDeVariables;
 import gnz.backend.cuarteto.Cuarteto;
 import gnz.backend.cuarteto.TipoDeCuarteto;
 import gnz.backend.errores.ManejadorDeErrores;
+import gnz.backend.funcion.Parametro;
 import gnz.backend.nodo.Nodo;
 import gnz.backend.nodoComparacion.NodoComparacion;
 import gnz.backend.nodoComparacion.NodoLogico;
@@ -15,6 +16,7 @@ import gnz.backend.nodoDeclaracion.NodoId;
 import gnz.backend.nodoDeclaracion.TipoDeVariable;
 import gnz.backend.nodoExpresion.NodoExpresion;
 import gnz.backend.nodoExpresion.NodoHojaExpresion;
+import gnz.backend.nodoExpresion.OperacionAritmetica;
 import gnz.backend.tablas.Categoria;
 import gnz.backend.tablas.TuplaDeSimbolo;
 import gnz.gui.frames.EditorDeTextoFrame;
@@ -25,6 +27,26 @@ import java.util.LinkedList;
  * @author jesfrin
  */
 public class CreadorDeVariables {
+    
+    
+    /*****************************************************************Funciones*************************************************************************************/
+    
+    public static void guardarFuncion(String nombreDeFuncion,TipoDeVariable tipo,LinkedList<Parametro> parametros,int linea,int columna,EditorDeTextoFrame editor,String ambito){
+        if(parametros==null){
+            parametros= new LinkedList<>();
+        }
+        TuplaDeSimbolo tupla= new TuplaDeSimbolo(0, nombreDeFuncion, tipo, parametros.size(), parametros);
+        boolean seGuardo=editor.getManTablas().guardarSubPrograma(tupla, linea, columna);
+        if(seGuardo){
+            //Ahora se guardan los parametros como variables
+            for (Parametro parametro : parametros) {
+                 tupla = new TuplaDeSimbolo(0, parametro.getNombreDeParametro(),tipo, ambito);
+                 editor.getManTablas().guardarVariable(tupla, linea, columna);
+            }
+        }
+        
+    }
+    
 
     /**
      * *************************************************************CREACION**********************************************************************************
@@ -34,13 +56,13 @@ public class CreadorDeVariables {
             ManejadorDeExpresionesBooleanas manejadorBooleano = new ManejadorDeExpresionesBooleanas(editor, declaracion.getAmbito());
             for (NodoId nodoId : declaracion.getIds()) {
                 if (nodoId.getAsignacion() == null) {
-                    TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nodoId.getId(), declaracion.getTipo(), Categoria.Variable, 0, declaracion.getAmbito());
+                    TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nodoId.getId(), declaracion.getTipo(), declaracion.getAmbito());
                     editor.getManTablas().guardarVariable(tupla, nodoId.getLinea(), nodoId.getColumna());
                 } else {
                     Cuarteto ultimoCuarteto = manejadorBooleano.evaluarExpresionBooleana(nodoId.getAsignacion());
                     if (ultimoCuarteto != null) {
                         //Guardando la variable
-                        TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nodoId.getId(), declaracion.getTipo(), Categoria.Variable, 0, declaracion.getAmbito());
+                        TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nodoId.getId(), declaracion.getTipo(), declaracion.getAmbito());
                         editor.getManTablas().guardarVariable(tupla, nodoId.getLinea(), nodoId.getColumna());
                         crearCuartetosParaBooleano(ultimoCuarteto, editor, nodoId, declaracion.getAmbito());
                     }
@@ -50,12 +72,12 @@ public class CreadorDeVariables {
             ManejadorDeExpresionesString manejadorDeCadenas = new ManejadorDeExpresionesString(editor, declaracion.getAmbito());
             for (NodoId nodoId : declaracion.getIds()) {
                 if (nodoId.getAsignacion() == null) {
-                    TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nodoId.getId(), declaracion.getTipo(), Categoria.Variable, 0, declaracion.getAmbito());
+                    TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nodoId.getId(), declaracion.getTipo(), declaracion.getAmbito());
                     editor.getManTablas().guardarVariable(tupla, nodoId.getLinea(), nodoId.getColumna());
                 } else {
                     NodoHojaExpresion nodoHoja = manejadorDeCadenas.evaluarExpresionCadena(nodoId.getAsignacion());
                     if (nodoHoja != null) {
-                        TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nodoId.getId(), declaracion.getTipo(), Categoria.Variable, 0, declaracion.getAmbito());
+                        TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nodoId.getId(), declaracion.getTipo(), declaracion.getAmbito());
                         editor.getManTablas().guardarVariable(tupla, nodoId.getLinea(), nodoId.getColumna());
                         Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + declaracion.getAmbito(), TipoDeCuarteto.ASIGNACION);
                         editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
@@ -66,14 +88,14 @@ public class CreadorDeVariables {
             ManejadorDeExpresionesNumericas manejadorNumerico = new ManejadorDeExpresionesNumericas(editor, declaracion.getAmbito());
             for (NodoId nodoId : declaracion.getIds()) {
                 if (nodoId.getAsignacion() == null) {//Solo se debe guardar la variable
-                    TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nodoId.getId(), declaracion.getTipo(), Categoria.Variable, 0, declaracion.getAmbito());
+                    TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nodoId.getId(), declaracion.getTipo(), declaracion.getAmbito());
                     editor.getManTablas().guardarVariable(tupla, nodoId.getLinea(), nodoId.getColumna());
                 } else {
                     NodoHojaExpresion nodoHoja = manejadorNumerico.evaluarExpresionMatematica(nodoId.getAsignacion());//Tipo y ultimo valor temporal
                     if (nodoHoja != null) {
                         //Se verifica que sean de tipos compatibles
                         if (declaracion.getTipo().getJerarquia() >= nodoHoja.getTipoDEVariable().getJerarquia()) {
-                            TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nodoId.getId(), declaracion.getTipo(), Categoria.Variable, 0, declaracion.getAmbito());
+                            TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nodoId.getId(), declaracion.getTipo(), declaracion.getAmbito());
                             editor.getManTablas().guardarVariable(tupla, nodoId.getLinea(), nodoId.getColumna());
                             Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + declaracion.getAmbito(), TipoDeCuarteto.ASIGNACION);
                             editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
@@ -157,8 +179,11 @@ public class CreadorDeVariables {
     }
 
     //****************************************************************Arreglos***************************************************************
-    public static void declararArreglo(LinkedList<NodoId> ids, LinkedList<Nodo> expresiones, EditorDeTextoFrame editor, String ambito) {
+    
+    
+    public static void declararArreglo(TipoDeVariable tipoDeVariable, LinkedList<NodoId> ids, LinkedList<Nodo> expresiones, EditorDeTextoFrame editor, String ambito) {
         NodoHojaExpresion hojaActual;
+        TuplaDeSimbolo tupla;
         ManejadorDeExpresionesNumericas manejadorNumerico = new ManejadorDeExpresionesNumericas(editor, ambito);
         LinkedList<NodoHojaExpresion> hojasEvaluadas = new LinkedList<>();
         boolean existeErrorEnHoja = false;
@@ -171,18 +196,94 @@ public class CreadorDeVariables {
             } else {
                 if (hojaActual.getTipoDEVariable().getJerarquia() <= TipoDeVariable.LONG.getJerarquia()) {
                     hojasEvaluadas.add(hojaActual);
-                } else {
+                } else {//Error de conversion de tipos
                     existeErrorEnHoja = true;
+                    String mensaje = "Error SEMANTICO, expresion EN ARREGLO no es NUMERICA.\n" + averiguarTipoDeNodo(expresion);
+                    ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
                     break;
                 }
             }
         }
-        //Verificando que no existieron errores
+        //Ahora se procede a guardar la tupla
         if (!existeErrorEnHoja) {
             for (NodoId id : ids) {
-                
+                tupla = new TuplaDeSimbolo(0, id.getId(), tipoDeVariable, hojasEvaluadas.size(), hojasEvaluadas, ambito);
+                editor.getManTablas().guardarVariable(tupla, id.getLinea(), id.getColumna());
             }
         }
+    }
+
+    
+    
+    
+    
+    public static void asignarValorArreglo(EditorDeTextoFrame editor, String ambito, LinkedList<Nodo> expresiones, NodoId nodoId) {
+        NodoHojaExpresion hojaActual;
+        boolean existeErrorEnHoja = false;
+        TuplaDeSimbolo tupla;
+        ManejadorDeExpresionesNumericas manejadorNumerico = new ManejadorDeExpresionesNumericas(editor, ambito);
+        LinkedList<NodoHojaExpresion> hojasEvaluadas = new LinkedList<>();
+        //Primero verificar que la variable exista,que tipo sea arreglo, y las dimenciones sean las correctas
+        tupla = editor.getManTablas().buscarVariable(nodoId.getId(), ambito);
+        if (tupla != null) {
+            if (tupla.getCategoria() == Categoria.Arreglo) {
+                if (tupla.getNumeroDimensiones() == expresiones.size()) {
+                    //Evaluando expresiones
+                    for (Nodo expresion : expresiones) {
+                        hojaActual = manejadorNumerico.evaluarExpresionMatematica(expresion);
+                        if (hojaActual == null) {
+                            existeErrorEnHoja = true;
+                            break;
+                        } else {
+                            if (hojaActual.getTipoDEVariable().getJerarquia() <= TipoDeVariable.LONG.getJerarquia()) {
+                                hojasEvaluadas.add(hojaActual);
+                            } else {//Error de conversion de tipos
+                                existeErrorEnHoja = true;
+                                String mensaje = "Error SEMANTICO, expresion EN ARREGLO no es NUMERICA.\n" + averiguarTipoDeNodo(expresion);
+                                ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!existeErrorEnHoja) {
+                        if (tupla.getTipo() == TipoDeVariable.BOOLEAN) {
+                            ManejadorDeExpresionesBooleanas manejadorBooleano = new ManejadorDeExpresionesBooleanas(editor, ambito);
+                            Cuarteto ultimoCuarteto = manejadorBooleano.evaluarExpresionBooleana(nodoId.getAsignacion());
+                            if(ultimoCuarteto!=null){
+                                String ultimoTemp = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), hojasEvaluadas, editor);
+                            }
+                            
+                        } else if (tupla.getTipo() == TipoDeVariable.STRING) {
+                            ManejadorDeExpresionesString manejadorCadena = new ManejadorDeExpresionesString(editor, ambito);
+                            NodoHojaExpresion nodoHoja = manejadorCadena.evaluarExpresionCadena(nodoId.getAsignacion());
+                            if (nodoHoja != null) {
+                                String ultimoTemp = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), hojasEvaluadas, editor);
+                            }
+                        } else {//Es numerico
+                            NodoHojaExpresion nodoHoja = manejadorNumerico.evaluarExpresionMatematica(nodoId.getAsignacion());
+                            if (nodoHoja != null) {
+                                if (tupla.getTipo().getJerarquia() >= nodoHoja.getTipoDEVariable().getJerarquia()) {
+                                    String ultimoTemp = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), hojasEvaluadas, editor);
+                                    //System.out.println("\n\n\n\n\n\n\n\nULTIMO TEMPORAL="+ultimoTemp+"\n\n\n\n\n");
+                                } else {//Error conversion ce tipos
+                                    String mensaje = "Error SEMANTICO, tipos no compatibles " + nodoHoja.getTipoDEVariable() + "\n No se puede convertirn en" + tupla.getTipo() + " en Linea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                                    ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                                }
+                            }
+                        }
+                    }
+
+                } else {//Error de dimension
+
+                }
+            } else {//Error de conversion de tipos
+
+            }
+        } else {//Error la variable no ha sido declarada
+
+        }
+
     }
 
     public static String averiguarTipoDeNodo(Nodo nodoPadre) {

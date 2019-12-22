@@ -13,9 +13,9 @@ import gnz.backend.nodoComparacion.NodoComparacion;
 import gnz.backend.nodoComparacion.NodoLogico;
 import gnz.backend.nodoComparacion.OperacionLogica;
 import gnz.backend.nodoDeclaracion.TipoDeVariable;
-import gnz.backend.nodoExpresion.NodoExpresion;
 import gnz.backend.nodoExpresion.NodoHojaExpresion;
 import gnz.backend.nodoExpresion.TipoDeHoja;
+import gnz.backend.tablas.Categoria;
 import gnz.backend.tablas.TuplaDeSimbolo;
 import gnz.gui.frames.EditorDeTextoFrame;
 
@@ -48,7 +48,6 @@ public class ManejadorDeExpresionesBooleanas {
         return cuarteto;
     }
 
-    
     public Cuarteto verificarSiVariableEsBooleana(NodoHojaExpresion nodoHoja) {
         TipoDeHoja tipo = nodoHoja.getTipo();
         switch (tipo) {
@@ -56,27 +55,41 @@ public class ManejadorDeExpresionesBooleanas {
                 //Primero en su ambito
                 TuplaDeSimbolo tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), ambito);
                 if (tupla != null) {
-                    if (tupla.getTipo() == TipoDeVariable.BOOLEAN) {
-                        String labelSi = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
-                        String labelNo = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
-                        Cuarteto cuartetoIf = new Cuarteto("==", tupla.getNombre()+tupla.getAmbito(), "1", labelSi, TipoDeCuarteto.IF);
-                        Cuarteto cuartetoGoto = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.GOTO);
-                        this.editor.getManTablas().anadirCuarteto(cuartetoIf);
-                        this.editor.getManTablas().anadirCuarteto(cuartetoGoto);
-                        return cuartetoGoto;
-                    }
-                } else {//En el ambito global
-                    tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), "global");
-                    if (tupla != null) {
+                    if (tupla.getCategoria() == Categoria.Variable) {
                         if (tupla.getTipo() == TipoDeVariable.BOOLEAN) {
                             String labelSi = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
                             String labelNo = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
-                            Cuarteto cuartetoIf = new Cuarteto("==", tupla.getNombre()+"global", "1", labelSi, TipoDeCuarteto.IF);
+                            Cuarteto cuartetoIf = new Cuarteto("==", tupla.getNombre() + tupla.getAmbito(), "1", labelSi, TipoDeCuarteto.IF);
                             Cuarteto cuartetoGoto = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.GOTO);
                             this.editor.getManTablas().anadirCuarteto(cuartetoIf);
                             this.editor.getManTablas().anadirCuarteto(cuartetoGoto);
                             return cuartetoGoto;
                         }
+                    } else {//Error de conversion de tipos
+                        String mensaje = "Error SEMANTICO, el elemento " + nodoHoja.getValor() + " No es una Variable.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                        ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                        return null;
+                    }
+
+                } else {//En el ambito global
+                    tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), "global");
+                    if (tupla != null) {
+                        if (tupla.getCategoria() == Categoria.Variable) {
+                            if (tupla.getTipo() == TipoDeVariable.BOOLEAN) {
+                                String labelSi = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
+                                String labelNo = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
+                                Cuarteto cuartetoIf = new Cuarteto("==", tupla.getNombre() + "global", "1", labelSi, TipoDeCuarteto.IF);
+                                Cuarteto cuartetoGoto = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.GOTO);
+                                this.editor.getManTablas().anadirCuarteto(cuartetoIf);
+                                this.editor.getManTablas().anadirCuarteto(cuartetoGoto);
+                                return cuartetoGoto;
+                            }
+                        } else {//Error de conversion de tipos
+                            String mensaje = "Error SEMANTICO, el elemento " + nodoHoja.getValor() + " No es una Variable.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                            ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                            return null;
+                        }
+
                     } else {//Error la variable no ha sido declarada
                         String mensaje = "Error SEMANTICO, la variable " + nodoHoja.getValor() + " No ha sido declarada.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
                         ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
@@ -110,7 +123,7 @@ public class ManejadorDeExpresionesBooleanas {
     }
 
     private Cuarteto recorrerNodoComparacion(NodoComparacion nodoComparacion) {
-        ManejadorDeExpresionesNumericas manejadorNumerico = new ManejadorDeExpresionesNumericas(editor,ambito);
+        ManejadorDeExpresionesNumericas manejadorNumerico = new ManejadorDeExpresionesNumericas(editor, ambito);
         NodoHojaExpresion nodoHoja1 = manejadorNumerico.evaluarExpresionMatematica(nodoComparacion.getNodo1());
         NodoHojaExpresion nodoHoja2 = manejadorNumerico.evaluarExpresionMatematica(nodoComparacion.getNodo2());
         if (nodoHoja1 != null && nodoHoja2 != null) {

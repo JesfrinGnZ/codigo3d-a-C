@@ -14,6 +14,7 @@ import gnz.backend.nodoExpresion.NodoExpresion;
 import gnz.backend.nodoExpresion.NodoHojaExpresion;
 import gnz.backend.nodoExpresion.OperacionAritmetica;
 import gnz.backend.nodoExpresion.TipoDeHoja;
+import gnz.backend.tablas.Categoria;
 import gnz.backend.tablas.TuplaDeSimbolo;
 import gnz.gui.frames.EditorDeTextoFrame;
 
@@ -78,17 +79,29 @@ public class ManejadorDeExpresionesString {
             case IDENTIFICADOR:
                 TuplaDeSimbolo tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), ambito);
                 if (tupla != null) {
-                    ambitoActualDeVariable = ambito;
-                    if (tupla.getTipo() == TipoDeVariable.STRING) {
-                        this.contadorDeString++;
-                    }
-                } else {
-                    tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), "global");
-                    if (tupla != null) {
-                        ambitoActualDeVariable = "global";
+                    if (tupla.getCategoria() == Categoria.Variable) {
+                        ambitoActualDeVariable = ambito;
                         if (tupla.getTipo() == TipoDeVariable.STRING) {
                             this.contadorDeString++;
                         }
+                    } else {
+                        String mensaje = "Error SEMANTICO, el elemento " + nodoHoja.getValor() + " No es una Variable.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                        ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                    }
+
+                } else {
+                    tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), "global");
+                    if (tupla != null) {
+                        if (tupla.getCategoria() == Categoria.Variable) {
+                            ambitoActualDeVariable = "global";
+                            if (tupla.getTipo() == TipoDeVariable.STRING) {
+                                this.contadorDeString++;
+                            }
+                        } else {
+                            String mensaje = "Error SEMANTICO, el elemento " + nodoHoja.getValor() + " No es una Variable.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                            ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                        }
+
                     } else {//Error la variable no ha sido declarada
                         String mensaje = "Error SEMANTICO, la variable " + nodoHoja.getValor() + " No ha sido declarada.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
                         ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());

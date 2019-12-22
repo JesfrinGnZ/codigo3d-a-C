@@ -268,3 +268,42 @@ MAIN() [
   int suma <-9;
   PRINTLN[suma];
 ]
+
+//****************************************************************Arreglos********************************************
+ARRAY int [1+2+3][10+8] arr;
+int x<-arr;
+int y;
+int a;
+boolean id1;
+float f1, f2, f3;
+int suma;
+
+int suma(int mm, int mmm) [
+    int resultado <- a + a;
+%%%
+    return resultado;
+]
+
+%%%
+MAIN() [
+ x<-6;
+ y<-1;
+ WHILE(x>0) [
+    y<-y*x;
+    x<-x-1;
+ ]
+ PRINTLN["El factorial de 6 es : ",y];
+ PRINT["\n"];
+ PRINTLN["El valor de x+1 es : ",x+1];
+
+ IF(a==1) [
+    y<-12;
+ ] ELSE [
+    f1<-13.2f;
+ ]
+ int suma <-9;
+  suma<-1+2+3;
+ PRINTLN[suma];
+]
+
+////****

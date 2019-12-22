@@ -50,25 +50,28 @@ public class ManejadorDeTablas {
     //****************************************************Acciones para tabla de simbolos**********************************************
     /**
      * Busca una variable en su ambito
+     *
      * @param nombre
      * @param ambito
-     * @return 
+     * @return
      */
     public TuplaDeSimbolo buscarVariable(String nombre, String ambito) {
         TuplaDeSimbolo tupla = null;
         for (TuplaDeSimbolo s : tablaDeSimbolos) {
-            if (s.getNombre().equals(nombre) && s.getAmbito().equalsIgnoreCase(ambito) && s.getCategoria()==Categoria.Variable) {
+            if (s.getNombre().equals(nombre) && s.getAmbito().equalsIgnoreCase(ambito) && (s.getCategoria() == Categoria.Variable || s.getCategoria() == Categoria.Arreglo)) {
                 tupla = s;
             }
         }
         return tupla;
     }
+
     /**
-     * Recibe una tupla a guardar con su respectivo ambito,
-     * revisa si ya ha sido declarada en ese ambito
+     * Recibe una tupla a guardar con su respectivo ambito, revisa si ya ha sido
+     * declarada en ese ambito
+     *
      * @param simbolo
      * @param linea
-     * @param columna 
+     * @param columna
      */
     public void guardarVariable(TuplaDeSimbolo simbolo, int linea, int columna) {
         TuplaDeSimbolo tupla = buscarVariable(simbolo.getNombre(), simbolo.getAmbito());//simbolo.getAmbito
@@ -80,29 +83,50 @@ public class ManejadorDeTablas {
         }
     }
 
-    
-    
-    
-    
-    public TuplaDeSimbolo buscarVariable(String nombre) {
+    public TuplaDeSimbolo buscarSubPrograma(String nombreDeFuncion) {
+        TuplaDeSimbolo tupla = null;
         for (TuplaDeSimbolo simbolo : tablaDeSimbolos) {
-            if (simbolo.getNombre().equals(nombre)) {
-                return simbolo;
+            if (simbolo.getNombre().equals(nombreDeFuncion) && simbolo.getCategoria() == Categoria.Subprograma) {
+                tupla = simbolo;
             }
         }
-        return null;
+        return tupla;
     }
-
-    public void guardarNuevaVariable(TuplaDeSimbolo simbolo, int linea, int columna) {
-        TuplaDeSimbolo simboloEncontrado = buscarVariable(simbolo.getNombre());
-        if (simboloEncontrado == null) {
+    /**
+     * Regresa true si se guardo el subprograma
+     * @param simbolo
+     * @param linea
+     * @param columna
+     * @return 
+     */
+    public boolean guardarSubPrograma(TuplaDeSimbolo simbolo, int linea, int columna) {
+        TuplaDeSimbolo tupla = buscarSubPrograma(simbolo.getNombre());
+        if (tupla == null) {
             tablaDeSimbolos.add(simbolo);
-        } else {
-            String mensaje = "Error SEMANTICO La variable:" + simbolo.getNombre() + " ya ha sido declarada.Linea:" + linea + " Columna:" + columna;
+            return true;
+        } else {//Error Semantico la funcion ya fue declarada
+            String mensaje = "Error SEMANTICO El SubPrograma:" + simbolo.getNombre() + " ya ha sido declarada.Linea:" + linea + " Columna:" + columna;
             ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
         }
+        return false;
     }
 
+    /**
+     *
+     * public TuplaDeSimbolo buscarVariable(String nombre) { for (TuplaDeSimbolo
+     * simbolo : tablaDeSimbolos) { if (simbolo.getNombre().equals(nombre)) {
+     * return simbolo; } } return null; }
+     *
+     * public void guardarNuevaVariable(TuplaDeSimbolo simbolo, int linea, int
+     * columna) { TuplaDeSimbolo simboloEncontrado =
+     * buscarVariable(simbolo.getNombre()); if (simboloEncontrado == null) {
+     * tablaDeSimbolos.add(simbolo); } else { String mensaje = "Error SEMANTICO
+     * La variable:" + simbolo.getNombre() + " ya ha sido declarada.Linea:" +
+     * linea + " Columna:" + columna;
+     * ManejadorDeErrores.escribirErrorSemantico(mensaje,
+     * editor.getErroresTextArea()); }
+    }
+     */
     //****************************************************Acciones para cuarteto******************************************************
     public void anadirCuarteto(Cuarteto e) {
         this.tablaDeCuarteto.add(e);

@@ -13,6 +13,7 @@ import gnz.backend.nodoDeclaracion.TipoDeVariable;
 import gnz.backend.nodoExpresion.NodoExpresion;
 import gnz.backend.nodoExpresion.NodoHojaExpresion;
 import gnz.backend.nodoExpresion.TipoDeHoja;
+import gnz.backend.tablas.Categoria;
 import gnz.backend.tablas.TuplaDeSimbolo;
 import gnz.gui.frames.EditorDeTextoFrame;
 
@@ -67,21 +68,35 @@ public class ManejadorDeExpresionesNumericas {
             case IDENTIFICADOR:
                 TuplaDeSimbolo tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), ambito);
                 if (tupla != null) {
-                    TipoDeVariable tipoDeVariable = tupla.getTipo();
-                    if (tipoDeVariable == TipoDeVariable.BYTE || tipoDeVariable == TipoDeVariable.CHAR || tipoDeVariable == TipoDeVariable.DOUBLE || tipoDeVariable == TipoDeVariable.FLOAT
-                            || tipoDeVariable == TipoDeVariable.INT || tipoDeVariable == TipoDeVariable.LONG) {
-                        ambitoActualDeVariable = ambito;
-                        return tipoDeVariable;
-                    }
-                } else {
-                    tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), "global");
-                    if (tupla != null) {
+                    if (tupla.getCategoria() == Categoria.Variable) {
                         TipoDeVariable tipoDeVariable = tupla.getTipo();
                         if (tipoDeVariable == TipoDeVariable.BYTE || tipoDeVariable == TipoDeVariable.CHAR || tipoDeVariable == TipoDeVariable.DOUBLE || tipoDeVariable == TipoDeVariable.FLOAT
                                 || tipoDeVariable == TipoDeVariable.INT || tipoDeVariable == TipoDeVariable.LONG) {
-                            ambitoActualDeVariable = "global";
+                            ambitoActualDeVariable = ambito;
                             return tipoDeVariable;
                         }
+                    } else {//Error de conversion de tipos
+                        String mensaje = "Error SEMANTICO, el elemento " + nodoHoja.getValor() + " No es una Variable.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                        ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                        return null;
+                    }
+
+                } else {
+                    tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), "global");
+                    if (tupla != null) {
+                        if (tupla.getCategoria() == Categoria.Variable) {
+                            TipoDeVariable tipoDeVariable = tupla.getTipo();
+                            if (tipoDeVariable == TipoDeVariable.BYTE || tipoDeVariable == TipoDeVariable.CHAR || tipoDeVariable == TipoDeVariable.DOUBLE || tipoDeVariable == TipoDeVariable.FLOAT
+                                    || tipoDeVariable == TipoDeVariable.INT || tipoDeVariable == TipoDeVariable.LONG) {
+                                ambitoActualDeVariable = "global";
+                                return tipoDeVariable;
+                            }
+                        } else {//Error de conversion de tipos
+                            String mensaje = "Error SEMANTICO, el elemento " + nodoHoja.getValor() + " No es una Variable.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                            ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                            return null;
+                        }
+
                     } else {//ERROR la variable no ha sido declarada
                         String mensaje = "Error SEMANTICO, la variable " + nodoHoja.getValor() + " No ha sido declarada.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
                         ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
