@@ -57,6 +57,7 @@ public class TuplaDeSimbolo {
      * @param tipo
      * @param numeroDimensiones
      * @param dimensionesArreglo 
+     * @param ambito 
      */
     public TuplaDeSimbolo(int numero, String nombre, TipoDeVariable tipo, int numeroDimensiones, LinkedList<NodoHojaExpresion> dimensionesArreglo,String ambito) {
         this.numero = numero;

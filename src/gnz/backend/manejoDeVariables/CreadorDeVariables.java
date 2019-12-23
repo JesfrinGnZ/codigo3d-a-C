@@ -27,26 +27,25 @@ import java.util.LinkedList;
  * @author jesfrin
  */
 public class CreadorDeVariables {
-    
-    
-    /*****************************************************************Funciones*************************************************************************************/
-    
-    public static void guardarFuncion(String nombreDeFuncion,TipoDeVariable tipo,LinkedList<Parametro> parametros,int linea,int columna,EditorDeTextoFrame editor,String ambito){
-        if(parametros==null){
-            parametros= new LinkedList<>();
+
+    /**
+     * ***************************************************************Funciones************************************************************************************
+     */
+    public static void guardarFuncion(String nombreDeFuncion, TipoDeVariable tipo, LinkedList<Parametro> parametros, int linea, int columna, EditorDeTextoFrame editor, String ambito) {
+        if (parametros == null) {
+            parametros = new LinkedList<>();
         }
-        TuplaDeSimbolo tupla= new TuplaDeSimbolo(0, nombreDeFuncion, tipo, parametros.size(), parametros);
-        boolean seGuardo=editor.getManTablas().guardarSubPrograma(tupla, linea, columna);
-        if(seGuardo){
+        TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nombreDeFuncion, tipo, parametros.size(), parametros);
+        boolean seGuardo = editor.getManTablas().guardarSubPrograma(tupla, linea, columna);
+        if (seGuardo) {
             //Ahora se guardan los parametros como variables
             for (Parametro parametro : parametros) {
-                 tupla = new TuplaDeSimbolo(0, parametro.getNombreDeParametro(),tipo, ambito);
-                 editor.getManTablas().guardarVariable(tupla, linea, columna);
+                tupla = new TuplaDeSimbolo(0, parametro.getNombreDeParametro(), tipo, ambito);
+                editor.getManTablas().guardarVariable(tupla, linea, columna);
             }
         }
-        
+
     }
-    
 
     /**
      * *************************************************************CREACION**********************************************************************************
@@ -130,6 +129,24 @@ public class CreadorDeVariables {
         editor.getManTablas().anadirCuarteto(labelFinal);//LABEL
     }
 
+    private static void crearCuartetosParaBooleano(Cuarteto ultimoCuarteto, EditorDeTextoFrame editor, NodoId nodoId, String ambito, String ultimoTemp) {
+        String labelSalida = "L" + editor.getManTablas().obtenerNuevoNumeroDeLabel();
+        //Cuartetos
+        Cuarteto labelSi = new Cuarteto(null, null, null, ultimoCuarteto.getOperador1(), TipoDeCuarteto.SOLO_LABEL);
+        Cuarteto labelNo = new Cuarteto(null, null, null, ultimoCuarteto.getResultado(), TipoDeCuarteto.SOLO_LABEL);
+        Cuarteto cuartetoAsignacionSi = new Cuarteto(null, "1", null, nodoId.getId() + ambito + "[" + ultimoTemp + "]", TipoDeCuarteto.ASIGNACION);
+        Cuarteto cuartetoAsignacionNo = new Cuarteto(null, "0", null, nodoId.getId() + ambito + "[" + ultimoTemp + "]", TipoDeCuarteto.ASIGNACION);
+        Cuarteto cuartetoGoto = new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.GOTO);
+        Cuarteto labelFinal = new Cuarteto(null, null, null, labelSalida, TipoDeCuarteto.SOLO_LABEL);
+        //Se anaden los cuartetos
+        editor.getManTablas().anadirCuarteto(labelSi);
+        editor.getManTablas().anadirCuarteto(cuartetoAsignacionSi);
+        editor.getManTablas().anadirCuarteto(cuartetoGoto);//GOTO_SALIDA
+        editor.getManTablas().anadirCuarteto(labelNo);
+        editor.getManTablas().anadirCuarteto(cuartetoAsignacionNo);
+        editor.getManTablas().anadirCuarteto(labelFinal);//LABEL
+    }
+
     /**
      * *************************************************************ASIGNACION**********************************************************************************
      */
@@ -179,8 +196,6 @@ public class CreadorDeVariables {
     }
 
     //****************************************************************Arreglos***************************************************************
-    
-    
     public static void declararArreglo(TipoDeVariable tipoDeVariable, LinkedList<NodoId> ids, LinkedList<Nodo> expresiones, EditorDeTextoFrame editor, String ambito) {
         NodoHojaExpresion hojaActual;
         TuplaDeSimbolo tupla;
@@ -213,10 +228,6 @@ public class CreadorDeVariables {
         }
     }
 
-    
-    
-    
-    
     public static void asignarValorArreglo(EditorDeTextoFrame editor, String ambito, LinkedList<Nodo> expresiones, NodoId nodoId) {
         NodoHojaExpresion hojaActual;
         boolean existeErrorEnHoja = false;
@@ -249,23 +260,27 @@ public class CreadorDeVariables {
                     if (!existeErrorEnHoja) {
                         if (tupla.getTipo() == TipoDeVariable.BOOLEAN) {
                             ManejadorDeExpresionesBooleanas manejadorBooleano = new ManejadorDeExpresionesBooleanas(editor, ambito);
+                            String ultimoTemp = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), hojasEvaluadas, editor);
                             Cuarteto ultimoCuarteto = manejadorBooleano.evaluarExpresionBooleana(nodoId.getAsignacion());
-                            if(ultimoCuarteto!=null){
-                                String ultimoTemp = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), hojasEvaluadas, editor);
+                            if (ultimoCuarteto != null) {
+                                crearCuartetosParaBooleano(ultimoCuarteto, editor, nodoId, ambito, ultimoTemp);
                             }
-                            
+
                         } else if (tupla.getTipo() == TipoDeVariable.STRING) {
                             ManejadorDeExpresionesString manejadorCadena = new ManejadorDeExpresionesString(editor, ambito);
+                            String ultimoTemp = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), hojasEvaluadas, editor);
                             NodoHojaExpresion nodoHoja = manejadorCadena.evaluarExpresionCadena(nodoId.getAsignacion());
                             if (nodoHoja != null) {
-                                String ultimoTemp = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), hojasEvaluadas, editor);
+                                Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + ambito + "[" + ultimoTemp + "]", TipoDeCuarteto.ASIGNACION);
+                                editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
                             }
                         } else {//Es numerico
+                            String ultimoTemp = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), hojasEvaluadas, editor);
                             NodoHojaExpresion nodoHoja = manejadorNumerico.evaluarExpresionMatematica(nodoId.getAsignacion());
                             if (nodoHoja != null) {
                                 if (tupla.getTipo().getJerarquia() >= nodoHoja.getTipoDEVariable().getJerarquia()) {
-                                    String ultimoTemp = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), hojasEvaluadas, editor);
-                                    //System.out.println("\n\n\n\n\n\n\n\nULTIMO TEMPORAL="+ultimoTemp+"\n\n\n\n\n");
+                                    Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + ambito + "[" + ultimoTemp + "]", TipoDeCuarteto.ASIGNACION);
+                                    editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
                                 } else {//Error conversion ce tipos
                                     String mensaje = "Error SEMANTICO, tipos no compatibles " + nodoHoja.getTipoDEVariable() + "\n No se puede convertirn en" + tupla.getTipo() + " en Linea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
                                     ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());

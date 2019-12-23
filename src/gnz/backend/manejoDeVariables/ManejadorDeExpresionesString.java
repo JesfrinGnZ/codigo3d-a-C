@@ -17,6 +17,7 @@ import gnz.backend.nodoExpresion.TipoDeHoja;
 import gnz.backend.tablas.Categoria;
 import gnz.backend.tablas.TuplaDeSimbolo;
 import gnz.gui.frames.EditorDeTextoFrame;
+import java.util.LinkedList;
 
 /**
  *
@@ -78,27 +79,65 @@ public class ManejadorDeExpresionesString {
         switch (tipo) {
             case IDENTIFICADOR:
                 TuplaDeSimbolo tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), ambito);
+                //---------------------------------------->Busqueda en su ambito
                 if (tupla != null) {
-                    if (tupla.getCategoria() == Categoria.Variable) {
+                    if (tupla.getCategoria() == Categoria.Variable && nodoHoja.getExpresiones() == null) {
                         ambitoActualDeVariable = ambito;
                         if (tupla.getTipo() == TipoDeVariable.STRING) {
                             this.contadorDeString++;
                         }
+                    } else if (tupla.getCategoria() == Categoria.Arreglo && nodoHoja.getExpresiones() != null) {
+                        if (tupla.getTipo() == TipoDeVariable.STRING) {
+                            this.contadorDeString++;
+                        }
+                        if (nodoHoja.getExpresiones().size() == tupla.getNumeroDimensiones()) {//Misma dimension
+                            LinkedList<NodoHojaExpresion> nodosHoja = ManejadorDeExpresionesParaArreglos.evaluarNodosHoja(nodoHoja.getExpresiones(), editor, ambito);
+                            if (nodosHoja != null) {
+                                String valor = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), nodosHoja, editor);
+                                String nuevaTemporal = "t" + editor.getManTablas().obtenerNuevoTemporal();
+                                Cuarteto cuartetoAsignacion = new Cuarteto(null, nuevaTemporal, null, nodoHoja.getValor() + ambito + "[" + valor + "]", TipoDeCuarteto.ASIGNACION);
+                                editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
+                                nodoHoja.setValor(nuevaTemporal);
+                                ambitoActualDeVariable = "";
+                            }
+
+                        } else {//Error de dimensiones
+                            String mensaje = "Error SEMANTICO, dimensiones incorrectas para arreglo " + nodoHoja.getValor() + ".\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                            ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                        }
                     } else {
-                        String mensaje = "Error SEMANTICO, el elemento " + nodoHoja.getValor() + " No es una Variable.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                        String mensaje = "Error SEMANTICO, el elemento " + nodoHoja.getValor() + " No se puede convertir a cadena.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
                         ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
                     }
 
-                } else {
+                } else {//------------------------------------------------------------------------------------------>Busqueda en ambito global
                     tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), "global");
                     if (tupla != null) {
-                        if (tupla.getCategoria() == Categoria.Variable) {
+                        if (tupla.getCategoria() == Categoria.Variable && nodoHoja.getExpresiones() == null) {
                             ambitoActualDeVariable = "global";
                             if (tupla.getTipo() == TipoDeVariable.STRING) {
                                 this.contadorDeString++;
                             }
+                        } else if (tupla.getCategoria() == Categoria.Arreglo && nodoHoja.getExpresiones() != null) {
+                            if (tupla.getTipo() == TipoDeVariable.STRING) {
+                                this.contadorDeString++;
+                            }
+                            if (nodoHoja.getExpresiones().size() == tupla.getNumeroDimensiones()) {//Misma dimension
+                                LinkedList<NodoHojaExpresion> nodosHoja = ManejadorDeExpresionesParaArreglos.evaluarNodosHoja(nodoHoja.getExpresiones(), editor, ambito);
+                                if (nodosHoja != null) {
+                                    String valor = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), nodosHoja, editor);
+                                    String nuevaTemporal = "t" + editor.getManTablas().obtenerNuevoTemporal();
+                                    Cuarteto cuartetoAsignacion = new Cuarteto(null, nuevaTemporal, null, nodoHoja.getValor() + "global" + "[" + valor + "]", TipoDeCuarteto.ASIGNACION);
+                                    editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
+                                    nodoHoja.setValor(nuevaTemporal);
+                                    ambitoActualDeVariable = "";
+                                }
+                            } else {//Error de dimensiones
+                                String mensaje = "Error SEMANTICO, dimensiones incorrectas para arreglo " + nodoHoja.getValor() + ".\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                                ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                            }
                         } else {
-                            String mensaje = "Error SEMANTICO, el elemento " + nodoHoja.getValor() + " No es una Variable.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                            String mensaje = "Error SEMANTICO, el elemento " + nodoHoja.getValor() + " No se puede convertir a cadena.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
                             ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
                         }
 

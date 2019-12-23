@@ -18,6 +18,7 @@ import gnz.backend.nodoExpresion.TipoDeHoja;
 import gnz.backend.tablas.Categoria;
 import gnz.backend.tablas.TuplaDeSimbolo;
 import gnz.gui.frames.EditorDeTextoFrame;
+import java.util.LinkedList;
 
 /**
  *
@@ -55,7 +56,7 @@ public class ManejadorDeExpresionesBooleanas {
                 //Primero en su ambito
                 TuplaDeSimbolo tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), ambito);
                 if (tupla != null) {
-                    if (tupla.getCategoria() == Categoria.Variable) {
+                    if (tupla.getCategoria() == Categoria.Variable && nodoHoja.getExpresiones() == null) {
                         if (tupla.getTipo() == TipoDeVariable.BOOLEAN) {
                             String labelSi = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
                             String labelNo = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
@@ -64,6 +65,31 @@ public class ManejadorDeExpresionesBooleanas {
                             this.editor.getManTablas().anadirCuarteto(cuartetoIf);
                             this.editor.getManTablas().anadirCuarteto(cuartetoGoto);
                             return cuartetoGoto;
+                        }
+                    } else if (tupla.getCategoria() == Categoria.Arreglo && nodoHoja.getExpresiones() != null) {
+                        if (tupla.getTipo() == TipoDeVariable.BOOLEAN) {
+                            if (nodoHoja.getExpresiones().size() == tupla.getNumeroDimensiones()) {//Misma dimension
+                                LinkedList<NodoHojaExpresion> nodosHoja = ManejadorDeExpresionesParaArreglos.evaluarNodosHoja(nodoHoja.getExpresiones(), editor, ambito);
+                                if (nodosHoja != null) {
+                                    String valor = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), nodosHoja, editor);
+                                    String nuevaTemporal = "t" + editor.getManTablas().obtenerNuevoTemporal();
+                                    Cuarteto cuartetoAsignacion = new Cuarteto(null, nuevaTemporal, null, nodoHoja.getValor() + ambito + "[" + valor + "]", TipoDeCuarteto.ASIGNACION);
+                                    editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
+                                    nodoHoja.setValor(nuevaTemporal);
+                                    String labelSi = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
+                                    String labelNo = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
+                                    Cuarteto cuartetoIf = new Cuarteto("==", nuevaTemporal, "1", labelSi, TipoDeCuarteto.IF);
+                                    Cuarteto cuartetoGoto = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.GOTO);
+                                    this.editor.getManTablas().anadirCuarteto(cuartetoIf);
+                                    this.editor.getManTablas().anadirCuarteto(cuartetoGoto);
+                                    return cuartetoGoto;
+                                }
+
+                            } else {//Error de dimensiones
+                                String mensaje = "Error SEMANTICO, dimensiones incorrectas para arreglo " + nodoHoja.getValor() + ".\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                                ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                                return null;
+                            }
                         }
                     } else {//Error de conversion de tipos
                         String mensaje = "Error SEMANTICO, el elemento " + nodoHoja.getValor() + " No es una Variable.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
@@ -74,7 +100,7 @@ public class ManejadorDeExpresionesBooleanas {
                 } else {//En el ambito global
                     tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), "global");
                     if (tupla != null) {
-                        if (tupla.getCategoria() == Categoria.Variable) {
+                        if (tupla.getCategoria() == Categoria.Variable && nodoHoja.getExpresiones() == null) {
                             if (tupla.getTipo() == TipoDeVariable.BOOLEAN) {
                                 String labelSi = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
                                 String labelNo = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
@@ -84,6 +110,31 @@ public class ManejadorDeExpresionesBooleanas {
                                 this.editor.getManTablas().anadirCuarteto(cuartetoGoto);
                                 return cuartetoGoto;
                             }
+                        } else if (tupla.getCategoria() == Categoria.Arreglo && nodoHoja.getExpresiones() != null) {
+                            if (tupla.getTipo() == TipoDeVariable.BOOLEAN) {
+                                if (nodoHoja.getExpresiones().size() == tupla.getNumeroDimensiones()) {//Misma dimension
+                                    LinkedList<NodoHojaExpresion> nodosHoja = ManejadorDeExpresionesParaArreglos.evaluarNodosHoja(nodoHoja.getExpresiones(), editor, ambito);
+                                    if (nodosHoja != null) {
+                                        String valor = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), nodosHoja, editor);
+                                        String nuevaTemporal = "t" + editor.getManTablas().obtenerNuevoTemporal();
+                                        Cuarteto cuartetoAsignacion = new Cuarteto(null, nuevaTemporal, null, nodoHoja.getValor() + "global" + "[" + valor + "]", TipoDeCuarteto.ASIGNACION);
+                                        editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
+                                        nodoHoja.setValor(nuevaTemporal);
+                                        String labelSi = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
+                                        String labelNo = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
+                                        Cuarteto cuartetoIf = new Cuarteto("==", nuevaTemporal, "1", labelSi, TipoDeCuarteto.IF);
+                                        Cuarteto cuartetoGoto = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.GOTO);
+                                        this.editor.getManTablas().anadirCuarteto(cuartetoIf);
+                                        this.editor.getManTablas().anadirCuarteto(cuartetoGoto);
+                                        return cuartetoGoto;
+                                    }
+                                } else {//Error de dimensiones
+                                    String mensaje = "Error SEMANTICO, dimensiones incorrectas para arreglo " + nodoHoja.getValor() + ".\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                                    ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                                    return null;
+                                }
+                            }
+
                         } else {//Error de conversion de tipos
                             String mensaje = "Error SEMANTICO, el elemento " + nodoHoja.getValor() + " No es una Variable.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
                             ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());

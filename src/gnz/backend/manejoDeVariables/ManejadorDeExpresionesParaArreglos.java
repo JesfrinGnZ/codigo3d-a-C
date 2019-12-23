@@ -7,6 +7,7 @@ package gnz.backend.manejoDeVariables;
 
 import gnz.backend.cuarteto.Cuarteto;
 import gnz.backend.cuarteto.TipoDeCuarteto;
+import gnz.backend.nodo.Nodo;
 import gnz.backend.nodoExpresion.NodoHojaExpresion;
 import gnz.backend.nodoExpresion.OperacionAritmetica;
 import gnz.gui.frames.EditorDeTextoFrame;
@@ -18,8 +19,23 @@ import java.util.LinkedList;
  */
 public class ManejadorDeExpresionesParaArreglos {
 
-    
+    public static LinkedList<NodoHojaExpresion> evaluarNodosHoja(LinkedList<Nodo> expresionesDeNodoHoja,EditorDeTextoFrame editor, String ambito) {
+        LinkedList<NodoHojaExpresion> nodosHoja = new LinkedList<>();
+        ManejadorDeExpresionesNumericas manNumerico = new ManejadorDeExpresionesNumericas(editor, ambito);
+        for (Nodo expresion : expresionesDeNodoHoja) {
+            NodoHojaExpresion nodHojaExpresion = manNumerico.evaluarExpresionMatematica(expresion);
+            if (nodHojaExpresion != null) {
+                nodosHoja.add(nodHojaExpresion);
+            }else{
+                nodosHoja=null;
+                break;
+            }
+        }
+        return nodosHoja;
+    }
+
     public static String evaluarArreglo(LinkedList<NodoHojaExpresion> dimensionesArreglo, LinkedList<NodoHojaExpresion> hojasEvaluadas, EditorDeTextoFrame editor) {
+        //Multiplicaciones
         int dondeSeEMpezara = 1;
         String ultimaTemporal = "";
         LinkedList<String> temporalesDeSuma = new LinkedList<>();
@@ -44,14 +60,16 @@ public class ManejadorDeExpresionesParaArreglos {
         }
         temporalesDeSuma.add(hojasEvaluadas.getLast().getValor() + hojasEvaluadas.getLast().getAmbito());
 
+        //Sumas
         if (temporalesDeSuma.size() >= 2) {
             String numTemporal = "t" + String.valueOf(editor.getManTablas().obtenerNuevoTemporal());
             Cuarteto nuevoCuarteto = new Cuarteto(OperacionAritmetica.MAS.getSigno(), temporalesDeSuma.getFirst(), temporalesDeSuma.get(1), numTemporal, TipoDeCuarteto.SOLO_EXPRESION);
             editor.getManTablas().anadirCuarteto(nuevoCuarteto);
             ultimaTemporal = numTemporal;
+            //Para los que siguen de 2
             for (int i = 2; i < temporalesDeSuma.size(); i++) {
                 numTemporal = "t" + String.valueOf(editor.getManTablas().obtenerNuevoTemporal());
-                nuevoCuarteto = new Cuarteto(OperacionAritmetica.POR.getSigno(), ultimaTemporal, temporalesDeSuma.get(i), numTemporal, TipoDeCuarteto.SOLO_EXPRESION);
+                nuevoCuarteto = new Cuarteto(OperacionAritmetica.MAS.getSigno(), ultimaTemporal, temporalesDeSuma.get(i), numTemporal, TipoDeCuarteto.SOLO_EXPRESION);
                 editor.getManTablas().anadirCuarteto(nuevoCuarteto);
                 ultimaTemporal = numTemporal;
             }

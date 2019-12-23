@@ -16,6 +16,7 @@ import gnz.backend.nodoExpresion.TipoDeHoja;
 import gnz.backend.tablas.Categoria;
 import gnz.backend.tablas.TuplaDeSimbolo;
 import gnz.gui.frames.EditorDeTextoFrame;
+import java.util.LinkedList;
 
 /**
  *
@@ -66,17 +67,39 @@ public class ManejadorDeExpresionesNumericas {
         TipoDeHoja tipo = nodoHoja.getTipo();
         switch (tipo) {
             case IDENTIFICADOR:
-                TuplaDeSimbolo tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), ambito);
+                TuplaDeSimbolo tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), ambito);//Puede que devuelva un arreglo
                 if (tupla != null) {
-                    if (tupla.getCategoria() == Categoria.Variable) {
+                    if (tupla.getCategoria() == Categoria.Variable && nodoHoja.getExpresiones() == null) {
                         TipoDeVariable tipoDeVariable = tupla.getTipo();
                         if (tipoDeVariable == TipoDeVariable.BYTE || tipoDeVariable == TipoDeVariable.CHAR || tipoDeVariable == TipoDeVariable.DOUBLE || tipoDeVariable == TipoDeVariable.FLOAT
                                 || tipoDeVariable == TipoDeVariable.INT || tipoDeVariable == TipoDeVariable.LONG) {
                             ambitoActualDeVariable = ambito;
                             return tipoDeVariable;
                         }
+                    } else if (tupla.getCategoria() == Categoria.Arreglo && nodoHoja.getExpresiones() != null) {
+                        TipoDeVariable tipoDeVariable = tupla.getTipo();
+                        if (tipoDeVariable == TipoDeVariable.BYTE || tipoDeVariable == TipoDeVariable.CHAR || tipoDeVariable == TipoDeVariable.DOUBLE || tipoDeVariable == TipoDeVariable.FLOAT
+                                || tipoDeVariable == TipoDeVariable.INT || tipoDeVariable == TipoDeVariable.LONG) {
+                            if (nodoHoja.getExpresiones().size() == tupla.getNumeroDimensiones()) {//Misma dimension
+                                LinkedList<NodoHojaExpresion> nodosHoja = ManejadorDeExpresionesParaArreglos.evaluarNodosHoja(nodoHoja.getExpresiones(), editor, ambito);
+                                if (nodosHoja != null) {
+                                    String valor = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), nodosHoja, editor);
+                                    String nuevaTemporal = "t" + editor.getManTablas().obtenerNuevoTemporal();
+                                    Cuarteto cuartetoAsignacion = new Cuarteto(null, nuevaTemporal, null, nodoHoja.getValor() + ambito + "[" + valor + "]", TipoDeCuarteto.ASIGNACION);
+                                    editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
+                                    nodoHoja.setValor(nuevaTemporal);
+                                    ambitoActualDeVariable = "";
+                                    return tipoDeVariable;
+                                }
+                            } else {//Error de dimensiones
+                                String mensaje = "Error SEMANTICO, dimensiones incorrectas para arreglo " + nodoHoja.getValor() + ".\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                                ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                                return null;
+                            }
+                        }
+
                     } else {//Error de conversion de tipos
-                        String mensaje = "Error SEMANTICO, el elemento " + nodoHoja.getValor() + " No es una Variable.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                        String mensaje = "Error SEMANTICO, el elemento " + nodoHoja.getValor() + " NO se puede convertir a numerico.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
                         ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
                         return null;
                     }
@@ -84,15 +107,37 @@ public class ManejadorDeExpresionesNumericas {
                 } else {
                     tupla = editor.getManTablas().buscarVariable(nodoHoja.getValor(), "global");
                     if (tupla != null) {
-                        if (tupla.getCategoria() == Categoria.Variable) {
+                        if (tupla.getCategoria() == Categoria.Variable && nodoHoja.getExpresiones() == null) {
                             TipoDeVariable tipoDeVariable = tupla.getTipo();
                             if (tipoDeVariable == TipoDeVariable.BYTE || tipoDeVariable == TipoDeVariable.CHAR || tipoDeVariable == TipoDeVariable.DOUBLE || tipoDeVariable == TipoDeVariable.FLOAT
                                     || tipoDeVariable == TipoDeVariable.INT || tipoDeVariable == TipoDeVariable.LONG) {
                                 ambitoActualDeVariable = "global";
                                 return tipoDeVariable;
                             }
+                        } else if (tupla.getCategoria() == Categoria.Arreglo && nodoHoja.getExpresiones() != null) {
+                            TipoDeVariable tipoDeVariable = tupla.getTipo();
+                            if (tipoDeVariable == TipoDeVariable.BYTE || tipoDeVariable == TipoDeVariable.CHAR || tipoDeVariable == TipoDeVariable.DOUBLE || tipoDeVariable == TipoDeVariable.FLOAT
+                                    || tipoDeVariable == TipoDeVariable.INT || tipoDeVariable == TipoDeVariable.LONG) {
+                                if (nodoHoja.getExpresiones().size() == tupla.getNumeroDimensiones()) {//Misma dimension
+                                    LinkedList<NodoHojaExpresion> nodosHoja = ManejadorDeExpresionesParaArreglos.evaluarNodosHoja(nodoHoja.getExpresiones(), editor, ambito);
+                                    if (nodosHoja != null) {
+                                        String valor = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), nodosHoja, editor);
+                                        String nuevaTemporal = "t" + editor.getManTablas().obtenerNuevoTemporal();
+                                        Cuarteto cuartetoAsignacion = new Cuarteto(null, nuevaTemporal, null, nodoHoja.getValor() + "global" + "[" + valor + "]", TipoDeCuarteto.ASIGNACION);
+                                        editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
+                                        nodoHoja.setValor(nuevaTemporal);
+                                        ambitoActualDeVariable = "";
+                                        return tipoDeVariable;
+                                    }
+                                } else {//Error de dimensiones
+                                    String mensaje = "Error SEMANTICO, dimensiones incorrectas para arreglo " + nodoHoja.getValor() + ".\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                                    ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                                    return null;
+                                }
+                            }
+
                         } else {//Error de conversion de tipos
-                            String mensaje = "Error SEMANTICO, el elemento " + nodoHoja.getValor() + " No es una Variable.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                            String mensaje = "Error SEMANTICO, el elemento " + nodoHoja.getValor() + " No se puede convertir a numerico.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
                             ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
                             return null;
                         }

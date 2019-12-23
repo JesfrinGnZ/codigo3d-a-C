@@ -245,8 +245,8 @@ non terminal Cuarteto     comparacionParaFor;
 //******************************************************************declaracion de funciones Predefinidas********************************************
 
 non terminal Object     declaracionDeFuncionesPredefinidas;
-non terminal Object     conjuntoDeTexto;
-non terminal Object     unTexto;
+non terminal LinkedList<Nodo>     conjuntoDeTexto;
+non terminal Nodo     unTexto;
 
 //***********************************************************************************Subprogramas*****************************************************
 
@@ -290,8 +290,8 @@ expresion::=NUMERO_ENTERO:i{:RESULT=new NodoHojaExpresion(TipoDeHoja.NUMERO_ENTE
 expresion::=NUMERO_DECIMAL:i{:RESULT=new NodoHojaExpresion(TipoDeHoja.NUMERO_DECIMAL,i,ileft,iright);:};
 expresion::=NUMERO_DECIMALF:i{:RESULT=new NodoHojaExpresion(TipoDeHoja.NUMERO_DECIMALF,i,ileft,iright);:};
 expresion::=DECLARACION_STRING:i{:RESULT=new NodoHojaExpresion(TipoDeHoja.DECLARACION_STRING,i,ileft,iright);:};
+expresion::=IDENTIFICADOR:i conjuntoDeDimensiones:expresiones{:RESULT= new NodoHojaExpresion(TipoDeHoja.IDENTIFICADOR,i,ileft,iright,expresiones);:};
 expresion::=llamadaDeFuncion;
-//expresion::=paraArreglo;
 
 
 comparacion::= comparacion:n1 AND:i comparacion:n2{:RESULT = new NodoLogico(OperacionLogica.AND,n1,n2,ileft,iright);:};
@@ -532,12 +532,22 @@ incrementoDecremento::= MENOS NUMERO_ENTERO:i
 
 //*********************************************************Funciones predefinidas************************************************************
 unaInstruccion::=declaracionDeFuncionesPredefinidas;
-declaracionDeFuncionesPredefinidas::= PRINTLN CORCHETE_ABIERTO conjuntoDeTexto CORCHETE_CERRADO PCOMA;
-declaracionDeFuncionesPredefinidas::= PRINT CORCHETE_ABIERTO conjuntoDeTexto CORCHETE_CERRADO PCOMA;
+declaracionDeFuncionesPredefinidas::= PRINTLN CORCHETE_ABIERTO conjuntoDeTexto:lista CORCHETE_CERRADO PCOMA;
+declaracionDeFuncionesPredefinidas::= PRINT CORCHETE_ABIERTO conjuntoDeTexto:lista CORCHETE_CERRADO PCOMA;
 declaracionDeFuncionesPredefinidas::= SCANS CORCHETE_ABIERTO IDENTIFICADOR CORCHETE_CERRADO PCOMA;
 declaracionDeFuncionesPredefinidas::= SCANN CORCHETE_ABIERTO IDENTIFICADOR CORCHETE_CERRADO PCOMA;
-conjuntoDeTexto::= conjuntoDeTexto COMA unTexto | unTexto;
-unTexto::=expresion;
+
+conjuntoDeTexto::= conjuntoDeTexto:lista COMA unTexto:n1
+{:lista.add(n1);
+  RESULT=lista;:};
+
+conjuntoDeTexto::=unTexto:n1
+{:LinkedList<Nodo> lista= new LinkedList<>();
+  lista.add(n1);
+  RESULT=lista;:};
+
+unTexto::=expresion:n1
+{:RESULT=n1;:};
 
 //************************************************************Return*************************************************************************
 unaInstruccion::=instruccionReturn;

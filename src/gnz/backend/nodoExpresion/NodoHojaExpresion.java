@@ -7,6 +7,7 @@ package gnz.backend.nodoExpresion;
 
 import gnz.backend.nodo.Nodo;
 import gnz.backend.nodoDeclaracion.TipoDeVariable;
+import java.util.LinkedList;
 
 /**
  *
@@ -20,16 +21,47 @@ public class NodoHojaExpresion implements Nodo {
     private int columna;
     private TipoDeVariable tipoDEVariable;
     private String ambito;
+    private LinkedList<Nodo> expresiones;
 
+    /**
+     * Para arreglos
+     * @param tipo
+     * @param valor
+     * @param linea
+     * @param columna
+     * @param expresiones 
+     */
+    public NodoHojaExpresion(TipoDeHoja tipo, String valor, int linea, int columna, LinkedList<Nodo> expresiones) {
+        this.tipo = tipo;
+        this.valor = valor;
+        this.linea = linea;
+        this.columna = columna;
+        this.expresiones = expresiones;
+        this.ambito="";
+    }
+
+    
+    
+    /**
+     * Para elementos minimos
+     * @param tipo
+     * @param valor
+     * @param linea
+     * @param columna 
+     */
     public NodoHojaExpresion(TipoDeHoja tipo, String valor, int linea, int columna) {
         this.tipo = tipo;
         this.valor = valor;
         this.linea = linea;
         this.columna = columna;
-        this.tipoDEVariable = null;
         this.ambito = "";
     }
 
+    /**
+     * Para guardar solo nombre y tipo
+     * @param tipoDeVariable
+     * @param valor 
+     */
     public NodoHojaExpresion(TipoDeVariable tipoDeVariable, String valor) {
         this.tipoDEVariable = tipoDeVariable;
         this.valor = valor;
@@ -84,4 +116,15 @@ public class NodoHojaExpresion implements Nodo {
         this.ambito = ambito;
     }
 
+    public LinkedList<Nodo> getExpresiones() {
+        return expresiones;
+    }
+
+    public void setExpresiones(LinkedList<Nodo> expresiones) {
+        this.expresiones = expresiones;
+    }
+
+    
+    
+    
 }
