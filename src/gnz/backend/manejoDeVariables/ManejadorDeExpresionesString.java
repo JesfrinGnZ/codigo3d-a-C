@@ -153,6 +153,14 @@ public class ManejadorDeExpresionesString {
                 this.contadorDeString++;
                 ambitoActualDeVariable = "";
                 break;
+            case LLAMADA_DE_FUNCION:
+                if(nodoHoja.getValor()!=null){
+                    if(nodoHoja.getTipoDEVariable()==TipoDeVariable.STRING){
+                        this.contadorDeString++;
+                    }
+                    ambitoActualDeVariable="";
+                }
+                break;
             default:
                 ambitoActualDeVariable = "";
                 break;

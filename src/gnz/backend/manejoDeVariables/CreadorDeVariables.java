@@ -16,7 +16,7 @@ import gnz.backend.nodoDeclaracion.NodoId;
 import gnz.backend.nodoDeclaracion.TipoDeVariable;
 import gnz.backend.nodoExpresion.NodoExpresion;
 import gnz.backend.nodoExpresion.NodoHojaExpresion;
-import gnz.backend.nodoExpresion.OperacionAritmetica;
+import gnz.backend.nodoExpresion.TipoDeHoja;
 import gnz.backend.tablas.Categoria;
 import gnz.backend.tablas.TuplaDeSimbolo;
 import gnz.gui.frames.EditorDeTextoFrame;
@@ -27,6 +27,106 @@ import java.util.LinkedList;
  * @author jesfrin
  */
 public class CreadorDeVariables {
+
+    //********************************************************Para llamadas de funciones*******************************************
+    public static NodoHojaExpresion evaluarLlamadaDeFuncion(String nombreDeFuncion, LinkedList<Nodo> expresiones, EditorDeTextoFrame editor, int linea, int columna) {
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLINEA:"+linea+"\n\n\n\n\n\n\n\n\n\n\n\n\n");
+        TuplaDeSimbolo subPrograma = editor.getManTablas().buscarSubPrograma(nombreDeFuncion);
+        LinkedList<String> parametroSimplificado = new LinkedList<>();
+        if (subPrograma.getTipoDeRetorno() != TipoDeVariable.VOID) {
+            if (subPrograma.getNumeroDeParametros() == expresiones.size()) {
+                for (int i = 0; i < subPrograma.getNumeroDeParametros(); i++) {
+                    Parametro parametro = subPrograma.getParametrosDeFuncion().get(i);
+                    if (parametro.getTipo() == TipoDeVariable.BOOLEAN) {
+                        ManejadorDeExpresionesBooleanas manBooleano = new ManejadorDeExpresionesBooleanas(editor, nombreDeFuncion);
+                        Cuarteto ultimoCuarteto = manBooleano.evaluarExpresionBooleana(expresiones.get(i));
+                        if (ultimoCuarteto != null) {
+                            crearCuartetosParaBooleanoParametro(ultimoCuarteto, editor);
+                        } else {
+                            break;
+                        }
+                    } else if (parametro.getTipo() == TipoDeVariable.STRING) {
+                        ManejadorDeExpresionesString manString = new ManejadorDeExpresionesString(editor, nombreDeFuncion);
+                        NodoHojaExpresion nodoHoja = manString.evaluarExpresionCadena(expresiones.get(i));
+                        if (nodoHoja != null) {
+                            parametroSimplificado.add(nodoHoja.getValor());
+                            //Escribir parametro
+                            Cuarteto cuartetoParam = new Cuarteto(null, null, null, nodoHoja.getValor(), TipoDeCuarteto.PARAMETRO);
+                            editor.getManTablas().anadirCuarteto(cuartetoParam);
+                        } else {
+                            break;
+                        }
+                    } else {//Es numerico
+                        ManejadorDeExpresionesNumericas manNumerico = new ManejadorDeExpresionesNumericas(editor, nombreDeFuncion);
+                        NodoHojaExpresion nodoHoja = manNumerico.evaluarExpresionMatematica(expresiones.get(i));
+                        if (nodoHoja != null) {
+                            if (nodoHoja.getTipoDEVariable().getJerarquia() <= parametro.getTipo().getJerarquia()) {
+                                parametroSimplificado.add(nodoHoja.getValor());
+                                //Escribir parametro
+                                Cuarteto cuartetoParam = new Cuarteto(null, null, null, nodoHoja.getValor(), TipoDeCuarteto.PARAMETRO);
+                                editor.getManTablas().anadirCuarteto(cuartetoParam);
+                            } else {//Error de limites
+                                String mensaje = "Error SEMANTICO, tipos no compatibles " + nodoHoja.getTipoDEVariable() + "\n No se puede convertirn" + subPrograma.getTipoDeRetorno() + " en Linea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                                ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                                break;
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                if (parametroSimplificado.size() == subPrograma.getNumeroDeParametros()) {
+                    String temporal = "t" + editor.getManTablas().obtenerNuevoTemporal();
+                    Cuarteto llamadaDeFuncion = new Cuarteto("call", nombreDeFuncion, "" + subPrograma.getNumeroDeParametros(), temporal, TipoDeCuarteto.LLAMADA_DE_FUNCION);
+                    editor.getManTablas().anadirCuarteto(llamadaDeFuncion);
+                    return new NodoHojaExpresion(TipoDeHoja.LLAMADA_DE_FUNCION, subPrograma.getTipoDeRetorno(), temporal,linea,columna);
+                }
+
+            } else {//Error de dimension de parameteros
+                String mensaje = "Error SEMANTICO, el subprograma " + nombreDeFuncion + " no recibe ese numero de parametros.\nLinea" + linea + " Columna:" + columna;
+                ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+            }
+        } else {//Error devuelve VOID
+            String mensaje = "Error SEMANTICO, el subprograma " + nombreDeFuncion + " es de tipo VOID.\nLinea" + linea + " Columna:" + columna;
+            ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+        }
+
+        return  new NodoHojaExpresion(TipoDeHoja.LLAMADA_DE_FUNCION, subPrograma.getTipoDeRetorno(), null,linea,columna);
+    }
+
+    //***********************************************************************Instruccion RETURN **********************************************************************
+    public static void guardarReturn(String nombreDeFuncion, Nodo expresion, EditorDeTextoFrame editor, int linea, int columna) {
+        TuplaDeSimbolo tupla = editor.getManTablas().buscarSubPrograma(nombreDeFuncion);
+        if (tupla != null) {
+            TipoDeVariable tipoDeRetorno = tupla.getTipoDeRetorno();
+            if (tipoDeRetorno == TipoDeVariable.VOID) {//Errror la funcion no debe devolver valor
+                String mensaje = "Error SEMANTICO, el subprograma " + nombreDeFuncion + " es de tipo VOID.\nLinea" + linea + " Columna:" + columna;
+                ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+            } else {
+                if (tipoDeRetorno == TipoDeVariable.BOOLEAN) {
+                    ManejadorDeExpresionesBooleanas manBooleano = new ManejadorDeExpresionesBooleanas(editor, nombreDeFuncion);
+                    Cuarteto ultimoCuarteto = manBooleano.evaluarExpresionBooleana(expresion);
+                    if (ultimoCuarteto != null) {
+                        crearCuartetosParaBooleanoReturn(ultimoCuarteto, editor);
+                    }
+                } else if (tipoDeRetorno == TipoDeVariable.STRING) {
+                    ManejadorDeExpresionesString manString = new ManejadorDeExpresionesString(editor, nombreDeFuncion);
+                    NodoHojaExpresion nodoHoja = manString.evaluarExpresionCadena(expresion);
+                    if (nodoHoja != null) {
+                        Cuarteto creturn = new Cuarteto(null, null, null, nodoHoja.getValor(), TipoDeCuarteto.RETURN);
+                        editor.getManTablas().anadirCuarteto(creturn);
+                    }
+                } else {//Es numerico
+                    ManejadorDeExpresionesNumericas manNumerico = new ManejadorDeExpresionesNumericas(editor, nombreDeFuncion);
+                    NodoHojaExpresion nodoHoja = manNumerico.evaluarExpresionMatematica(expresion);
+                    if (nodoHoja != null) {
+                        Cuarteto creturn = new Cuarteto(null, null, null, nodoHoja.getValor(), TipoDeCuarteto.RETURN);
+                        editor.getManTablas().anadirCuarteto(creturn);
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * ***************************************************************Funciones************************************************************************************
@@ -40,7 +140,7 @@ public class CreadorDeVariables {
         if (seGuardo) {
             //Ahora se guardan los parametros como variables
             for (Parametro parametro : parametros) {
-                tupla = new TuplaDeSimbolo(0, parametro.getNombreDeParametro(), tipo, ambito);
+                tupla = new TuplaDeSimbolo(0, parametro.getNombreDeParametro(), parametro.getTipo(), ambito);
                 editor.getManTablas().guardarVariable(tupla, linea, columna);
             }
         }
@@ -48,7 +148,8 @@ public class CreadorDeVariables {
     }
 
     /**
-     * *************************************************************CREACION**********************************************************************************
+     * *************************************************************CREACION DE
+     * VARIABLES**********************************************************************************
      */
     public static void declararVariables(DeclaracionDeVariable declaracion, EditorDeTextoFrame editor) {
         if (declaracion.getTipo() == TipoDeVariable.BOOLEAN) {
@@ -111,6 +212,42 @@ public class CreadorDeVariables {
 
     }
 
+    private static void crearCuartetosParaBooleanoParametro(Cuarteto ultimoCuarteto, EditorDeTextoFrame editor) {
+        String labelSalida = "L" + editor.getManTablas().obtenerNuevoNumeroDeLabel();
+        //Cuartetos
+        Cuarteto labelSi = new Cuarteto(null, null, null, ultimoCuarteto.getOperador1(), TipoDeCuarteto.SOLO_LABEL);
+        Cuarteto labelNo = new Cuarteto(null, null, null, ultimoCuarteto.getResultado(), TipoDeCuarteto.SOLO_LABEL);
+        Cuarteto cuartetoAsignacionSi = new Cuarteto(null, null, null, "1", TipoDeCuarteto.PARAMETRO);
+        Cuarteto cuartetoAsignacionNo = new Cuarteto(null, null, null, "0", TipoDeCuarteto.PARAMETRO);
+        Cuarteto cuartetoGoto = new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.GOTO);
+        Cuarteto labelFinal = new Cuarteto(null, null, null, labelSalida, TipoDeCuarteto.SOLO_LABEL);
+        //Se anaden los cuartetos
+        editor.getManTablas().anadirCuarteto(labelSi);
+        editor.getManTablas().anadirCuarteto(cuartetoAsignacionSi);
+        editor.getManTablas().anadirCuarteto(cuartetoGoto);//GOTO_SALIDA
+        editor.getManTablas().anadirCuarteto(labelNo);
+        editor.getManTablas().anadirCuarteto(cuartetoAsignacionNo);
+        editor.getManTablas().anadirCuarteto(labelFinal);//LABEL
+    }
+
+    private static void crearCuartetosParaBooleanoReturn(Cuarteto ultimoCuarteto, EditorDeTextoFrame editor) {
+        String labelSalida = "L" + editor.getManTablas().obtenerNuevoNumeroDeLabel();
+        //Cuartetos
+        Cuarteto labelSi = new Cuarteto(null, null, null, ultimoCuarteto.getOperador1(), TipoDeCuarteto.SOLO_LABEL);
+        Cuarteto labelNo = new Cuarteto(null, null, null, ultimoCuarteto.getResultado(), TipoDeCuarteto.SOLO_LABEL);
+        Cuarteto cuartetoAsignacionSi = new Cuarteto(null, null, null, "1", TipoDeCuarteto.RETURN);
+        Cuarteto cuartetoAsignacionNo = new Cuarteto(null, null, null, "0", TipoDeCuarteto.RETURN);
+        Cuarteto cuartetoGoto = new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.GOTO);
+        Cuarteto labelFinal = new Cuarteto(null, null, null, labelSalida, TipoDeCuarteto.SOLO_LABEL);
+        //Se anaden los cuartetos
+        editor.getManTablas().anadirCuarteto(labelSi);
+        editor.getManTablas().anadirCuarteto(cuartetoAsignacionSi);
+        editor.getManTablas().anadirCuarteto(cuartetoGoto);//GOTO_SALIDA
+        editor.getManTablas().anadirCuarteto(labelNo);
+        editor.getManTablas().anadirCuarteto(cuartetoAsignacionNo);
+        editor.getManTablas().anadirCuarteto(labelFinal);//LABEL
+    }
+
     private static void crearCuartetosParaBooleano(Cuarteto ultimoCuarteto, EditorDeTextoFrame editor, NodoId nodoId, String ambito) {
         String labelSalida = "L" + editor.getManTablas().obtenerNuevoNumeroDeLabel();
         //Cuartetos
@@ -148,7 +285,9 @@ public class CreadorDeVariables {
     }
 
     /**
-     * *************************************************************ASIGNACION**********************************************************************************
+     * *************************************************************ASIGNACION
+     * DE
+     * VARIABLES**********************************************************************************
      */
     public static void asignarVariable(NodoId nodoId, EditorDeTextoFrame editor, String ambito) {
         TuplaDeSimbolo tupla = editor.getManTablas().buscarVariable(nodoId.getId(), ambito);
@@ -188,7 +327,7 @@ public class CreadorDeVariables {
                     Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + ambito, TipoDeCuarteto.ASIGNACION);
                     editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
                 } else {//ERROR de conversion de tipos
-                    String mensaje = "Error SEMANTICO, tipos no compatibles " + nodoHoja.getTipoDEVariable() + "\n No se puede convertirn en" + tupla.getTipo() + " en Linea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                    String mensaje = "Error SEMANTICO, tipos no compatibles " + nodoHoja.getTipoDEVariable() + "\n No se puede convertirnnnn en" + tupla.getTipo() + " en Linea:" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
                     ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
                 }
             }

@@ -37,6 +37,37 @@ MAIN() [
 ]
 
 
+*********************************************
+int x;
+int y;
+int a;
+boolean id1;
+float f1, f2, f3;
+
+int suma(int mm, int mmm) [
+     int resultado <- mm + mmm;
+%%%
+     return resultado;
+]
+
+%%%
+MAIN() [
+  x<-6+suma(2,3);
+  y<-1;
+  WHILE(x>0) [
+     y<-y*x;
+     x<-x-1;
+  ]
+]
+
+
+
+
+
+
+
+
+
 ****************************************************Codigo jony************************
 int x;
 int y;

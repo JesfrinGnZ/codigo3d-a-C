@@ -7,7 +7,6 @@ package gnz.backend.tablas;
 
 import gnz.backend.cuarteto.Cuarteto;
 import gnz.backend.errores.ManejadorDeErrores;
-import gnz.backend.nodoDeclaracion.TipoDeVariable;
 import gnz.gui.frames.EditorDeTextoFrame;
 import java.util.LinkedList;
 
@@ -92,12 +91,14 @@ public class ManejadorDeTablas {
         }
         return tupla;
     }
+
     /**
      * Regresa true si se guardo el subprograma
+     *
      * @param simbolo
      * @param linea
      * @param columna
-     * @return 
+     * @return
      */
     public boolean guardarSubPrograma(TuplaDeSimbolo simbolo, int linea, int columna) {
         TuplaDeSimbolo tupla = buscarSubPrograma(simbolo.getNombre());
@@ -124,8 +125,7 @@ public class ManejadorDeTablas {
      * La variable:" + simbolo.getNombre() + " ya ha sido declarada.Linea:" +
      * linea + " Columna:" + columna;
      * ManejadorDeErrores.escribirErrorSemantico(mensaje,
-     * editor.getErroresTextArea()); }
-    }
+     * editor.getErroresTextArea()); } }
      */
     //****************************************************Acciones para cuarteto******************************************************
     public void anadirCuarteto(Cuarteto e) {
@@ -144,6 +144,7 @@ public class ManejadorDeTablas {
 
     public void escribirCuartetos() {
         for (Cuarteto cuarteto : tablaDeCuarteto) {
+            //this.editor.getCodigo3dTextArea().append(cuarteto.getTipoDeCuarteto().toString()+"\n");
             switch (cuarteto.getTipoDeCuarteto()) {
                 case ASIGNACION: {
                     this.editor.getCodigo3dTextArea().append(cuarteto.getResultado() + "=" + cuarteto.getOperador1() + "\n");
@@ -163,7 +164,23 @@ public class ManejadorDeTablas {
                     break;
                 }
                 case SOLO_LABEL: {
-                    this.editor.getCodigo3dTextArea().append(cuarteto.getResultado() + "\n");
+                    this.editor.getCodigo3dTextArea().append(cuarteto.getResultado() + ":\n");
+                    break;
+                }
+                case INICIO_FUNCION: {
+                    this.editor.getCodigo3dTextArea().append("\n" + cuarteto.getResultado() + ":\n");
+                    break;
+                }
+                case RETURN: {
+                    this.editor.getCodigo3dTextArea().append("return " + cuarteto.getResultado() + "\n");
+                    break;
+                }
+                case PARAMETRO: {
+                    this.editor.getCodigo3dTextArea().append("Param " + cuarteto.getResultado() + "\n");
+                    break;
+                }
+                case LLAMADA_DE_FUNCION: {
+                    this.editor.getCodigo3dTextArea().append(cuarteto.getResultado() +"="+cuarteto.getOperando()+cuarteto.getOperador1()+","+cuarteto.getOperador2()+ "\n");
                     break;
                 }
                 case GOTOSALIDA: {

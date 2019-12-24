@@ -159,6 +159,21 @@ public class ManejadorDeExpresionesNumericas {
             case NUMERO_ENTERO:
                 ambitoActualDeVariable = "";
                 return verificarTipoDeVariableEntero(nodoHoja.getValor());
+            case LLAMADA_DE_FUNCION:
+                if (nodoHoja.getValor() != null) {
+                    TipoDeVariable tipoDeVariable = nodoHoja.getTipoDEVariable();
+                    if (tipoDeVariable == TipoDeVariable.BYTE || tipoDeVariable == TipoDeVariable.CHAR || tipoDeVariable == TipoDeVariable.DOUBLE || tipoDeVariable == TipoDeVariable.FLOAT
+                            || tipoDeVariable == TipoDeVariable.INT || tipoDeVariable == TipoDeVariable.LONG) {
+                        ambitoActualDeVariable = "";
+                        return tipoDeVariable;
+                    } else {
+                        String mensaje = "Error SEMANTICO, la funcion No se puede convertir a numerico.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                        ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                        return null;
+                    }
+                } else {
+                    return null;
+                }
             default:
                 break;
         }

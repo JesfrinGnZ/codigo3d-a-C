@@ -15,8 +15,8 @@ import java.util.LinkedList;
  */
 public class NodoHojaExpresion implements Nodo {
 
-    TipoDeHoja tipo;
-    String valor;
+    private TipoDeHoja tipo;
+    private String valor;
     private int linea;
     private int columna;
     private TipoDeVariable tipoDEVariable;
@@ -25,11 +25,12 @@ public class NodoHojaExpresion implements Nodo {
 
     /**
      * Para arreglos
+     *
      * @param tipo
      * @param valor
      * @param linea
      * @param columna
-     * @param expresiones 
+     * @param expresiones
      */
     public NodoHojaExpresion(TipoDeHoja tipo, String valor, int linea, int columna, LinkedList<Nodo> expresiones) {
         this.tipo = tipo;
@@ -37,17 +38,16 @@ public class NodoHojaExpresion implements Nodo {
         this.linea = linea;
         this.columna = columna;
         this.expresiones = expresiones;
-        this.ambito="";
+        this.ambito = "";
     }
 
-    
-    
     /**
      * Para elementos minimos
+     *
      * @param tipo
      * @param valor
      * @param linea
-     * @param columna 
+     * @param columna
      */
     public NodoHojaExpresion(TipoDeHoja tipo, String valor, int linea, int columna) {
         this.tipo = tipo;
@@ -59,13 +59,23 @@ public class NodoHojaExpresion implements Nodo {
 
     /**
      * Para guardar solo nombre y tipo
+     *
      * @param tipoDeVariable
-     * @param valor 
+     * @param valor
      */
     public NodoHojaExpresion(TipoDeVariable tipoDeVariable, String valor) {
         this.tipoDEVariable = tipoDeVariable;
         this.valor = valor;
         this.ambito = "";
+    }
+
+    public NodoHojaExpresion(TipoDeHoja tipoDeHoja,TipoDeVariable tipoDeVariable, String valor,int linea,int columna) {
+        this.tipoDEVariable = tipoDeVariable;
+        this.valor = valor;
+        this.tipo=tipoDeHoja;
+        this.ambito = "";
+        this.linea=linea;
+        this.columna=columna;
     }
 
     public TipoDeHoja getTipo() {
@@ -124,7 +134,4 @@ public class NodoHojaExpresion implements Nodo {
         this.expresiones = expresiones;
     }
 
-    
-    
-    
 }

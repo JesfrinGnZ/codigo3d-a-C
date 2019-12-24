@@ -39,6 +39,19 @@ parser code {:
         int linea = s.left;
         System.out.println("Error SINTACTICO:" + s.value + " en:" + linea + ":" + columna);
  }
+ //*******************************************************ANadir goto Main*******************************************************************
+ private void anadirGotoMain(){
+   int posicion=0;
+   for(Cuarteto cuarteto:editor.getManTablas().getTablaDeCuarteto()){
+     if(cuarteto.getTipoDeCuarteto()==TipoDeCuarteto.INICIO_FUNCION){
+       break;
+     }
+     posicion++;
+   }
+   Cuarteto cuartetoGoto = new Cuarteto("goto", null, null, "MAIN", TipoDeCuarteto.GOTO);
+   editor.getManTablas().getTablaDeCuarteto().add(posicion, cuartetoGoto);
+ }
+
 //********************************************************Metodos para If y variantes********************************************************
     private Cuarteto crearInstruccionDeIf(Nodo n1){
       if(n1!=null){
@@ -185,7 +198,7 @@ non terminal Object     conjuntoDeInstrucciones;
 non terminal Nodo       unaInstruccion;
 non terminal LinkedList<Nodo>     conjuntoDeDeclaraciones;
 non terminal Nodo     unaDeclaracion;
-
+non terminal Object   misDeclaraciones;
 
 //******************************************************************Declaracion de variables******************************************
 
@@ -256,8 +269,9 @@ non terminal Object     tipoDeRetorno;
 non terminal LinkedList<Parametro>     conjuntoDeParametros;
 non terminal Parametro     unParametro;
 non terminal Object     cuerpoDeFuncion,instruccionReturn;
-non terminal Object     llamadaDeFuncion;
-non terminal Object     listaDeParametros,miParametro;
+non terminal NodoHojaExpresion     llamadaDeFuncion;
+non terminal LinkedList<Nodo>     listaDeParametros;
+non terminal Nodo     miParametro;
 //***********************************************************************************Funcion Main***************************************************
 non terminal Object funcionMain;
 
@@ -291,7 +305,7 @@ expresion::=NUMERO_DECIMAL:i{:RESULT=new NodoHojaExpresion(TipoDeHoja.NUMERO_DEC
 expresion::=NUMERO_DECIMALF:i{:RESULT=new NodoHojaExpresion(TipoDeHoja.NUMERO_DECIMALF,i,ileft,iright);:};
 expresion::=DECLARACION_STRING:i{:RESULT=new NodoHojaExpresion(TipoDeHoja.DECLARACION_STRING,i,ileft,iright);:};
 expresion::=IDENTIFICADOR:i conjuntoDeDimensiones:expresiones{:RESULT= new NodoHojaExpresion(TipoDeHoja.IDENTIFICADOR,i,ileft,iright,expresiones);:};
-expresion::=llamadaDeFuncion;
+expresion::=llamadaDeFuncion:n1{:RESULT=n1;:};
 
 
 comparacion::= comparacion:n1 AND:i comparacion:n2{:RESULT = new NodoLogico(OperacionLogica.AND,n1,n2,ileft,iright);:};
@@ -319,17 +333,23 @@ tipoDeVariable::=VOID{:RESULT=TipoDeVariable.VOID;:};
 
 //******************************************************************Inicio**********************************************************
 
-inicio::=conjuntoDeDeclaraciones
-{::};
-inicio::= conjuntoDeDeclaraciones:declaraciones conjuntoDeSubprogramas SEPARADOR funcionMain
-{::};
-inicio::= conjuntoDeDeclaraciones  SEPARADOR funcionMain;
-inicio::= conjuntoDeSubprogramas  SEPARADOR funcionMain;
-inicio::= SEPARADOR funcionMain;
+
+inicio::= conjuntoDeDeclaraciones conjuntoDeSubprogramas SEPARADOR funcionMain
+{:anadirGotoMain();:};
+
+inicio::= conjuntoDeDeclaraciones  SEPARADOR funcionMain
+{:anadirGotoMain();:};
+
+inicio::= conjuntoDeSubprogramas  SEPARADOR funcionMain
+{:anadirGotoMain();:};
+
+inicio::=SEPARADOR funcionMain;
 
 conjuntoDeInstrucciones::=conjuntoDeInstrucciones unaInstruccion | unaInstruccion;
 
 //******************************************************************Conjunto de declaraciones**********************************************************
+
+
 conjuntoDeDeclaraciones::=conjuntoDeDeclaraciones:lista unaDeclaracion:n1
 {:lista.add(n1);RESULT=lista;:}
  |
@@ -551,19 +571,37 @@ unTexto::=expresion:n1
 
 //************************************************************Return*************************************************************************
 unaInstruccion::=instruccionReturn;
-instruccionReturn::=RETURN comparacion PCOMA;
+instruccionReturn::=RETURN:i comparacion:expresion PCOMA
+{:CreadorDeVariables.guardarReturn(ambito,expresion,editor,ileft,iright);:};
 
 //************************************************************Llamada a funciones*************************************************************************
 unaInstruccion::=llamadaDeFuncion;
-llamadaDeFuncion::=IDENTIFICADOR PARENTESIS_ABIERTO listaDeParametros PARENTESIS_CERRADO PCOMA{::};
-listaDeParametros::=listaDeParametros COMA miParametro | miParametro;
-miParametro::=comparacion;
+llamadaDeFuncion::=IDENTIFICADOR:i PARENTESIS_ABIERTO listaDeParametros:expresiones PARENTESIS_CERRADO
+{:RESULT =CreadorDeVariables.evaluarLlamadaDeFuncion(i,expresiones,editor,ileft,iright);:};
+
+listaDeParametros::=listaDeParametros:lista COMA miParametro:n1
+{:lista.add(n1);
+  RESULT=lista;:};
+
+listaDeParametros::=miParametro:n1
+{:LinkedList<Nodo> lista = new LinkedList<>();
+  lista.add(n1);
+  RESULT=lista;:};
+
+miParametro::=comparacion:n1{:RESULT=n1;:};
 
 
 //*********************************************************Subprogramas**********************************************************************
 
 conjuntoDeSubprogramas::= conjuntoDeSubprogramas unSubPrograma| unSubPrograma;
-unSubPrograma::=tipoDeVariable:tipo IDENTIFICADOR:i PARENTESIS_ABIERTO{:ambito=i;:} conjuntoDeParametros:parametros PARENTESIS_CERRADO
+
+unSubPrograma::=tipoDeVariable:tipo IDENTIFICADOR:i PARENTESIS_ABIERTO
+{:ambito=i;
+  Cuarteto cuartetoInicioFuncion = new Cuarteto(null, null, null,i, TipoDeCuarteto.INICIO_FUNCION);
+  editor.getManTablas().anadirCuarteto(cuartetoInicioFuncion);
+
+  :}
+conjuntoDeParametros:parametros PARENTESIS_CERRADO
 {:CreadorDeVariables.guardarFuncion(i,tipo,parametros,ileft,iright,editor,ambito);:}
 CORCHETE_ABIERTO cuerpoDeFuncion CORCHETE_CERRADO{:ambito="";:};
 
@@ -589,4 +627,8 @@ cuerpoDeFuncion::= SEPARADOR conjuntoDeInstrucciones;
 cuerpoDeFuncion::= SEPARADOR;
 
 //***************************************************************funcionMain************************************************************
-funcionMain::= MAIN:i PARENTESIS_ABIERTO{:ambito=i;:} PARENTESIS_CERRADO CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO;
+funcionMain::= MAIN:i PARENTESIS_ABIERTO
+{:ambito=i;
+  Cuarteto cuartetoInicioFuncion = new Cuarteto(null, null, null,i, TipoDeCuarteto.INICIO_FUNCION);
+  editor.getManTablas().anadirCuarteto(cuartetoInicioFuncion);:}
+PARENTESIS_CERRADO CORCHETE_ABIERTO conjuntoDeInstrucciones CORCHETE_CERRADO;

@@ -161,4 +161,14 @@ public class TuplaDeSimbolo {
         this.ambito = ambito;
     }
 
+    public TipoDeVariable getTipoDeRetorno() {
+        return tipoDeRetorno;
+    }
+
+    public void setTipoDeRetorno(TipoDeVariable tipoDeRetorno) {
+        this.tipoDeRetorno = tipoDeRetorno;
+    }
+    
+    
+
 }

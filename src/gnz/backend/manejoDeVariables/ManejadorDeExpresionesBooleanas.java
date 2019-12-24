@@ -164,6 +164,23 @@ public class ManejadorDeExpresionesBooleanas {
                 this.editor.getManTablas().anadirCuarteto(cuartetoIf2);
                 this.editor.getManTablas().anadirCuarteto(cuartetoGotoFalse);
                 return cuartetoGotoFalse;
+            case LLAMADA_DE_FUNCION:
+                if (nodoHoja.getValor() != null) {
+                    if (nodoHoja.getTipoDEVariable() == TipoDeVariable.BOOLEAN) {
+                        String labelSs = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
+                        String labelNn = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
+                        Cuarteto cuartetoS = new Cuarteto("==", nodoHoja.getValor(), "1", labelSs, TipoDeCuarteto.IF);
+                        Cuarteto cuartetoGotoF = new Cuarteto("goto", labelSs, null, labelNn, TipoDeCuarteto.GOTO);
+                        this.editor.getManTablas().anadirCuarteto(cuartetoS);
+                        this.editor.getManTablas().anadirCuarteto(cuartetoGotoF);
+                        return cuartetoGotoF;
+                    } else {
+                        String mensaje = "Error SEMANTICO, no se puede convertir la funcion a boleano.\nLinea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                        ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                        return null;
+                    }
+                }
+                break;
             default:
                 break;
         }
