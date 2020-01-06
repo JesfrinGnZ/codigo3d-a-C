@@ -95,7 +95,7 @@ public class ManejadorDeExpresionesString {
                             if (nodosHoja != null) {
                                 String valor = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), nodosHoja, editor);
                                 String nuevaTemporal = "t" + editor.getManTablas().obtenerNuevoTemporal();
-                                Cuarteto cuartetoAsignacion = new Cuarteto(null, nuevaTemporal, null, nodoHoja.getValor() + ambito + "[" + valor + "]", TipoDeCuarteto.ASIGNACION);
+                                Cuarteto cuartetoAsignacion = new Cuarteto(null, nuevaTemporal, null, nodoHoja.getValor() + ambito + "[" + valor + "]", TipoDeCuarteto.ASIGNACION_DECLARACION,TipoDeVariable.STRING);
                                 editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
                                 nodoHoja.setValor(nuevaTemporal);
                                 ambitoActualDeVariable = "";
@@ -127,7 +127,7 @@ public class ManejadorDeExpresionesString {
                                 if (nodosHoja != null) {
                                     String valor = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), nodosHoja, editor);
                                     String nuevaTemporal = "t" + editor.getManTablas().obtenerNuevoTemporal();
-                                    Cuarteto cuartetoAsignacion = new Cuarteto(null, nuevaTemporal, null, nodoHoja.getValor() + "global" + "[" + valor + "]", TipoDeCuarteto.ASIGNACION);
+                                    Cuarteto cuartetoAsignacion = new Cuarteto(null, nuevaTemporal, null, nodoHoja.getValor() + "global" + "[" + valor + "]", TipoDeCuarteto.ASIGNACION_DECLARACION,TipoDeVariable.STRING);
                                     editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
                                     nodoHoja.setValor(nuevaTemporal);
                                     ambitoActualDeVariable = "";
@@ -149,7 +149,7 @@ public class ManejadorDeExpresionesString {
                 break;
             case DECLARACION_STRING:
                 int fin = nodoHoja.getValor().length() - 1;
-                nodoHoja.setValor(nodoHoja.getValor().substring(1, fin));
+                //nodoHoja.setValor(nodoHoja.getValor().substring(1, fin));
                 this.contadorDeString++;
                 ambitoActualDeVariable = "";
                 break;
@@ -180,7 +180,7 @@ public class ManejadorDeExpresionesString {
             if (nodo1 != null && nodo2 != null) {
                 if (nodoExpresion.getOperacion() == OperacionAritmetica.MAS) {
                     String numTemporal = "t" + String.valueOf(this.editor.getManTablas().obtenerNuevoTemporal());
-                    Cuarteto nuevoCuarteto = new Cuarteto(nodoExpresion.getOperacion().getSigno(), nodo1.getValor() + nodo1.getAmbito(), nodo2.getValor() + nodo2.getAmbito(), numTemporal, TipoDeCuarteto.SOLO_EXPRESION);
+                    Cuarteto nuevoCuarteto = new Cuarteto(nodoExpresion.getOperacion().getSigno(), nodo1.getValor() + nodo1.getAmbito(), nodo2.getValor() + nodo2.getAmbito(), numTemporal, TipoDeCuarteto.SOLO_EXPRESION,TipoDeVariable.STRING);
                     this.editor.getManTablas().anadirCuarteto(nuevoCuarteto);
                     return new NodoHojaExpresion(TipoDeVariable.STRING, numTemporal);
                 } else {//Error la operacion no es valida para cadena

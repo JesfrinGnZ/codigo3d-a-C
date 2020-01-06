@@ -85,7 +85,7 @@ public class ManejadorDeExpresionesNumericas {
                                 if (nodosHoja != null) {
                                     String valor = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), nodosHoja, editor);
                                     String nuevaTemporal = "t" + editor.getManTablas().obtenerNuevoTemporal();
-                                    Cuarteto cuartetoAsignacion = new Cuarteto(null, nuevaTemporal, null, nodoHoja.getValor() + ambito + "[" + valor + "]", TipoDeCuarteto.ASIGNACION);
+                                    Cuarteto cuartetoAsignacion = new Cuarteto(null, nuevaTemporal, null, nodoHoja.getValor() + ambito + "[" + valor + "]", TipoDeCuarteto.ASIGNACION_DECLARACION,TipoDeVariable.INT);
                                     editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
                                     nodoHoja.setValor(nuevaTemporal);
                                     ambitoActualDeVariable = "";
@@ -123,7 +123,7 @@ public class ManejadorDeExpresionesNumericas {
                                     if (nodosHoja != null) {
                                         String valor = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), nodosHoja, editor);
                                         String nuevaTemporal = "t" + editor.getManTablas().obtenerNuevoTemporal();
-                                        Cuarteto cuartetoAsignacion = new Cuarteto(null, nuevaTemporal, null, nodoHoja.getValor() + "global" + "[" + valor + "]", TipoDeCuarteto.ASIGNACION);
+                                        Cuarteto cuartetoAsignacion = new Cuarteto(null, nuevaTemporal, null, nodoHoja.getValor() + "global" + "[" + valor + "]", TipoDeCuarteto.ASIGNACION_DECLARACION,TipoDeVariable.INT);
                                         editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
                                         nodoHoja.setValor(nuevaTemporal);
                                         ambitoActualDeVariable = "";
@@ -226,7 +226,7 @@ public class ManejadorDeExpresionesNumericas {
                 TipoDeVariable tipoMayor = buscarElMayorTipoDeVariable(nodo1.getTipoDEVariable(), nodo2.getTipoDEVariable());
                 //Se crea un cuarteto
                 String numTemporal = "t" + String.valueOf(this.editor.getManTablas().obtenerNuevoTemporal());
-                Cuarteto nuevoCuarteto = new Cuarteto(nodoExpresion.getOperacion().getSigno(), nodo1.getValor() + nodo1.getAmbito(), nodo2.getValor() + nodo2.getAmbito(), numTemporal, TipoDeCuarteto.SOLO_EXPRESION);
+                Cuarteto nuevoCuarteto = new Cuarteto(nodoExpresion.getOperacion().getSigno(), nodo1.getValor() + nodo1.getAmbito(), nodo2.getValor() + nodo2.getAmbito(), numTemporal, TipoDeCuarteto.SOLO_EXPRESION,tipoMayor);
                 this.editor.getManTablas().anadirCuarteto(nuevoCuarteto);
                 return new NodoHojaExpresion(tipoMayor, numTemporal);
             }

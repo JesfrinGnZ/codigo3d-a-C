@@ -298,10 +298,10 @@ public class ManejadorDeDeclaraciones {
         if (seDebeGenerarELAceptado) {
             
             String labelSalida = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
-            Cuarteto cuartetoSi = new Cuarteto(null, "1", null, nodoId.getId(), TipoDeCuarteto.ASIGNACION);//n=1
+            Cuarteto cuartetoSi = new Cuarteto(null, "1", null, nodoId.getId(), TipoDeCuarteto.ASIGNACION_DECLARACION);//n=1
             Cuarteto cuartetoSalida = new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.GOTOSALIDA);
             Cuarteto cuartetoEtiquetaNo = new Cuarteto("goto", cuartetos[1].getOperador1(), null, cuartetos[1].getResultado(), TipoDeCuarteto.SOLO_LABEL);
-            Cuarteto cuartetoNo = new Cuarteto(null, "0", null, nodoId.getId(), TipoDeCuarteto.ASIGNACION);//n=0
+            Cuarteto cuartetoNo = new Cuarteto(null, "0", null, nodoId.getId(), TipoDeCuarteto.ASIGNACION_DECLARACION);//n=0
             Cuarteto cuartetoFin = new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.SOLO_LABEL);
 
             this.editor.getManTablas().anadirCuarteto(cuartetoSi);
@@ -438,9 +438,9 @@ public class ManejadorDeDeclaraciones {
         if (seDebeGenerarElAceptado) {
                         String labelSalida = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
 
-            Cuarteto cuartetoSi = new Cuarteto(null, "1", null, nodoId.getId(), TipoDeCuarteto.ASIGNACION);
+            Cuarteto cuartetoSi = new Cuarteto(null, "1", null, nodoId.getId(), TipoDeCuarteto.ASIGNACION_DECLARACION);
             Cuarteto cuartetoEtiquetaNo = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.SOLO_LABEL);
-            Cuarteto cuartetoNo = new Cuarteto(null, "0", null, nodoId.getId(), TipoDeCuarteto.ASIGNACION);
+            Cuarteto cuartetoNo = new Cuarteto(null, "0", null, nodoId.getId(), TipoDeCuarteto.ASIGNACION_DECLARACION);
 
             this.editor.getManTablas().anadirCuarteto(cuartetoSi);
             this.editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.GOTOSALIDA));
@@ -479,7 +479,7 @@ public class ManejadorDeDeclaraciones {
 
     //****************************************************************Expresiones*******************************************************************************
     private void guardarVariableYCuarteto(String operador1, TipoDeVariable tipo, NodoId nodoId, boolean seDebeGuardarLaVariable) {
-        Cuarteto cuarteto = new Cuarteto(null, operador1, null, nodoId.getId(), TipoDeCuarteto.ASIGNACION);
+        Cuarteto cuarteto = new Cuarteto(null, operador1, null, nodoId.getId(), TipoDeCuarteto.ASIGNACION_DECLARACION);
         TuplaDeSimbolo variableAGuardar = new TuplaDeSimbolo(0, nodoId.getId(), tipo, Categoria.Variable, null,this.nombreDeFuncion);
         this.editor.getManTablas().anadirCuarteto(cuarteto);
         if (seDebeGuardarLaVariable) {
@@ -749,7 +749,7 @@ public class ManejadorDeDeclaraciones {
 
         //Recorrido de arbol
         String ultimaTemporal = recorrerArbol(nodoDeclaracion, nodoExpresion);
-        Cuarteto nuevoCuarteto = new Cuarteto(null, ultimaTemporal, null, nodoId.getId(), TipoDeCuarteto.ASIGNACION);
+        Cuarteto nuevoCuarteto = new Cuarteto(null, ultimaTemporal, null, nodoId.getId(), TipoDeCuarteto.ASIGNACION_DECLARACION);
         TuplaDeSimbolo simbolo = new TuplaDeSimbolo(0, nodoId.getId(), nodoDeclaracion.getTipo(), Categoria.Variable, null,this.nombreDeFuncion);
         this.editor.getManTablas().anadirCuarteto(nuevoCuarteto);
         if (seDebeGuardarLaVariable) {

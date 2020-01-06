@@ -3,6 +3,7 @@ package gnz.gui.frames;
 import gnz.backend.analizadores.AnalizadorLexicoCodigo;
 import gnz.backend.analizadores.parser;
 import gnz.backend.errores.ManejadorDeErrores;
+import gnz.backend.manejadorC.ManejadorC;
 import gnz.backend.tablas.ManejadorDeTablas;
 import java.io.BufferedReader;
 import java.io.StringReader;
@@ -24,6 +25,7 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
     private final UndoManager editManager;
     private final ManejadorDeEditorDeTexto manejadorEditor;
     private ManejadorDeTablas manTablas;
+    private CodigoCJDialog frameC;
 
     /**
      * Creates new form EditorDeTextoFrame
@@ -32,6 +34,7 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
         editManager = new UndoManager();
         initComponents();
         crearOyenteDeEdicion();
+        frameC = new CodigoCJDialog(this,false);
         this.manejadorEditor = new ManejadorDeEditorDeTexto(codigoTextArea, editManager, this);
         //Para lineas de codigo
         TextLineNumber lineNumber = new TextLineNumber(codigoTextArea);
@@ -60,6 +63,7 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
         analizarCodigoButton = new javax.swing.JButton();
         limpiarCodigo3dYErroresButton = new javax.swing.JButton();
         limpiarAreaDeTextoButton = new javax.swing.JButton();
+        guardar3dButton = new javax.swing.JButton();
         erroresScrollPane = new javax.swing.JScrollPane();
         erroresTextArea = new javax.swing.JTextArea();
         jLabel3 = new javax.swing.JLabel();
@@ -127,6 +131,12 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
         });
         jToolBar1.add(limpiarAreaDeTextoButton);
 
+        guardar3dButton.setText("Guardar 3D");
+        guardar3dButton.setFocusable(false);
+        guardar3dButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        guardar3dButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(guardar3dButton);
+
         erroresTextArea.setColumns(20);
         erroresTextArea.setRows(5);
         erroresScrollPane.setViewportView(erroresTextArea);
@@ -150,14 +160,14 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
                     .addComponent(codigojScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(60, 60, 60)
-                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(200, 200, 200)
                         .addComponent(jLabel3))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(14, 14, 14)
-                        .addComponent(erroresScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 439, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(erroresScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 439, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(28, 28, 28)
+                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 392, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(7, 7, 7)
                 .addComponent(codigoTresDireccionesjScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE)
                 .addContainerGap())
@@ -175,8 +185,9 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(2, 2, 2)
                                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(8, 8, 8)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(erroresScrollPane))
@@ -394,6 +405,7 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane erroresScrollPane;
     private javax.swing.JTextArea erroresTextArea;
     private javax.swing.JLabel filaColumnaLabel;
+    private javax.swing.JButton guardar3dButton;
     private javax.swing.JMenuItem guardarArchivoMenuItem3;
     private javax.swing.JMenuItem guardarComoMenuItem4;
     private javax.swing.JLabel jLabel1;
@@ -427,6 +439,12 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
         if (!ManejadorDeErrores.hayError) {
             erroresTextArea.setText("NO EXISTEN ERRORES");
             manTablas.escribirCuartetos();
+            //Ahora se escribe el codigo c
+            ManejadorC manC = new ManejadorC(manTablas.getTablaDeCuarteto(), this);
+            frameC.getCodigoCjTextArea().setText(manC.escribirProgramaC());
+            //Ahora se escribe el assembler
+            //Ahora se hace visible el frame
+            frameC.setVisible(true);
         }
         ManejadorDeErrores.hayError = false;
     }

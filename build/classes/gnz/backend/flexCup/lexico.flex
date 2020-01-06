@@ -3,6 +3,7 @@
 package gnz.backend.analizadores;
 import java_cup.runtime.*;
 import static gnz.backend.analizadores.sym.*;
+import gnz.backend.errores.ManejadorDeErrores;
 import gnz.gui.frames.*;
 
 %% //------------------>2da area<--------------------------
@@ -153,5 +154,9 @@ Digitos = 0 | [1-9][0-9]*
 //<<EOF>>                 { return symbol(EOF);
 
 [^]     {//ManejadorDeErrores.mostrarErrorLexico(this.editor.getErroresTextArea(), yytext(), yyline+1, yycolumn+1,manCuarteto);
+          int linea=yyline+1;
+          int columna=yycolumn+1;
+          String mensaje="Error LEXICO el caracter \""+yytext()+"\" no es valido.\nLinea:"+linea+" columna:"+columna;
+          ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
 
         }

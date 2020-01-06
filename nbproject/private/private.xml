@@ -3,19 +3,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/manejadorC/ManejadorC.java</file>
             <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/manejoDeVariables/ManejadorDeExpresionesBooleanas.java</file>
             <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/analizadores/parser.java</file>
+            <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/manejoDeVariables/ManejadorDeExpresionesParaArreglos.java</file>
             <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/tablas/ManejadorDeTablas.java</file>
-            <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/manejoDeVariables/ManejadorDeExpresionesNumericas.java</file>
-            <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/nodoExpresion/TipoDeHoja.java</file>
-            <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/manejoDeVariables/ManejadorDeExpresionesString.java</file>
-            <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/nodoDeclaracion/TipoDeVariable.java</file>
+            <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/manejoDeVariables/ManejadorLecturaEscritura.java</file>
             <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/manejoDeVariables/CreadorDeVariables.java</file>
-            <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/tablas/TuplaDeSimbolo.java</file>
-            <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/nodoExpresion/NodoHojaExpresion.java</file>
             <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/cuarteto/TipoDeCuarteto.java</file>
-            <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/gui/frames/EditorDeTextoFrame.java</file>
-            <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/nodoDeclaracion/ManejadorDeDeclaraciones.java</file>
+            <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/manejoDeVariables/ManejadorDeExpresionesNumericas.java</file>
         </group>
     </open-files>
 </project-private>

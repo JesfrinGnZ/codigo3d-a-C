@@ -4,6 +4,7 @@
 package gnz.backend.analizadores;
 
 import gnz.backend.cuarteto.*;
+import gnz.backend.errores.ManejadorDeErrores;
 import gnz.backend.funcion.Parametro;
 import java_cup.runtime.*;
 import gnz.backend.nodo.Nodo;
@@ -19,25 +20,32 @@ parser code {:
 
     private EditorDeTextoFrame editor;
     private ManejadorDeDeclaraciones man;
+    private ManejadorLecturaEscritura manLecturaEscritura;
     private String ambito="global";
 
     public parser(AnalizadorLexicoCodigo lex,EditorDeTextoFrame editor){
         super(lex);
         this.editor=editor;
+        this.manLecturaEscritura= new ManejadorLecturaEscritura(editor);
     }
 
     //Metodo al que se llama automaticamente ante algun error sintactico
     public void syntax_error(Symbol s){
         int columna = s.right;
         int linea = s.left;
-        System.out.println("Error SINTACTICO:" + s.value + " en:" + linea + ":" + columna);
+        String mensaje="Error SINTACTICO no se esperaba:" + s.value + " en:" + linea + ":" + columna;
+        //System.out.println("Error SINTACTICO:" + s.value + " en:" + linea + ":" + columna);
+        ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+
 }
 
     //Metodo al que se llama en el momento en que ya no es posible una recuperacion de errores
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
         int columna = s.right;
         int linea = s.left;
-        System.out.println("Error SINTACTICO:" + s.value + " en:" + linea + ":" + columna);
+        String mensaje="Error SINTACTICO:" + s.value + " en:" + linea + ":" + columna;
+        //System.out.println("Error SINTACTICO:" + s.value + " en:" + linea + ":" + columna);
+        ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
  }
  //*******************************************************ANadir goto Main*******************************************************************
  private void anadirGotoMain(){
@@ -552,10 +560,17 @@ incrementoDecremento::= MENOS NUMERO_ENTERO:i
 
 //*********************************************************Funciones predefinidas************************************************************
 unaInstruccion::=declaracionDeFuncionesPredefinidas;
-declaracionDeFuncionesPredefinidas::= PRINTLN CORCHETE_ABIERTO conjuntoDeTexto:lista CORCHETE_CERRADO PCOMA;
-declaracionDeFuncionesPredefinidas::= PRINT CORCHETE_ABIERTO conjuntoDeTexto:lista CORCHETE_CERRADO PCOMA;
-declaracionDeFuncionesPredefinidas::= SCANS CORCHETE_ABIERTO IDENTIFICADOR CORCHETE_CERRADO PCOMA;
-declaracionDeFuncionesPredefinidas::= SCANN CORCHETE_ABIERTO IDENTIFICADOR CORCHETE_CERRADO PCOMA;
+declaracionDeFuncionesPredefinidas::= PRINTLN CORCHETE_ABIERTO conjuntoDeTexto:lista CORCHETE_CERRADO PCOMA
+{:manLecturaEscritura.evaluarPrint(lista,ambito,TipoDeCuarteto.Println);:};
+
+declaracionDeFuncionesPredefinidas::= PRINT CORCHETE_ABIERTO conjuntoDeTexto:lista CORCHETE_CERRADO PCOMA
+{:manLecturaEscritura.evaluarPrint(lista,ambito,TipoDeCuarteto.Print);:};
+
+declaracionDeFuncionesPredefinidas::= SCANS CORCHETE_ABIERTO IDENTIFICADOR:i CORCHETE_CERRADO PCOMA
+{:manLecturaEscritura.evaluarScan(i,ambito,TipoDeCuarteto.SCANS,ileft,iright);:};
+
+declaracionDeFuncionesPredefinidas::= SCANN CORCHETE_ABIERTO IDENTIFICADOR:i CORCHETE_CERRADO PCOMA
+{:manLecturaEscritura.evaluarScan(i,ambito,TipoDeCuarteto.SCANN,ileft,iright);:};
 
 conjuntoDeTexto::= conjuntoDeTexto:lista COMA unTexto:n1
 {:lista.add(n1);

@@ -60,8 +60,8 @@ public class ManejadorDeExpresionesBooleanas {
                         if (tupla.getTipo() == TipoDeVariable.BOOLEAN) {
                             String labelSi = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
                             String labelNo = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
-                            Cuarteto cuartetoIf = new Cuarteto("==", tupla.getNombre() + tupla.getAmbito(), "1", labelSi, TipoDeCuarteto.IF);
-                            Cuarteto cuartetoGoto = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.GOTO);
+                            Cuarteto cuartetoIf = new Cuarteto("==", tupla.getNombre() + tupla.getAmbito(), "1", labelSi, TipoDeCuarteto.IF,null);
+                            Cuarteto cuartetoGoto = new Cuarteto("goto", labelSi, null, labelNo, TipoDeCuarteto.GOTO,null);
                             this.editor.getManTablas().anadirCuarteto(cuartetoIf);
                             this.editor.getManTablas().anadirCuarteto(cuartetoGoto);
                             return cuartetoGoto;
@@ -73,7 +73,7 @@ public class ManejadorDeExpresionesBooleanas {
                                 if (nodosHoja != null) {
                                     String valor = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), nodosHoja, editor);
                                     String nuevaTemporal = "t" + editor.getManTablas().obtenerNuevoTemporal();
-                                    Cuarteto cuartetoAsignacion = new Cuarteto(null, nuevaTemporal, null, nodoHoja.getValor() + ambito + "[" + valor + "]", TipoDeCuarteto.ASIGNACION);
+                                    Cuarteto cuartetoAsignacion = new Cuarteto(null, nuevaTemporal, null, nodoHoja.getValor() + ambito + "[" + valor + "]", TipoDeCuarteto.ASIGNACION_DECLARACION,null);
                                     editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
                                     nodoHoja.setValor(nuevaTemporal);
                                     String labelSi = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();
@@ -117,7 +117,7 @@ public class ManejadorDeExpresionesBooleanas {
                                     if (nodosHoja != null) {
                                         String valor = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), nodosHoja, editor);
                                         String nuevaTemporal = "t" + editor.getManTablas().obtenerNuevoTemporal();
-                                        Cuarteto cuartetoAsignacion = new Cuarteto(null, nuevaTemporal, null, nodoHoja.getValor() + "global" + "[" + valor + "]", TipoDeCuarteto.ASIGNACION);
+                                        Cuarteto cuartetoAsignacion = new Cuarteto(null, nuevaTemporal, null, nodoHoja.getValor() + "global" + "[" + valor + "]", TipoDeCuarteto.ASIGNACION_DECLARACION);
                                         editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
                                         nodoHoja.setValor(nuevaTemporal);
                                         String labelSi = "L" + this.editor.getManTablas().obtenerNuevoNumeroDeLabel();

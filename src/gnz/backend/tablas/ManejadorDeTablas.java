@@ -63,6 +63,18 @@ public class ManejadorDeTablas {
         }
         return tupla;
     }
+    
+    public TuplaDeSimbolo buscarVariable(String nombre){
+        TuplaDeSimbolo tupla = null;
+        for (TuplaDeSimbolo s : tablaDeSimbolos) {
+            String nombreConAmbito=s.getNombre()+s.getAmbito();
+            if(nombreConAmbito.equals(nombre)){
+                tupla=s;
+            }
+        }
+        return tupla;
+    }
+    
 
     /**
      * Recibe una tupla a guardar con su respectivo ambito, revisa si ya ha sido
@@ -146,7 +158,11 @@ public class ManejadorDeTablas {
         for (Cuarteto cuarteto : tablaDeCuarteto) {
             //this.editor.getCodigo3dTextArea().append(cuarteto.getTipoDeCuarteto().toString()+"\n");
             switch (cuarteto.getTipoDeCuarteto()) {
-                case ASIGNACION: {
+                case ASIGNACION_DECLARACION: {
+                    this.editor.getCodigo3dTextArea().append(cuarteto.getResultado() + "=" + cuarteto.getOperador1() + "\n");
+                    break;
+                }
+                case SOLO_ASIGNACION:{
                     this.editor.getCodigo3dTextArea().append(cuarteto.getResultado() + "=" + cuarteto.getOperador1() + "\n");
                     break;
                 }
@@ -160,7 +176,6 @@ public class ManejadorDeTablas {
                 }
                 case GOTO: {//Tiene el padre de si y el que no
                     this.editor.getCodigo3dTextArea().append("goto " + cuarteto.getResultado() + "\n");
-                    //this.editor.getCodigo3dTextArea().append(cuarteto.getOperador1()+"\n");
                     break;
                 }
                 case SOLO_LABEL: {
@@ -180,7 +195,23 @@ public class ManejadorDeTablas {
                     break;
                 }
                 case LLAMADA_DE_FUNCION: {
-                    this.editor.getCodigo3dTextArea().append(cuarteto.getResultado() +"="+cuarteto.getOperando()+cuarteto.getOperador1()+","+cuarteto.getOperador2()+ "\n");
+                    this.editor.getCodigo3dTextArea().append(cuarteto.getResultado() +"="+cuarteto.getOperando()+" "+cuarteto.getOperador1()+","+cuarteto.getOperador2()+ "\n");
+                    break;
+                }
+                case Print:{
+                    this.editor.getCodigo3dTextArea().append("Print "+cuarteto.getResultado()+"\n");
+                    break;
+                }
+                case Println:{
+                    this.editor.getCodigo3dTextArea().append("Println "+cuarteto.getResultado()+"\n");
+                    break;
+                }
+                case SCANS:{
+                    this.editor.getCodigo3dTextArea().append(cuarteto.getOperando()+" "+cuarteto.getResultado()+"\n");
+                    break;
+                }
+                case SCANN:{
+                    this.editor.getCodigo3dTextArea().append(cuarteto.getOperando()+" "+cuarteto.getResultado()+"\n");
                     break;
                 }
                 case GOTOSALIDA: {

@@ -6,6 +6,7 @@
 package gnz.backend.analizadores;
 
 import gnz.backend.cuarteto.*;
+import gnz.backend.errores.ManejadorDeErrores;
 import gnz.backend.funcion.Parametro;
 import java_cup.runtime.*;
 import gnz.backend.nodo.Nodo;
@@ -868,25 +869,32 @@ public class parser extends java_cup.runtime.lr_parser {
 
     private EditorDeTextoFrame editor;
     private ManejadorDeDeclaraciones man;
+    private ManejadorLecturaEscritura manLecturaEscritura;
     private String ambito="global";
 
     public parser(AnalizadorLexicoCodigo lex,EditorDeTextoFrame editor){
         super(lex);
         this.editor=editor;
+        this.manLecturaEscritura= new ManejadorLecturaEscritura(editor);
     }
 
     //Metodo al que se llama automaticamente ante algun error sintactico
     public void syntax_error(Symbol s){
         int columna = s.right;
         int linea = s.left;
-        System.out.println("Error SINTACTICO:" + s.value + " en:" + linea + ":" + columna);
+        String mensaje="Error SINTACTICO no se esperaba:" + s.value + " en:" + linea + ":" + columna;
+        //System.out.println("Error SINTACTICO:" + s.value + " en:" + linea + ":" + columna);
+        ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+
 }
 
     //Metodo al que se llama en el momento en que ya no es posible una recuperacion de errores
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
         int columna = s.right;
         int linea = s.left;
-        System.out.println("Error SINTACTICO:" + s.value + " en:" + linea + ":" + columna);
+        String mensaje="Error SINTACTICO:" + s.value + " en:" + linea + ":" + columna;
+        //System.out.println("Error SINTACTICO:" + s.value + " en:" + linea + ":" + columna);
+        ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
  }
  //*******************************************************ANadir goto Main*******************************************************************
  private void anadirGotoMain(){
@@ -2344,7 +2352,7 @@ RESULT=lista;
 		int listaleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int listaright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		LinkedList<Nodo> lista = (LinkedList<Nodo>)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-
+		manLecturaEscritura.evaluarPrint(lista,ambito,TipoDeCuarteto.Println);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("declaracionDeFuncionesPredefinidas",35, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -2356,7 +2364,7 @@ RESULT=lista;
 		int listaleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int listaright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		LinkedList<Nodo> lista = (LinkedList<Nodo>)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-
+		manLecturaEscritura.evaluarPrint(lista,ambito,TipoDeCuarteto.Print);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("declaracionDeFuncionesPredefinidas",35, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -2365,7 +2373,10 @@ RESULT=lista;
           case 102: // declaracionDeFuncionesPredefinidas ::= SCANS CORCHETE_ABIERTO IDENTIFICADOR CORCHETE_CERRADO PCOMA 
             {
               Object RESULT =null;
-
+		int ileft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		manLecturaEscritura.evaluarScan(i,ambito,TipoDeCuarteto.SCANS,ileft,iright);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("declaracionDeFuncionesPredefinidas",35, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -2374,7 +2385,10 @@ RESULT=lista;
           case 103: // declaracionDeFuncionesPredefinidas ::= SCANN CORCHETE_ABIERTO IDENTIFICADOR CORCHETE_CERRADO PCOMA 
             {
               Object RESULT =null;
-
+		int ileft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int iright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		String i = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		manLecturaEscritura.evaluarScan(i,ambito,TipoDeCuarteto.SCANN,ileft,iright);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("declaracionDeFuncionesPredefinidas",35, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

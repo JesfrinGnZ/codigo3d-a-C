@@ -8,6 +8,7 @@ package gnz.backend.manejoDeVariables;
 import gnz.backend.cuarteto.Cuarteto;
 import gnz.backend.cuarteto.TipoDeCuarteto;
 import gnz.backend.nodo.Nodo;
+import gnz.backend.nodoDeclaracion.TipoDeVariable;
 import gnz.backend.nodoExpresion.NodoHojaExpresion;
 import gnz.backend.nodoExpresion.OperacionAritmetica;
 import gnz.gui.frames.EditorDeTextoFrame;
@@ -43,12 +44,12 @@ public class ManejadorDeExpresionesParaArreglos {
             for (int i = dondeSeEMpezara; i < dimensionesArreglo.size(); i++) {
                 if (i == dondeSeEMpezara) {
                     String numTemporal = "t" + String.valueOf(editor.getManTablas().obtenerNuevoTemporal());
-                    Cuarteto nuevoCuarteto = new Cuarteto(OperacionAritmetica.POR.getSigno(), hojasEvaluada.getValor() + hojasEvaluada.getAmbito(), dimensionesArreglo.get(i).getValor(), numTemporal, TipoDeCuarteto.SOLO_EXPRESION);
+                    Cuarteto nuevoCuarteto = new Cuarteto(OperacionAritmetica.POR.getSigno(), hojasEvaluada.getValor() + hojasEvaluada.getAmbito(), dimensionesArreglo.get(i).getValor(), numTemporal, TipoDeCuarteto.SOLO_EXPRESION,TipoDeVariable.INT);
                     ultimaTemporal = numTemporal;
                     editor.getManTablas().anadirCuarteto(nuevoCuarteto);
                 } else {
                     String numTemporal = "t" + String.valueOf(editor.getManTablas().obtenerNuevoTemporal());
-                    Cuarteto nuevoCuarteto = new Cuarteto(OperacionAritmetica.POR.getSigno(), ultimaTemporal + hojasEvaluada.getAmbito(), dimensionesArreglo.get(i).getValor(), numTemporal, TipoDeCuarteto.SOLO_EXPRESION);
+                    Cuarteto nuevoCuarteto = new Cuarteto(OperacionAritmetica.POR.getSigno(), ultimaTemporal + hojasEvaluada.getAmbito(), dimensionesArreglo.get(i).getValor(), numTemporal, TipoDeCuarteto.SOLO_EXPRESION,TipoDeVariable.INT);
                     ultimaTemporal = numTemporal;
                     editor.getManTablas().anadirCuarteto(nuevoCuarteto);
                 }
@@ -63,13 +64,13 @@ public class ManejadorDeExpresionesParaArreglos {
         //Sumas
         if (temporalesDeSuma.size() >= 2) {
             String numTemporal = "t" + String.valueOf(editor.getManTablas().obtenerNuevoTemporal());
-            Cuarteto nuevoCuarteto = new Cuarteto(OperacionAritmetica.MAS.getSigno(), temporalesDeSuma.getFirst(), temporalesDeSuma.get(1), numTemporal, TipoDeCuarteto.SOLO_EXPRESION);
+            Cuarteto nuevoCuarteto = new Cuarteto(OperacionAritmetica.MAS.getSigno(), temporalesDeSuma.getFirst(), temporalesDeSuma.get(1), numTemporal, TipoDeCuarteto.SOLO_EXPRESION,TipoDeVariable.INT);
             editor.getManTablas().anadirCuarteto(nuevoCuarteto);
             ultimaTemporal = numTemporal;
             //Para los que siguen de 2
             for (int i = 2; i < temporalesDeSuma.size(); i++) {
                 numTemporal = "t" + String.valueOf(editor.getManTablas().obtenerNuevoTemporal());
-                nuevoCuarteto = new Cuarteto(OperacionAritmetica.MAS.getSigno(), ultimaTemporal, temporalesDeSuma.get(i), numTemporal, TipoDeCuarteto.SOLO_EXPRESION);
+                nuevoCuarteto = new Cuarteto(OperacionAritmetica.MAS.getSigno(), ultimaTemporal, temporalesDeSuma.get(i), numTemporal, TipoDeCuarteto.SOLO_EXPRESION,TipoDeVariable.INT);
                 editor.getManTablas().anadirCuarteto(nuevoCuarteto);
                 ultimaTemporal = numTemporal;
             }

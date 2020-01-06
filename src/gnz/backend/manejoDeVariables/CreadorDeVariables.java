@@ -16,6 +16,7 @@ import gnz.backend.nodoDeclaracion.NodoId;
 import gnz.backend.nodoDeclaracion.TipoDeVariable;
 import gnz.backend.nodoExpresion.NodoExpresion;
 import gnz.backend.nodoExpresion.NodoHojaExpresion;
+import gnz.backend.nodoExpresion.OperacionAritmetica;
 import gnz.backend.nodoExpresion.TipoDeHoja;
 import gnz.backend.tablas.Categoria;
 import gnz.backend.tablas.TuplaDeSimbolo;
@@ -30,9 +31,14 @@ public class CreadorDeVariables {
 
     //********************************************************Para llamadas de funciones*******************************************
     public static NodoHojaExpresion evaluarLlamadaDeFuncion(String nombreDeFuncion, LinkedList<Nodo> expresiones, EditorDeTextoFrame editor, int linea, int columna) {
-        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLINEA:"+linea+"\n\n\n\n\n\n\n\n\n\n\n\n\n");
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLINEA:" + linea + "\n\n\n\n\n\n\n\n\n\n\n\n\n");
         TuplaDeSimbolo subPrograma = editor.getManTablas().buscarSubPrograma(nombreDeFuncion);
         LinkedList<String> parametroSimplificado = new LinkedList<>();
+        if (subPrograma == null) {
+            String mensaje = "Error SEMANTICO, el subprograma " + nombreDeFuncion + " no ha sido declarado.\nLinea" + linea + " Columna:" + columna;
+            ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+            return new NodoHojaExpresion(TipoDeHoja.LLAMADA_DE_FUNCION, TipoDeVariable.VOID, null, linea, columna);
+        }
         if (subPrograma.getTipoDeRetorno() != TipoDeVariable.VOID) {
             if (subPrograma.getNumeroDeParametros() == expresiones.size()) {
                 for (int i = 0; i < subPrograma.getNumeroDeParametros(); i++) {
@@ -79,7 +85,7 @@ public class CreadorDeVariables {
                     String temporal = "t" + editor.getManTablas().obtenerNuevoTemporal();
                     Cuarteto llamadaDeFuncion = new Cuarteto("call", nombreDeFuncion, "" + subPrograma.getNumeroDeParametros(), temporal, TipoDeCuarteto.LLAMADA_DE_FUNCION);
                     editor.getManTablas().anadirCuarteto(llamadaDeFuncion);
-                    return new NodoHojaExpresion(TipoDeHoja.LLAMADA_DE_FUNCION, subPrograma.getTipoDeRetorno(), temporal,linea,columna);
+                    return new NodoHojaExpresion(TipoDeHoja.LLAMADA_DE_FUNCION, subPrograma.getTipoDeRetorno(), temporal, linea, columna);
                 }
 
             } else {//Error de dimension de parameteros
@@ -91,7 +97,7 @@ public class CreadorDeVariables {
             ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
         }
 
-        return  new NodoHojaExpresion(TipoDeHoja.LLAMADA_DE_FUNCION, subPrograma.getTipoDeRetorno(), null,linea,columna);
+        return new NodoHojaExpresion(TipoDeHoja.LLAMADA_DE_FUNCION, subPrograma.getTipoDeRetorno(), null, linea, columna);
     }
 
     //***********************************************************************Instruccion RETURN **********************************************************************
@@ -147,10 +153,7 @@ public class CreadorDeVariables {
 
     }
 
-    /**
-     * *************************************************************CREACION DE
-     * VARIABLES**********************************************************************************
-     */
+    //* *************************************************************CREACION DE VARIABLES********************************************************************************/
     public static void declararVariables(DeclaracionDeVariable declaracion, EditorDeTextoFrame editor) {
         if (declaracion.getTipo() == TipoDeVariable.BOOLEAN) {
             ManejadorDeExpresionesBooleanas manejadorBooleano = new ManejadorDeExpresionesBooleanas(editor, declaracion.getAmbito());
@@ -158,13 +161,16 @@ public class CreadorDeVariables {
                 if (nodoId.getAsignacion() == null) {
                     TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nodoId.getId(), declaracion.getTipo(), declaracion.getAmbito());
                     editor.getManTablas().guardarVariable(tupla, nodoId.getLinea(), nodoId.getColumna());
+                    Cuarteto cuartetoAsignacion = new Cuarteto(null, null, null, nodoId.getId() + declaracion.getAmbito(), TipoDeCuarteto.DECLARACION, TipoDeVariable.INT);
+                    editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
+
                 } else {
                     Cuarteto ultimoCuarteto = manejadorBooleano.evaluarExpresionBooleana(nodoId.getAsignacion());
                     if (ultimoCuarteto != null) {
                         //Guardando la variable
                         TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nodoId.getId(), declaracion.getTipo(), declaracion.getAmbito());
                         editor.getManTablas().guardarVariable(tupla, nodoId.getLinea(), nodoId.getColumna());
-                        crearCuartetosParaBooleano(ultimoCuarteto, editor, nodoId, declaracion.getAmbito());
+                        crearCuartetosParaBooleano(ultimoCuarteto, editor, nodoId, declaracion.getAmbito(), TipoDeCuarteto.ASIGNACION_DECLARACION);
                     }
                 }
             }
@@ -174,12 +180,14 @@ public class CreadorDeVariables {
                 if (nodoId.getAsignacion() == null) {
                     TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nodoId.getId(), declaracion.getTipo(), declaracion.getAmbito());
                     editor.getManTablas().guardarVariable(tupla, nodoId.getLinea(), nodoId.getColumna());
+                    Cuarteto cuartetoAsignacion = new Cuarteto(null, null, null, nodoId.getId() + declaracion.getAmbito(), TipoDeCuarteto.DECLARACION, TipoDeVariable.STRING);
+                    editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
                 } else {
                     NodoHojaExpresion nodoHoja = manejadorDeCadenas.evaluarExpresionCadena(nodoId.getAsignacion());
                     if (nodoHoja != null) {
                         TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nodoId.getId(), declaracion.getTipo(), declaracion.getAmbito());
                         editor.getManTablas().guardarVariable(tupla, nodoId.getLinea(), nodoId.getColumna());
-                        Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + declaracion.getAmbito(), TipoDeCuarteto.ASIGNACION);
+                        Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + declaracion.getAmbito(), TipoDeCuarteto.ASIGNACION_DECLARACION, TipoDeVariable.STRING);
                         editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
                     }
                 }
@@ -190,6 +198,8 @@ public class CreadorDeVariables {
                 if (nodoId.getAsignacion() == null) {//Solo se debe guardar la variable
                     TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nodoId.getId(), declaracion.getTipo(), declaracion.getAmbito());
                     editor.getManTablas().guardarVariable(tupla, nodoId.getLinea(), nodoId.getColumna());
+                    Cuarteto cuartetoAsignacion = new Cuarteto(null, null, null, nodoId.getId() + declaracion.getAmbito(), TipoDeCuarteto.DECLARACION, declaracion.getTipo());
+                    editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
                 } else {
                     NodoHojaExpresion nodoHoja = manejadorNumerico.evaluarExpresionMatematica(nodoId.getAsignacion());//Tipo y ultimo valor temporal
                     if (nodoHoja != null) {
@@ -197,7 +207,7 @@ public class CreadorDeVariables {
                         if (declaracion.getTipo().getJerarquia() >= nodoHoja.getTipoDEVariable().getJerarquia()) {
                             TuplaDeSimbolo tupla = new TuplaDeSimbolo(0, nodoId.getId(), declaracion.getTipo(), declaracion.getAmbito());
                             editor.getManTablas().guardarVariable(tupla, nodoId.getLinea(), nodoId.getColumna());
-                            Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + declaracion.getAmbito(), TipoDeCuarteto.ASIGNACION);
+                            Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + declaracion.getAmbito(), TipoDeCuarteto.ASIGNACION_DECLARACION, declaracion.getTipo());
                             editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
                         } else {//ERROR de conversion de tipos
                             String mensaje = "Error SEMANTICO, tipos no compatibles " + nodoHoja.getTipoDEVariable() + "\n No se puede convertirn en" + declaracion.getTipo() + " en Linea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
@@ -248,13 +258,13 @@ public class CreadorDeVariables {
         editor.getManTablas().anadirCuarteto(labelFinal);//LABEL
     }
 
-    private static void crearCuartetosParaBooleano(Cuarteto ultimoCuarteto, EditorDeTextoFrame editor, NodoId nodoId, String ambito) {
+    private static void crearCuartetosParaBooleano(Cuarteto ultimoCuarteto, EditorDeTextoFrame editor, NodoId nodoId, String ambito, TipoDeCuarteto tipoDeCuarteto) {
         String labelSalida = "L" + editor.getManTablas().obtenerNuevoNumeroDeLabel();
         //Cuartetos
         Cuarteto labelSi = new Cuarteto(null, null, null, ultimoCuarteto.getOperador1(), TipoDeCuarteto.SOLO_LABEL);
         Cuarteto labelNo = new Cuarteto(null, null, null, ultimoCuarteto.getResultado(), TipoDeCuarteto.SOLO_LABEL);
-        Cuarteto cuartetoAsignacionSi = new Cuarteto(null, "1", null, nodoId.getId() + ambito, TipoDeCuarteto.ASIGNACION);
-        Cuarteto cuartetoAsignacionNo = new Cuarteto(null, "0", null, nodoId.getId() + ambito, TipoDeCuarteto.ASIGNACION);
+        Cuarteto cuartetoAsignacionSi = new Cuarteto(null, "1", null, nodoId.getId() + ambito, tipoDeCuarteto, TipoDeVariable.INT);
+        Cuarteto cuartetoAsignacionNo = new Cuarteto(null, "0", null, nodoId.getId() + ambito, TipoDeCuarteto.SOLO_ASIGNACION, TipoDeVariable.INT);
         Cuarteto cuartetoGoto = new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.GOTO);
         Cuarteto labelFinal = new Cuarteto(null, null, null, labelSalida, TipoDeCuarteto.SOLO_LABEL);
         //Se anaden los cuartetos
@@ -271,8 +281,8 @@ public class CreadorDeVariables {
         //Cuartetos
         Cuarteto labelSi = new Cuarteto(null, null, null, ultimoCuarteto.getOperador1(), TipoDeCuarteto.SOLO_LABEL);
         Cuarteto labelNo = new Cuarteto(null, null, null, ultimoCuarteto.getResultado(), TipoDeCuarteto.SOLO_LABEL);
-        Cuarteto cuartetoAsignacionSi = new Cuarteto(null, "1", null, nodoId.getId() + ambito + "[" + ultimoTemp + "]", TipoDeCuarteto.ASIGNACION);
-        Cuarteto cuartetoAsignacionNo = new Cuarteto(null, "0", null, nodoId.getId() + ambito + "[" + ultimoTemp + "]", TipoDeCuarteto.ASIGNACION);
+        Cuarteto cuartetoAsignacionSi = new Cuarteto(null, "1", null, nodoId.getId() + ambito + "[" + ultimoTemp + "]", TipoDeCuarteto.ASIGNACION_DECLARACION);
+        Cuarteto cuartetoAsignacionNo = new Cuarteto(null, "0", null, nodoId.getId() + ambito + "[" + ultimoTemp + "]", TipoDeCuarteto.ASIGNACION_DECLARACION);
         Cuarteto cuartetoGoto = new Cuarteto("goto", null, null, labelSalida, TipoDeCuarteto.GOTO);
         Cuarteto labelFinal = new Cuarteto(null, null, null, labelSalida, TipoDeCuarteto.SOLO_LABEL);
         //Se anaden los cuartetos
@@ -284,11 +294,7 @@ public class CreadorDeVariables {
         editor.getManTablas().anadirCuarteto(labelFinal);//LABEL
     }
 
-    /**
-     * *************************************************************ASIGNACION
-     * DE
-     * VARIABLES**********************************************************************************
-     */
+    // *************************************************************ASIGNACION DE VARIABLES********************************************************************************
     public static void asignarVariable(NodoId nodoId, EditorDeTextoFrame editor, String ambito) {
         TuplaDeSimbolo tupla = editor.getManTablas().buscarVariable(nodoId.getId(), ambito);
         if (tupla != null) {//En su ambito
@@ -310,13 +316,13 @@ public class CreadorDeVariables {
             ManejadorDeExpresionesBooleanas manBooleano = new ManejadorDeExpresionesBooleanas(editor, ambito);
             Cuarteto ultimoCuarteto = manBooleano.evaluarExpresionBooleana(nodoId.getAsignacion());
             if (ultimoCuarteto != null) {
-                crearCuartetosParaBooleano(ultimoCuarteto, editor, nodoId, ambito);
+                crearCuartetosParaBooleano(ultimoCuarteto, editor, nodoId, ambito, TipoDeCuarteto.SOLO_ASIGNACION);
             }
         } else if (tipo == TipoDeVariable.STRING) {
             ManejadorDeExpresionesString manString = new ManejadorDeExpresionesString(editor, ambito);
             NodoHojaExpresion nodoHoja = manString.evaluarExpresionCadena(nodoId.getAsignacion());
             if (nodoHoja != null) {
-                Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + ambito, TipoDeCuarteto.ASIGNACION);
+                Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + ambito, TipoDeCuarteto.SOLO_ASIGNACION, TipoDeVariable.STRING);
                 editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
             }
         } else {//Es numerico
@@ -324,7 +330,7 @@ public class CreadorDeVariables {
             NodoHojaExpresion nodoHoja = manNumerico.evaluarExpresionMatematica(nodoId.getAsignacion());
             if (nodoHoja != null) {
                 if (tupla.getTipo().getJerarquia() >= nodoHoja.getTipoDEVariable().getJerarquia()) {
-                    Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + ambito, TipoDeCuarteto.ASIGNACION);
+                    Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + ambito, TipoDeCuarteto.SOLO_ASIGNACION, tupla.getTipo());
                     editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
                 } else {//ERROR de conversion de tipos
                     String mensaje = "Error SEMANTICO, tipos no compatibles " + nodoHoja.getTipoDEVariable() + "\n No se puede convertirnnnn en" + tupla.getTipo() + " en Linea:" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
@@ -359,12 +365,34 @@ public class CreadorDeVariables {
             }
         }
         //Ahora se procede a guardar la tupla
+        Cuarteto cuartetoDeclaracion;
+        String ultimaTemporal;
         if (!existeErrorEnHoja) {
             for (NodoId id : ids) {
                 tupla = new TuplaDeSimbolo(0, id.getId(), tipoDeVariable, hojasEvaluadas.size(), hojasEvaluadas, ambito);
                 editor.getManTablas().guardarVariable(tupla, id.getLinea(), id.getColumna());
+                //Ahora se crea la declaracion
+                if (hojasEvaluadas.size() == 1) {
+                    cuartetoDeclaracion = new Cuarteto(null, null, null, id.getId() + ambito + "[" + hojasEvaluadas.get(0) + "]", TipoDeCuarteto.DECLARACION, tipoDeVariable);
+                    editor.getManTablas().anadirCuarteto(cuartetoDeclaracion);
+                } else if (hojasEvaluadas.size() >= 2) {
+                    String numTemporal = "t" + String.valueOf(editor.getManTablas().obtenerNuevoTemporal());
+                    Cuarteto nuevoCuarteto = new Cuarteto(OperacionAritmetica.MAS.getSigno(), hojasEvaluadas.get(0).getValor(), hojasEvaluadas.get(1).getValor(), numTemporal, TipoDeCuarteto.SOLO_EXPRESION, TipoDeVariable.INT);
+                    editor.getManTablas().anadirCuarteto(nuevoCuarteto);
+                    ultimaTemporal = numTemporal;
+                    for (int i = 2; i < hojasEvaluadas.size(); i++) {
+                        numTemporal = "t" + String.valueOf(editor.getManTablas().obtenerNuevoTemporal());
+                        nuevoCuarteto = new Cuarteto(OperacionAritmetica.MAS.getSigno(), hojasEvaluadas.get(0).getValor(), hojasEvaluadas.get(1).getValor(), numTemporal, TipoDeCuarteto.SOLO_EXPRESION, TipoDeVariable.INT);
+                        editor.getManTablas().anadirCuarteto(nuevoCuarteto);
+                        ultimaTemporal = numTemporal;
+                    }
+                    cuartetoDeclaracion = new Cuarteto(null, null, null, id.getId() + ambito + "[" + ultimaTemporal + "]", TipoDeCuarteto.DECLARACION, tipoDeVariable);
+                    editor.getManTablas().anadirCuarteto(cuartetoDeclaracion);
+                }
             }
+
         }
+
     }
 
     public static void asignarValorArreglo(EditorDeTextoFrame editor, String ambito, LinkedList<Nodo> expresiones, NodoId nodoId) {
@@ -410,15 +438,16 @@ public class CreadorDeVariables {
                             String ultimoTemp = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), hojasEvaluadas, editor);
                             NodoHojaExpresion nodoHoja = manejadorCadena.evaluarExpresionCadena(nodoId.getAsignacion());
                             if (nodoHoja != null) {
-                                Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + ambito + "[" + ultimoTemp + "]", TipoDeCuarteto.ASIGNACION);
+                                Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + ambito + "[" + ultimoTemp + "]", TipoDeCuarteto.SOLO_ASIGNACION);
                                 editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
                             }
                         } else {//Es numerico
+                            manejadorNumerico = new ManejadorDeExpresionesNumericas(editor, ambito);
                             String ultimoTemp = ManejadorDeExpresionesParaArreglos.evaluarArreglo(tupla.getDimensionesArreglo(), hojasEvaluadas, editor);
                             NodoHojaExpresion nodoHoja = manejadorNumerico.evaluarExpresionMatematica(nodoId.getAsignacion());
                             if (nodoHoja != null) {
                                 if (tupla.getTipo().getJerarquia() >= nodoHoja.getTipoDEVariable().getJerarquia()) {
-                                    Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + ambito + "[" + ultimoTemp + "]", TipoDeCuarteto.ASIGNACION);
+                                    Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + ambito + "[" + ultimoTemp + "]", TipoDeCuarteto.SOLO_ASIGNACION);
                                     editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
                                 } else {//Error conversion ce tipos
                                     String mensaje = "Error SEMANTICO, tipos no compatibles " + nodoHoja.getTipoDEVariable() + "\n No se puede convertirn en" + tupla.getTipo() + " en Linea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
@@ -429,13 +458,16 @@ public class CreadorDeVariables {
                     }
 
                 } else {//Error de dimension
-
+                    String mensaje = "Error SEMANTICO, las dimenciones del arreglo \"" + nodoId.getId() + "\" no coinciden.\nLinea" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
+                    ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
                 }
             } else {//Error de conversion de tipos
-
+                String mensaje = "Error SEMANTICO, tipos no compatibles " + nodoId.getId() + "no es un arreglo.\nLinea:" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
+                ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
             }
         } else {//Error la variable no ha sido declarada
-
+            String mensaje = "Error SEMANTICO, la variable " + nodoId.getId() + " No ha sido declarada.\nLinea:" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
+            ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
         }
 
     }

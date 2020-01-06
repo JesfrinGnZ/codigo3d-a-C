@@ -458,3 +458,64 @@ MAIN() [
   suma<-1+2+3;
  PRINTLN[suma];
 ]
+
+////////////////////////////////////////////////////
+string cad<-5+8+"Hola";
+int x;
+int y;
+int a;
+boolean id1;
+float f1, f2, f3;
+
+boolean suma(int mm, int mmm) [
+     int resultado <- mm + mmm;
+%%%
+     return TRUE;
+]
+
+%%%
+MAIN() [
+  boolean<-suma(1,2);
+  y<-1;
+  WHILE(x>0) [
+     y<-y*x;
+     x<-x-1;
+  ]
+]
+////////////////////////////////////////////////
+string cadena<-TRUE +"Hola";
+boolean bol<-TRUE AND TRUE;
+int n<-5*8+3/2;
+boolean bol1<-bol;
+string cad<-"5";
+string cad1<-cad;
+int x;
+int y;
+int a;
+boolean id1;
+float f1, f2, f3;
+
+boolean suma(int mm, int mmm) [
+     int resultado <- mm + mmm;
+%%%
+     return TRUE;
+]
+
+%%%
+MAIN() [
+  boolean b<-suma(1,2);
+  y<-1;
+  WHILE(x>0) [
+     y<-y*x;
+     x<-x-1;
+  ]
+
+  boolean c<-suma(1,2);
+  y<-1;
+  WHILE(x>0) [
+     y<-y*x;
+     x<-x-1;
+  ]
+]
+
+////////////

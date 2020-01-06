@@ -5,6 +5,7 @@
 package gnz.backend.analizadores;
 import java_cup.runtime.*;
 import static gnz.backend.analizadores.sym.*;
+import gnz.backend.errores.ManejadorDeErrores;
 import gnz.gui.frames.*;
 
 
@@ -1004,6 +1005,10 @@ public class AnalizadorLexicoCodigo implements java_cup.runtime.Scanner {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1: 
             { //ManejadorDeErrores.mostrarErrorLexico(this.editor.getErroresTextArea(), yytext(), yyline+1, yycolumn+1,manCuarteto);
+          int linea=yyline+1;
+          int columna=yycolumn+1;
+          String mensaje="Error LEXICO el caracter \""+yytext()+"\" no es valido.\nLinea:"+linea+" columna:"+columna;
+          ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
             } 
             // fall through
           case 57: break;
