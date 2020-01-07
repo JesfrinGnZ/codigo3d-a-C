@@ -134,7 +134,11 @@ public class ManejadorC {
                             expresiones += evaluarExpresionString(cuarteto.getResultado(), cuarteto.getOperador1());
                             expresiones += evaluarExpresionString(cuarteto.getResultado(), cuarteto.getOperador2());
                         } else {
-                            expresiones += "\t" + cuarteto.getTipoDeVariable().toString().toLowerCase() + " " + cuarteto.getResultado() + "=" + cuarteto.getOperador1() + cuarteto.getOperando() + cuarteto.getOperador2() + ";\n";
+                            String tipo=cuarteto.getTipoDeVariable().toString().toLowerCase();
+                            if(cuarteto.getTipoDeVariable()==TipoDeVariable.VOID){
+                                tipo="";
+                            }
+                            expresiones += "\t" + tipo + " " + cuarteto.getResultado() + "=" + cuarteto.getOperador1() + cuarteto.getOperando() + cuarteto.getOperador2() + ";\n";
                         }
                     } else {
                         if (cuarteto.getTipoDeVariable() == TipoDeVariable.STRING) {

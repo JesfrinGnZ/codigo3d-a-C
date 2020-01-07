@@ -1000,10 +1000,11 @@ private void finalicacionDeWhile(Nodo n1,Cuarteto cuartetoInicio){
 //**********************************************Metodos para for***************************************************************
 private void finalizacionDeFor(Cuarteto ultimoCuarteto,Cuarteto cuartetoInicio,IncrementoDecremento incr){
   if(ultimoCuarteto!=null && cuartetoInicio!=null){
-    String numTemporal = "t" + String.valueOf(editor.getManTablas().obtenerNuevoTemporal());
-    editor.getManTablas().anadirCuarteto(new Cuarteto(incr.getTipo(),cuartetoInicio.getOperador1(),incr.getNumero(),cuartetoInicio.getOperador1(),TipoDeCuarteto.SOLO_EXPRESION));
+    //String numTemporal = "t" + String.valueOf(editor.getManTablas().obtenerNuevoTemporal());
+
+    editor.getManTablas().anadirCuarteto(new Cuarteto(incr.getTipo(),cuartetoInicio.getOperador1()+ambito,incr.getNumero(),cuartetoInicio.getOperador1()+ambito,TipoDeCuarteto.SOLO_EXPRESION));
     //Cuarteto que permite volver hacia arriba
-    editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetoInicio.getResultado(), TipoDeCuarteto.GOTOSALIDA));
+    editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, cuartetoInicio.getResultado(), TipoDeCuarteto.GOTO));
     //Cuarteto que genera la etiqueta final
     editor.getManTablas().anadirCuarteto(new Cuarteto("goto", null, null, ultimoCuarteto.getResultado(), TipoDeCuarteto.SOLO_LABEL));
   }

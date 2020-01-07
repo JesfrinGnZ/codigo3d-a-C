@@ -76,7 +76,8 @@ public class ManejadorLecturaEscritura {
     }
 
     public void evaluarPrint(LinkedList<Nodo> nodosDePrint, String ambito, TipoDeCuarteto tipoDeCuarteto) {
-        String saltoDeLinea = "";
+        char c = 92;
+        String saltoDeLinea = c + "n";
         TipoDeCuarteto tipoDeCuartetoParC = TipoDeCuarteto.PrintlnC;
         Cuarteto cuarteto = null;
         String instruccionInicioParaC = "\tprintf(\"";
@@ -91,15 +92,16 @@ public class ManejadorLecturaEscritura {
                 switch (nodoHoja.getTipo()) {
                     case IDENTIFICADOR: {
                         TuplaDeSimbolo variable = editor.getManTablas().buscarVariable(nodoHoja.getValor(), ambito);
+                        String amb = ambito;
                         if (variable == null && !ambito.equalsIgnoreCase("global")) {
                             variable = editor.getManTablas().buscarVariable(nodoHoja.getValor(), "global");
                             cuarteto = new Cuarteto("", "", "", nodoHoja.getValor() + "global", tipoDeCuarteto, variable.getTipo());
-
+                            amb = "global";
                         } else {
-                            cuarteto = new Cuarteto("", "", "", nodoHoja.getValor() + ambito, tipoDeCuarteto, variable.getTipo());
+                            cuarteto = new Cuarteto("", "", "", nodoHoja.getValor() + amb, tipoDeCuarteto, variable.getTipo());
                         }
-                        instruccionInicioParaC += evaluarVariable(variable);
-                        instruccionFInParaC += nodoHoja.getValor() + ",";
+                        instruccionInicioParaC += evaluarVariable(variable)+saltoDeLinea;
+                        instruccionFInParaC += nodoHoja.getValor() + amb + ",";
                         break;
                     }
                     case TRUE: {
@@ -159,13 +161,14 @@ public class ManejadorLecturaEscritura {
 
     /**
      * evalua scan
+     *
      * @param id
      * @param ambito
-     * @param tipoDeCuarteto 
-     * @param linea 
-     * @param columna 
+     * @param tipoDeCuarteto
+     * @param linea
+     * @param columna
      */
-    public void evaluarScan(String id, String ambito, TipoDeCuarteto tipoDeCuarteto,int linea, int columna) {
+    public void evaluarScan(String id, String ambito, TipoDeCuarteto tipoDeCuarteto, int linea, int columna) {
         TuplaDeSimbolo tupla = editor.getManTablas().buscarVariable(id, ambito);
         Cuarteto cuarteto;
         if (tupla == null) {
@@ -174,23 +177,23 @@ public class ManejadorLecturaEscritura {
         }
         if (tipoDeCuarteto == TipoDeCuarteto.SCANS) {//ValorString
             if (tupla.getTipo() == TipoDeVariable.STRING) {
-                cuarteto = new Cuarteto("scanf(\"" + FORMATO_CADENA + "\",", "", "", id + ambito + ");\n", tipoDeCuarteto.SCANF);
+                cuarteto = new Cuarteto("scanf(\"" + FORMATO_CADENA + "\",", "", "", "&" + id + ambito + ");\n", tipoDeCuarteto.SCANF);
                 editor.getManTablas().anadirCuarteto(cuarteto);
                 cuarteto = new Cuarteto("SCANS", "", "", id + ambito, tipoDeCuarteto.SCANS);
                 editor.getManTablas().anadirCuarteto(cuarteto);
             } else {//Error de ingrerso de datos
-                String mensaje = "Error SEMANTICO, solo se admite String en SCANS.\nLinea:" +linea+" Columna:"+columna;
+                String mensaje = "Error SEMANTICO, solo se admite variables String en SCANS.\nLinea:" + linea + " Columna:" + columna;
                 ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
             }
         } else {
             if (tupla.getTipo() != TipoDeVariable.STRING && tupla.getTipo() != TipoDeVariable.BOOLEAN) {
                 String formato = evaluarVariable(tupla);
-                cuarteto = new Cuarteto("\tscanf(\"" + formato + "\",", "", "", id + ambito + ");\n", tipoDeCuarteto.SCANF);
+                cuarteto = new Cuarteto("\tscanf(\"" + formato + "\",", "", "", "&" + id + ambito + ");\n", tipoDeCuarteto.SCANF);
                 editor.getManTablas().anadirCuarteto(cuarteto);
                 cuarteto = new Cuarteto("\tSCANN", "", "", id + ambito, tipoDeCuarteto.SCANN);
                 editor.getManTablas().anadirCuarteto(cuarteto);
             } else {//Error de ingreso de datos
-                String mensaje = "Error SEMANTICO, solo se admite numeros en SCANN.\nLinea:" +linea+" Columna:"+columna;
+                String mensaje = "Error SEMANTICO, solo se admiten variables numericas en SCANN.\nLinea:" + linea + " Columna:" + columna;
                 ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
             }
         }

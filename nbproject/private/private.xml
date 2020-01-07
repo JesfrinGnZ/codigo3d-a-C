@@ -12,6 +12,9 @@
             <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/manejoDeVariables/CreadorDeVariables.java</file>
             <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/cuarteto/TipoDeCuarteto.java</file>
             <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/manejoDeVariables/ManejadorDeExpresionesNumericas.java</file>
+            <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/gui/frames/ManejadorDeArchivos.java</file>
+            <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/gui/frames/EditorDeTextoFrame.java</file>
+            <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/gui/frames/ManejadorDeEditorDeTexto.java</file>
         </group>
     </open-files>
 </project-private>

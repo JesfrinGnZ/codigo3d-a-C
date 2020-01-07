@@ -6,9 +6,11 @@ import gnz.backend.errores.ManejadorDeErrores;
 import gnz.backend.manejadorC.ManejadorC;
 import gnz.backend.tablas.ManejadorDeTablas;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.event.UndoableEditEvent;
@@ -25,7 +27,6 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
     private final UndoManager editManager;
     private final ManejadorDeEditorDeTexto manejadorEditor;
     private ManejadorDeTablas manTablas;
-    private CodigoCJDialog frameC;
 
     /**
      * Creates new form EditorDeTextoFrame
@@ -34,7 +35,6 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
         editManager = new UndoManager();
         initComponents();
         crearOyenteDeEdicion();
-        frameC = new CodigoCJDialog(this,false);
         this.manejadorEditor = new ManejadorDeEditorDeTexto(codigoTextArea, editManager, this);
         //Para lineas de codigo
         TextLineNumber lineNumber = new TextLineNumber(codigoTextArea);
@@ -45,6 +45,13 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
         //Para lineas de 
         TextLineNumber linerNumber3 = new TextLineNumber(codigo3dTextArea);
         codigoTresDireccionesjScrollPane.setRowHeaderView(linerNumber3);
+
+        TextLineNumber line1 = new TextLineNumber(codigoCTextArea);
+        codigoCjScrollPane.setRowHeaderView(line1);
+
+        TextLineNumber line2 = new TextLineNumber(assemblerTextArea);
+        assemblerScrollPane.setRowHeaderView(line2);
+
     }
 
     @SuppressWarnings("unchecked")
@@ -61,12 +68,18 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
         filaColumnaLabel = new javax.swing.JLabel();
         jToolBar1 = new javax.swing.JToolBar();
         analizarCodigoButton = new javax.swing.JButton();
-        limpiarCodigo3dYErroresButton = new javax.swing.JButton();
         limpiarAreaDeTextoButton = new javax.swing.JButton();
-        guardar3dButton = new javax.swing.JButton();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
         erroresScrollPane = new javax.swing.JScrollPane();
         erroresTextArea = new javax.swing.JTextArea();
-        jLabel3 = new javax.swing.JLabel();
+        codigoCjScrollPane = new javax.swing.JScrollPane();
+        codigoCTextArea = new javax.swing.JTextArea();
+        assemblerScrollPane = new javax.swing.JScrollPane();
+        assemblerTextArea = new javax.swing.JTextArea();
+        jToolBar2 = new javax.swing.JToolBar();
+        guardarCodigo3dButton = new javax.swing.JButton();
+        guardarCodigoCButton = new javax.swing.JButton();
+        guardarAssemblerjButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         nuevoArchivoMenuItem = new javax.swing.JMenuItem();
@@ -112,14 +125,6 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
         });
         jToolBar1.add(analizarCodigoButton);
 
-        limpiarCodigo3dYErroresButton.setText("Limpiar Codigo 3D");
-        limpiarCodigo3dYErroresButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                limpiarCodigo3dYErroresButtonActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(limpiarCodigo3dYErroresButton);
-
         limpiarAreaDeTextoButton.setText("Limpiar Todo");
         limpiarAreaDeTextoButton.setFocusable(false);
         limpiarAreaDeTextoButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -131,17 +136,58 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
         });
         jToolBar1.add(limpiarAreaDeTextoButton);
 
-        guardar3dButton.setText("Guardar 3D");
-        guardar3dButton.setFocusable(false);
-        guardar3dButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        guardar3dButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(guardar3dButton);
-
         erroresTextArea.setColumns(20);
         erroresTextArea.setRows(5);
         erroresScrollPane.setViewportView(erroresTextArea);
 
-        jLabel3.setText("Errores");
+        jTabbedPane1.addTab("Errores", erroresScrollPane);
+
+        codigoCTextArea.setColumns(20);
+        codigoCTextArea.setRows(5);
+        codigoCjScrollPane.setViewportView(codigoCTextArea);
+
+        jTabbedPane1.addTab("Codigo C", codigoCjScrollPane);
+
+        assemblerTextArea.setColumns(20);
+        assemblerTextArea.setRows(5);
+        assemblerScrollPane.setViewportView(assemblerTextArea);
+
+        jTabbedPane1.addTab("Assembler", assemblerScrollPane);
+
+        jToolBar2.setRollover(true);
+
+        guardarCodigo3dButton.setText("Guardar codigo 3d");
+        guardarCodigo3dButton.setFocusable(false);
+        guardarCodigo3dButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        guardarCodigo3dButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        guardarCodigo3dButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                guardarCodigo3dButtonActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(guardarCodigo3dButton);
+
+        guardarCodigoCButton.setText("Guardar codigo C");
+        guardarCodigoCButton.setFocusable(false);
+        guardarCodigoCButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        guardarCodigoCButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        guardarCodigoCButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                guardarCodigoCButtonActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(guardarCodigoCButton);
+
+        guardarAssemblerjButton.setText("Guardar assembler");
+        guardarAssemblerjButton.setFocusable(false);
+        guardarAssemblerjButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        guardarAssemblerjButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        guardarAssemblerjButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                guardarAssemblerjButtonActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(guardarAssemblerjButton);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -151,50 +197,49 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
                 .addGap(172, 172, 172)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(318, 318, 318)
                 .addComponent(jLabel2)
                 .addGap(135, 135, 135))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(filaColumnaLabel)
-                    .addComponent(codigojScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE))
+                    .addComponent(codigojScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 431, Short.MAX_VALUE))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(200, 200, 200)
-                        .addComponent(jLabel3))
+                        .addGap(18, 18, 18)
+                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 402, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(16, 16, 16)
+                        .addComponent(codigoTresDireccionesjScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 431, Short.MAX_VALUE)
+                        .addContainerGap())
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addComponent(erroresScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 439, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
-                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 392, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(7, 7, 7)
-                .addComponent(codigoTresDireccionesjScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE)
-                .addContainerGap())
+                        .addGap(223, 223, 223)
+                        .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(codigoTresDireccionesjScrollPane)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(2, 2, 2)
-                                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(erroresScrollPane))
-                            .addComponent(codigojScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 528, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 17, Short.MAX_VALUE)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel1)
+                        .addComponent(jLabel2))
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(filaColumnaLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(codigojScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 528, Short.MAX_VALUE)
+                    .addComponent(jTabbedPane1)
+                    .addComponent(codigoTresDireccionesjScrollPane, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(filaColumnaLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 12, Short.MAX_VALUE))))
         );
 
         jMenu1.setText("Archivo");
@@ -291,7 +336,7 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(18, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -370,6 +415,8 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
         try {
             this.codigo3dTextArea.setText("");
             this.erroresTextArea.setText("");
+            this.codigoCTextArea.setText("");
+            this.assemblerTextArea.setText("");
             this.manTablas = new ManejadorDeTablas(this);
             analizarCodigo(this.codigoTextArea.getText());
         } catch (Exception ex) {
@@ -384,10 +431,17 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
         this.erroresTextArea.setText("");
     }//GEN-LAST:event_limpiarAreaDeTextoButtonActionPerformed
 
-    private void limpiarCodigo3dYErroresButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_limpiarCodigo3dYErroresButtonActionPerformed
-        this.codigo3dTextArea.setText("");
-        this.erroresTextArea.setText("");
-    }//GEN-LAST:event_limpiarCodigo3dYErroresButtonActionPerformed
+    private void guardarCodigo3dButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarCodigo3dButtonActionPerformed
+        guardarComo(this.codigo3dTextArea.getText());
+    }//GEN-LAST:event_guardarCodigo3dButtonActionPerformed
+
+    private void guardarCodigoCButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarCodigoCButtonActionPerformed
+        guardarComo(this.codigoCTextArea.getText());
+    }//GEN-LAST:event_guardarCodigoCButtonActionPerformed
+
+    private void guardarAssemblerjButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarAssemblerjButtonActionPerformed
+        guardarComo(this.assemblerTextArea.getText());
+    }//GEN-LAST:event_guardarAssemblerjButtonActionPerformed
     /**
      * @param args the command line arguments
      */
@@ -395,7 +449,11 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem abrirArchivoMenuItem2;
     private javax.swing.JButton analizarCodigoButton;
+    private javax.swing.JScrollPane assemblerScrollPane;
+    private javax.swing.JTextArea assemblerTextArea;
     private javax.swing.JTextArea codigo3dTextArea;
+    private javax.swing.JTextArea codigoCTextArea;
+    private javax.swing.JScrollPane codigoCjScrollPane;
     private javax.swing.JTextArea codigoTextArea;
     private javax.swing.JScrollPane codigoTresDireccionesjScrollPane;
     private javax.swing.JScrollPane codigojScrollPane;
@@ -405,19 +463,21 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane erroresScrollPane;
     private javax.swing.JTextArea erroresTextArea;
     private javax.swing.JLabel filaColumnaLabel;
-    private javax.swing.JButton guardar3dButton;
     private javax.swing.JMenuItem guardarArchivoMenuItem3;
+    private javax.swing.JButton guardarAssemblerjButton;
+    private javax.swing.JButton guardarCodigo3dButton;
+    private javax.swing.JButton guardarCodigoCButton;
     private javax.swing.JMenuItem guardarComoMenuItem4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JToolBar jToolBar2;
     private javax.swing.JButton limpiarAreaDeTextoButton;
-    private javax.swing.JButton limpiarCodigo3dYErroresButton;
     private javax.swing.JMenuItem nuevoArchivoMenuItem;
     private javax.swing.JMenuItem pegarMenuItem;
     private javax.swing.JMenuItem rehacerMenuItem;
@@ -441,10 +501,9 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
             manTablas.escribirCuartetos();
             //Ahora se escribe el codigo c
             ManejadorC manC = new ManejadorC(manTablas.getTablaDeCuarteto(), this);
-            frameC.getCodigoCjTextArea().setText(manC.escribirProgramaC());
+            codigoCTextArea.setText(manC.escribirProgramaC());
             //Ahora se escribe el assembler
             //Ahora se hace visible el frame
-            frameC.setVisible(true);
         }
         ManejadorDeErrores.hayError = false;
     }
@@ -467,6 +526,24 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
 
     public JTextArea getCodigo3dTextArea() {
         return codigo3dTextArea;
+    }
+
+    public void guardarComo(String texto) {
+        try {
+            if (texto.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "No existe codigo", "ERROR", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JFileChooser chooser = new JFileChooser();
+                chooser.showSaveDialog(this);
+                File ruta = chooser.getSelectedFile();
+                ManejadorDeArchivos.escribirArchivo(ruta, texto);
+                JOptionPane.showMessageDialog(this, "Archivo guardado con exito");
+            }
+        } catch (Exception e) {
+            String mensaje = "Existio un error al guardar el codigo";
+            JOptionPane.showMessageDialog(this, mensaje, "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
+
     }
 
 }
