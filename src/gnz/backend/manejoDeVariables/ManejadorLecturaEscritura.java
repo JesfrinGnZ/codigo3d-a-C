@@ -100,7 +100,7 @@ public class ManejadorLecturaEscritura {
                         } else {
                             cuarteto = new Cuarteto("", "", "", nodoHoja.getValor() + amb, tipoDeCuarteto, variable.getTipo());
                         }
-                        instruccionInicioParaC += evaluarVariable(variable)+saltoDeLinea;
+                        instruccionInicioParaC += evaluarVariable(variable) + saltoDeLinea;
                         instruccionFInParaC += nodoHoja.getValor() + amb + ",";
                         break;
                     }
@@ -171,13 +171,15 @@ public class ManejadorLecturaEscritura {
     public void evaluarScan(String id, String ambito, TipoDeCuarteto tipoDeCuarteto, int linea, int columna) {
         TuplaDeSimbolo tupla = editor.getManTablas().buscarVariable(id, ambito);
         Cuarteto cuarteto;
+        char c = 92;
+        String formatoCadena = "%[^"+c + "n]";
         if (tupla == null) {
             tupla = editor.getManTablas().buscarVariable(id, "global");
             ambito = "global";
         }
         if (tipoDeCuarteto == TipoDeCuarteto.SCANS) {//ValorString
             if (tupla.getTipo() == TipoDeVariable.STRING) {
-                cuarteto = new Cuarteto("scanf(\"" + FORMATO_CADENA + "\",", "", "", "&" + id + ambito + ");\n", tipoDeCuarteto.SCANF);
+                cuarteto = new Cuarteto("\tscanf(\"" + formatoCadena + "\",", "", "", id + ambito + ");\n", tipoDeCuarteto.SCANF);
                 editor.getManTablas().anadirCuarteto(cuarteto);
                 cuarteto = new Cuarteto("SCANS", "", "", id + ambito, tipoDeCuarteto.SCANS);
                 editor.getManTablas().anadirCuarteto(cuarteto);

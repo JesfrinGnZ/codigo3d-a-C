@@ -78,15 +78,15 @@ public class ManejadorC {
         return expresiones;
     }
 
-    private TipoDeVariable cambiarTipoDeVariable(TipoDeVariable tipoDeVariable){
-        if(tipoDeVariable==TipoDeVariable.STRING){
+    private TipoDeVariable cambiarTipoDeVariable(TipoDeVariable tipoDeVariable) {
+        if (tipoDeVariable == TipoDeVariable.STRING) {
             return TipoDeVariable.CHAR;
-        }else if(tipoDeVariable==TipoDeVariable.BOOLEAN || tipoDeVariable==TipoDeVariable.BYTE){
+        } else if (tipoDeVariable == TipoDeVariable.BOOLEAN || tipoDeVariable == TipoDeVariable.BYTE) {
             return TipoDeVariable.INT;
         }
         return tipoDeVariable;
     }
-    
+
     private String evaluarContenido(LinkedList<Cuarteto> cuartetos, boolean esDeFuncion, boolean seGuardoJustoAhora, String nombreResult, String nombreDeFuncion) {
         LinkedList<String> parametrosDeFuncion = new LinkedList<>();
         String expresiones = "";
@@ -134,9 +134,9 @@ public class ManejadorC {
                             expresiones += evaluarExpresionString(cuarteto.getResultado(), cuarteto.getOperador1());
                             expresiones += evaluarExpresionString(cuarteto.getResultado(), cuarteto.getOperador2());
                         } else {
-                            String tipo=cuarteto.getTipoDeVariable().toString().toLowerCase();
-                            if(cuarteto.getTipoDeVariable()==TipoDeVariable.VOID){
-                                tipo="";
+                            String tipo = cuarteto.getTipoDeVariable().toString().toLowerCase();
+                            if (cuarteto.getTipoDeVariable() == TipoDeVariable.VOID) {
+                                tipo = "";
                             }
                             expresiones += "\t" + tipo + " " + cuarteto.getResultado() + "=" + cuarteto.getOperador1() + cuarteto.getOperando() + cuarteto.getOperador2() + ";\n";
                         }
@@ -172,23 +172,23 @@ public class ManejadorC {
                 }
                 case SOLO_LABEL: {
                     if (esDeFuncion) {
-                        expresiones += "\t" + cuarteto.getResultado() + nombreDeFuncion + numeroParFuncion +":;\n";
+                        expresiones += "\t" + cuarteto.getResultado() + nombreDeFuncion + numeroParFuncion + ":;\n";
 
                     } else {
                         expresiones += "\t" + cuarteto.getResultado() + ":;\n";
                     }
                     break;
                 }
-                case PrintC:{
-                    expresiones+=cuarteto.getResultado();
+                case PrintC: {
+                    expresiones += cuarteto.getResultado();
                     break;
                 }
-                case PrintlnC:{
-                    expresiones+=cuarteto.getResultado();
+                case PrintlnC: {
+                    expresiones += cuarteto.getResultado();
                     break;
                 }
-                case SCANF:{
-                    expresiones+=cuarteto.getOperando()+cuarteto.getResultado();
+                case SCANF: {
+                    expresiones += cuarteto.getOperando() + cuarteto.getResultado();
                     break;
                 }
                 case INICIO_FUNCION: {
@@ -218,7 +218,8 @@ public class ManejadorC {
                             i++;
                         }
                     }
-                    parametrosDeFuncion = new LinkedList<>();//Reiniciando lista
+
+                    parametrosDeFuncion = new LinkedList<>();//Llenando lista de cuartetos 
                     boolean seEstaEnLaFuncion = false;
                     for (Cuarteto cuart : listaDeCuartetos) {
                         if (seEstaEnLaFuncion) {
@@ -226,16 +227,21 @@ public class ManejadorC {
                         }
                         if (cuart.getTipoDeCuarteto() == TipoDeCuarteto.INICIO_FUNCION && cuart.getResultado().equals(cuarteto.getOperador1())) {
                             seEstaEnLaFuncion = true;
-                        } else if (cuart.getTipoDeCuarteto() == TipoDeCuarteto.INICIO_FUNCION) {
+                        } else if (cuart.getTipoDeCuarteto() == TipoDeCuarteto.INICIO_FUNCION && !cuartetosDeSubprograma.isEmpty()) {
                             break;
                         }
                     }
-                    Parametro param1 = new Parametro(subPrograma.getTipoDeRetorno(), cuarteto.getResultado());
-                    if (param1.getTipo() == TipoDeVariable.BOOLEAN) {
-                        expresiones += "\t" + "int" + " " + param1.getNombreDeParametro() + ";\n";
+                    //Trabajo con el return
+                    Parametro paramReturn = new Parametro(subPrograma.getTipoDeRetorno(), cuarteto.getResultado());
+                    if (paramReturn.getTipo() == TipoDeVariable.BOOLEAN) {
+                        expresiones += "\t" + "int" + " " + paramReturn.getNombreDeParametro() + ";\n";
+                    } else if (paramReturn.getTipo() == TipoDeVariable.STRING) {
+                        expresiones += "\t" + "char" + " " + paramReturn.getNombreDeParametro() + ";\n";
+                    } else if (paramReturn.getTipo() == TipoDeVariable.VOID) {
                     } else {
-                        expresiones += "\t" + param1.getTipo().toString().toLowerCase() + ";\n";
+                        expresiones += "\t" + paramReturn.getTipo().toString().toLowerCase() + " " + paramReturn.getNombreDeParametro() + ";\n";
                     }
+                    //Trabajo con el contenido de la funcion
                     expresiones += evaluarContenido(cuartetosDeSubprograma, true, funcionYaSeGuardo, cuarteto.getResultado(), subPrograma.getNombre());//Resultado es a lo que se iguala el return
                     numeroParFuncion++;
                     break;

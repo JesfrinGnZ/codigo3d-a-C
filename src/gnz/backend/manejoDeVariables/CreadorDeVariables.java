@@ -373,16 +373,16 @@ public class CreadorDeVariables {
                 editor.getManTablas().guardarVariable(tupla, id.getLinea(), id.getColumna());
                 //Ahora se crea la declaracion
                 if (hojasEvaluadas.size() == 1) {
-                    cuartetoDeclaracion = new Cuarteto(null, null, null, id.getId() + ambito + "[" + hojasEvaluadas.get(0) + "]", TipoDeCuarteto.DECLARACION, tipoDeVariable);
+                    cuartetoDeclaracion = new Cuarteto(null, null, null, id.getId() + ambito + "[" + hojasEvaluadas.get(0).getValor() + "]", TipoDeCuarteto.DECLARACION, tipoDeVariable);
                     editor.getManTablas().anadirCuarteto(cuartetoDeclaracion);
                 } else if (hojasEvaluadas.size() >= 2) {
                     String numTemporal = "t" + String.valueOf(editor.getManTablas().obtenerNuevoTemporal());
-                    Cuarteto nuevoCuarteto = new Cuarteto(OperacionAritmetica.MAS.getSigno(), hojasEvaluadas.get(0).getValor(), hojasEvaluadas.get(1).getValor(), numTemporal, TipoDeCuarteto.SOLO_EXPRESION, TipoDeVariable.INT);
+                    Cuarteto nuevoCuarteto = new Cuarteto(OperacionAritmetica.POR.getSigno(), hojasEvaluadas.get(0).getValor(), hojasEvaluadas.get(1).getValor(), numTemporal, TipoDeCuarteto.SOLO_EXPRESION, TipoDeVariable.INT);
                     editor.getManTablas().anadirCuarteto(nuevoCuarteto);
                     ultimaTemporal = numTemporal;
                     for (int i = 2; i < hojasEvaluadas.size(); i++) {
                         numTemporal = "t" + String.valueOf(editor.getManTablas().obtenerNuevoTemporal());
-                        nuevoCuarteto = new Cuarteto(OperacionAritmetica.MAS.getSigno(), hojasEvaluadas.get(0).getValor(), hojasEvaluadas.get(1).getValor(), numTemporal, TipoDeCuarteto.SOLO_EXPRESION, TipoDeVariable.INT);
+                        nuevoCuarteto = new Cuarteto(OperacionAritmetica.POR.getSigno(), hojasEvaluadas.get(i).getValor(), ultimaTemporal, numTemporal, TipoDeCuarteto.SOLO_EXPRESION, TipoDeVariable.INT);
                         editor.getManTablas().anadirCuarteto(nuevoCuarteto);
                         ultimaTemporal = numTemporal;
                     }
