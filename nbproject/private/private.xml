@@ -4,6 +4,7 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/manejadorC/ManejadorC.java</file>
+            <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/manejoDeVariables/ManejadorDeExpresionesParaArreglos.java</file>
             <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/manejoDeVariables/ManejadorLecturaEscritura.java</file>
             <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/manejoDeVariables/CreadorDeVariables.java</file>
             <file>file:/home/jesfrin/NetBeansProjects/compi2/src/gnz/backend/manejoDeVariables/ManejadorDeExpresionesNumericas.java</file>

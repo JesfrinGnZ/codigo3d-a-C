@@ -102,9 +102,9 @@ public class CreadorDeVariables {
 
     //***********************************************************************Instruccion RETURN **********************************************************************
     public static void guardarReturn(String nombreDeFuncion, Nodo expresion, EditorDeTextoFrame editor, int linea, int columna) {
-        TuplaDeSimbolo tupla = editor.getManTablas().buscarSubPrograma(nombreDeFuncion);
-        if (tupla != null) {
-            TipoDeVariable tipoDeRetorno = tupla.getTipoDeRetorno();
+        TuplaDeSimbolo subPrograma = editor.getManTablas().buscarSubPrograma(nombreDeFuncion);
+        if (subPrograma != null) {
+            TipoDeVariable tipoDeRetorno = subPrograma.getTipoDeRetorno();
             if (tipoDeRetorno == TipoDeVariable.VOID) {//Errror la funcion no debe devolver valor
                 String mensaje = "Error SEMANTICO, el subprograma " + nombreDeFuncion + " es de tipo VOID.\nLinea" + linea + " Columna:" + columna;
                 ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
@@ -126,9 +126,16 @@ public class CreadorDeVariables {
                     ManejadorDeExpresionesNumericas manNumerico = new ManejadorDeExpresionesNumericas(editor, nombreDeFuncion);
                     NodoHojaExpresion nodoHoja = manNumerico.evaluarExpresionMatematica(expresion);
                     if (nodoHoja != null) {
-                        Cuarteto creturn = new Cuarteto(null, null, null, nodoHoja.getValor(), TipoDeCuarteto.RETURN);
-                        editor.getManTablas().anadirCuarteto(creturn);
+                        //Se debe averiguar si lo que se regresa es correcto
+                        if (nodoHoja.getTipoDEVariable().getJerarquia() <= subPrograma.getTipoDeRetorno().getJerarquia()) {
+                            Cuarteto creturn = new Cuarteto(null, null, null, nodoHoja.getValor(), TipoDeCuarteto.RETURN);
+                            editor.getManTablas().anadirCuarteto(creturn);
+                        } else {
+                            String mensaje = "Error SEMANTICO, tipos no compatibles " + nodoHoja.getTipoDEVariable() + "\n No se puede convertirn en :)" + subPrograma.getTipoDeRetorno() + " en Linea:" + linea + " Columna:" + columna;
+                            ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
+                        }
                     }
+
                 }
             }
         }
@@ -210,7 +217,7 @@ public class CreadorDeVariables {
                             Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + declaracion.getAmbito(), TipoDeCuarteto.ASIGNACION_DECLARACION, declaracion.getTipo());
                             editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
                         } else {//ERROR de conversion de tipos
-                            String mensaje = "Error SEMANTICO, tipos no compatibles " + nodoHoja.getTipoDEVariable() + "\n No se puede convertirn en" + declaracion.getTipo() + " en Linea:" + nodoHoja.getLinea() + " Columna:" + nodoHoja.getColumna();
+                            String mensaje = "Error SEMANTICO, tipos no compatibles " + nodoHoja.getTipoDEVariable() + "\n No se puede convertirn en " + declaracion.getTipo() + " en Linea:" + declaracion.getLinea() + " Columna:" + declaracion.getColumna();
                             ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
                         }
 
@@ -333,7 +340,7 @@ public class CreadorDeVariables {
                     Cuarteto cuartetoAsignacion = new Cuarteto(null, nodoHoja.getValor(), null, nodoId.getId() + ambito, TipoDeCuarteto.SOLO_ASIGNACION, tupla.getTipo());
                     editor.getManTablas().anadirCuarteto(cuartetoAsignacion);
                 } else {//ERROR de conversion de tipos
-                    String mensaje = "Error SEMANTICO, tipos no compatibles " + nodoHoja.getTipoDEVariable() + "\n No se puede convertirnnnn en" + tupla.getTipo() + " en Linea:" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
+                    String mensaje = "Error SEMANTICO, tipos no compatibles " + nodoHoja.getTipoDEVariable() + "\n No se puede convertir en" + tupla.getTipo() + " en Linea:" + nodoId.getLinea() + " Columna:" + nodoId.getColumna();
                     ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
                 }
             }

@@ -89,7 +89,7 @@ public class ManejadorDeTablas {
         if (tupla == null) {//La variable no ha sido declarada en ese ambito
             tablaDeSimbolos.add(simbolo);
         } else {//Error semantico
-            String mensaje = "Error SEMANTICO La variable:" + simbolo.getNombre() + " ya ha sido declarada.Linea:" + linea + " Columna:" + columna;
+            String mensaje = "Error SEMANTICO La variable:" + simbolo.getNombre() + " ya ha sido declarada\n.Linea:" + linea + " Columna:" + columna;
             ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
         }
     }
@@ -118,7 +118,7 @@ public class ManejadorDeTablas {
             tablaDeSimbolos.add(simbolo);
             return true;
         } else {//Error Semantico la funcion ya fue declarada
-            String mensaje = "Error SEMANTICO El SubPrograma:" + simbolo.getNombre() + " ya ha sido declarada.Linea:" + linea + " Columna:" + columna;
+            String mensaje = "Error SEMANTICO El SubPrograma:" + simbolo.getNombre() + " ya ha sido declarada.\nLinea:" + linea + " Columna:" + columna;
             ManejadorDeErrores.escribirErrorSemantico(mensaje, editor.getErroresTextArea());
         }
         return false;
