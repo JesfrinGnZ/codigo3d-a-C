@@ -20,7 +20,8 @@ public class ManejadorDeTablas {
     private LinkedList<TuplaDeSimbolo> tablaDeSimbolos;
     private int numeroDeTemporal;
     private int numeroDeLabel;
-    private EditorDeTextoFrame editor;
+    private final EditorDeTextoFrame editor;
+    private int posicionEnMemoria;
 
     public ManejadorDeTablas(EditorDeTextoFrame editor) {
         this.tablaDeCuarteto = new LinkedList<>();
@@ -28,6 +29,11 @@ public class ManejadorDeTablas {
         numeroDeLabel = 0;
         numeroDeTemporal = 0;
         this.editor = editor;
+        this.posicionEnMemoria=0;
+    }
+    
+    private int obtenerPosicionEnMemoria(){
+        return ++posicionEnMemoria;
     }
 
     public LinkedList<Cuarteto> getTablaDeCuarteto() {
@@ -87,6 +93,7 @@ public class ManejadorDeTablas {
     public void guardarVariable(TuplaDeSimbolo simbolo, int linea, int columna) {
         TuplaDeSimbolo tupla = buscarVariable(simbolo.getNombre(), simbolo.getAmbito());//simbolo.getAmbito
         if (tupla == null) {//La variable no ha sido declarada en ese ambito
+            simbolo.setPosicionEnMemoria(obtenerPosicionEnMemoria());
             tablaDeSimbolos.add(simbolo);
         } else {//Error semantico
             String mensaje = "Error SEMANTICO La variable:" + simbolo.getNombre() + " ya ha sido declarada\n.Linea:" + linea + " Columna:" + columna;
@@ -124,21 +131,7 @@ public class ManejadorDeTablas {
         return false;
     }
 
-    /**
-     *
-     * public TuplaDeSimbolo buscarVariable(String nombre) { for (TuplaDeSimbolo
-     * simbolo : tablaDeSimbolos) { if (simbolo.getNombre().equals(nombre)) {
-     * return simbolo; } } return null; }
-     *
-     * public void guardarNuevaVariable(TuplaDeSimbolo simbolo, int linea, int
-     * columna) { TuplaDeSimbolo simboloEncontrado =
-     * buscarVariable(simbolo.getNombre()); if (simboloEncontrado == null) {
-     * tablaDeSimbolos.add(simbolo); } else { String mensaje = "Error SEMANTICO
-     * La variable:" + simbolo.getNombre() + " ya ha sido declarada.Linea:" +
-     * linea + " Columna:" + columna;
-     * ManejadorDeErrores.escribirErrorSemantico(mensaje,
-     * editor.getErroresTextArea()); } }
-     */
+
     //****************************************************Acciones para cuarteto******************************************************
     public void anadirCuarteto(Cuarteto e) {
         this.tablaDeCuarteto.add(e);

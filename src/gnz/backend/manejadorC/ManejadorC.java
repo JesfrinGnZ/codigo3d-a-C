@@ -40,9 +40,10 @@ public class ManejadorC {
     }
 
     public String escribirProgramaC() {
-        String declaraciones = escribirExprescionesYAsignacionesGlobales();
-        declaraciones += escribirContenidoDeMain();
-        return "\n\n\n\n\n\n\n\n\n" + INICIO_C + declaraciones + FIN_C;
+        String programaC;
+        programaC = escribirExprescionesYAsignacionesGlobales();
+        programaC += escribirContenidoDeMain();
+        return "\n\n\n\n\n\n\n\n\n" + INICIO_C + programaC + FIN_C;
     }
 
     private String escribirExprescionesYAsignacionesGlobales() {

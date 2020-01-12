@@ -3,6 +3,7 @@ package gnz.gui.frames;
 import gnz.backend.analizadores.AnalizadorLexicoCodigo;
 import gnz.backend.analizadores.parser;
 import gnz.backend.errores.ManejadorDeErrores;
+import gnz.backend.manejadorC.ManejadorAssembler;
 import gnz.backend.manejadorC.ManejadorC;
 import gnz.backend.tablas.ManejadorDeTablas;
 import java.io.BufferedReader;
@@ -503,6 +504,8 @@ public class EditorDeTextoFrame extends javax.swing.JFrame {
             ManejadorC manC = new ManejadorC(manTablas.getTablaDeCuarteto(), this);
             codigoCTextArea.setText(manC.escribirProgramaC());
             //Ahora se escribe el assembler
+            ManejadorAssembler manA = new ManejadorAssembler(manTablas.getTablaDeCuarteto(), this);
+            assemblerTextArea.setText(manA.escribirCodigoAssembler());
             //Ahora se hace visible el frame
         }
         ManejadorDeErrores.hayError = false;

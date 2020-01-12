@@ -28,65 +28,72 @@ public class TuplaDeSimbolo {
     private TipoDeVariable tipoDeRetorno;
     private Integer numeroDeParametros;
     private LinkedList<Parametro> parametrosDeFuncion;
-
-    //Para funciones
-    public TuplaDeSimbolo(String nombre,TipoDeVariable tipoDeRetorno){
-        this.categoria=Categoria.Subprograma;
-        
-    }
+    //Para assembler
+    private int posicionEnMemoria;
     
+    
+    
+    //Para funciones
+    public TuplaDeSimbolo(String nombre, TipoDeVariable tipoDeRetorno) {
+        this.categoria = Categoria.Subprograma;
+
+    }
+
     /**
      * Para variables normales
+     *
      * @param numero
      * @param nombre
      * @param tipo
-     * @param ambito 
+     * @param ambito
      */
-    public TuplaDeSimbolo(int numero, String nombre, TipoDeVariable tipo,String ambito) {
+    public TuplaDeSimbolo(int numero, String nombre, TipoDeVariable tipo, String ambito) {
         this.numero = numero;
         this.nombre = nombre;
         this.tipo = tipo;
         this.categoria = Categoria.Variable;
-        this.ambito=ambito;
-        this.numeroDimensiones=0;
+        this.ambito = ambito;
+        this.numeroDimensiones = 0;
     }
+
     /**
      * Para arreglos
+     *
      * @param numero
      * @param nombre
      * @param tipo
      * @param numeroDimensiones
-     * @param dimensionesArreglo 
-     * @param ambito 
+     * @param dimensionesArreglo
+     * @param ambito
      */
-    public TuplaDeSimbolo(int numero, String nombre, TipoDeVariable tipo, int numeroDimensiones, LinkedList<NodoHojaExpresion> dimensionesArreglo,String ambito) {
+    public TuplaDeSimbolo(int numero, String nombre, TipoDeVariable tipo, int numeroDimensiones, LinkedList<NodoHojaExpresion> dimensionesArreglo, String ambito) {
         this.numero = numero;
         this.nombre = nombre;
         this.tipo = tipo;
         this.categoria = Categoria.Arreglo;
         this.numeroDimensiones = numeroDimensiones;
         this.dimensionesArreglo = dimensionesArreglo;
-        this.ambito=ambito;
+        this.ambito = ambito;
     }
-    
+
     /**
      * Para funciones
+     *
      * @param numero
      * @param nombre
      * @param tipoDeRetorno
      * @param numeroDeParametros
-     * @param parametrosDeFuncion 
+     * @param parametrosDeFuncion
      */
-    public TuplaDeSimbolo(int numero,String nombre,TipoDeVariable tipoDeRetorno,Integer numeroDeParametros,LinkedList<Parametro> parametrosDeFuncion){
-        this.ambito="";
-        this.categoria=Categoria.Subprograma;
-        this.numero=numero;
-        this.nombre=nombre;
-        this.tipoDeRetorno=tipoDeRetorno;
-        this.numeroDeParametros=numeroDeParametros;
-        this.parametrosDeFuncion=parametrosDeFuncion;
+    public TuplaDeSimbolo(int numero, String nombre, TipoDeVariable tipoDeRetorno, Integer numeroDeParametros, LinkedList<Parametro> parametrosDeFuncion) {
+        this.ambito = "";
+        this.categoria = Categoria.Subprograma;
+        this.numero = numero;
+        this.nombre = nombre;
+        this.tipoDeRetorno = tipoDeRetorno;
+        this.numeroDeParametros = numeroDeParametros;
+        this.parametrosDeFuncion = parametrosDeFuncion;
     }
-    
 
     public int getNumero() {
         return numero;
@@ -152,7 +159,6 @@ public class TuplaDeSimbolo {
         this.parametrosDeFuncion = parametrosDeFuncion;
     }
 
-
     public String getAmbito() {
         return ambito;
     }
@@ -168,7 +174,13 @@ public class TuplaDeSimbolo {
     public void setTipoDeRetorno(TipoDeVariable tipoDeRetorno) {
         this.tipoDeRetorno = tipoDeRetorno;
     }
-    
-    
+
+    public int getPosicionEnMemoria() {
+        return posicionEnMemoria;
+    }
+
+    public void setPosicionEnMemoria(int posicionEnMemoria) {
+        this.posicionEnMemoria = posicionEnMemoria;
+    }
 
 }

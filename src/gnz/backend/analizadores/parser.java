@@ -868,7 +868,6 @@ public class parser extends java_cup.runtime.lr_parser {
 
 
     private EditorDeTextoFrame editor;
-    private ManejadorDeDeclaraciones man;
     private ManejadorLecturaEscritura manLecturaEscritura;
     private String ambito="global";
 
